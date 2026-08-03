@@ -1,11 +1,10 @@
 # Income-per-sed
 
 [![Quality](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/quality.yml/badge.svg)](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/quality.yml)
-[![Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/pages.yml/badge.svg)](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/pages.yml)
 
 一个离线运行的收入仪表与任务计价工具。页面采用机械表盘、数字滚轮和怀表码表视觉语言，按工作时间实时展示今日收入、本月累计、工作进度，并支持历史回溯。
 
-[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/) · [下载最新版本](https://github.com/ZeusCupidCloris/Income-per-sed/releases/latest) · [查看完整说明书](docs/Income-per-sed（说明文档）.docx)
+[下载最新版本](https://github.com/ZeusCupidCloris/Income-per-sed/releases/latest) · [查看完整说明书](docs/Income-per-sed（说明文档）.docx)
 
 ![Income-per-sed 桌面版预览](docs/images/preview-desktop.png)
 
@@ -42,11 +41,7 @@
 4. 页面会根据当前时间自动计算收入和进度。
 5. iPhone 用户可将 `IncomeWidget.js` 与 Push 页面放入 iCloud Drive 的 Scriptable 目录。
 
-## 在线预览
-
-GitHub Pages 会将 Push 版作为静态页面发布。在线版与下载版使用相同 HTML；下载后仍可完全离线运行。
-
-手机版首屏预览：
+## 手机版预览
 
 <img src="docs/images/preview-mobile.png" alt="Income-per-sed 手机版预览" width="390">
 
