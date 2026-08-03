@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to publish
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -11,8 +17,15 @@ permissions:
 jobs:
   publish:
     runs-on: windows-latest
+    env:
+      RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
     steps:
+      - name: Preserve repository file bytes
+        shell: pwsh
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_TAG }}
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -29,17 +42,17 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $notes = "docs/releases/$env:GITHUB_REF_NAME.md"
+          $notes = "docs/releases/$env:RELEASE_TAG.md"
           if (-not (Test-Path -LiteralPath $notes)) {
             throw "Missing release notes: $notes"
           }
-          gh release create $env:GITHUB_REF_NAME `
+          gh release create $env:RELEASE_TAG `
             'Income-per-sed-Push.html#Push 日常使用版' `
             'Income-per-sed-Develop.html#Develop 开发诊断版' `
             'IncomeWidget.js#Scriptable iPhone 小组件' `
             'docs/Income-per-sed（说明文档）.docx#完整 Word 说明书' `
             'SHA256SUMS.txt#SHA-256 校验值' `
-            --title "Income-per-sed $env:GITHUB_REF_NAME" `
+            --title "Income-per-sed $env:RELEASE_TAG" `
             --notes-file $notes `
             --verify-tag `
             --latest
