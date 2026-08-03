@@ -18,6 +18,7 @@ jobs:
   publish:
     runs-on: windows-latest
     env:
+      PYTHONUTF8: '1'
       RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
     steps:
       - name: Preserve repository file bytes
