@@ -1,0 +1,16 @@
+{
+  "name": "income-per-sed-quality",
+  "version": "2.5.0",
+  "private": true,
+  "description": "Release validation and visual regression for Income-per-sed.",
+  "scripts": {
+    "validate": "python scripts/validate_release.py",
+    "checksums": "python scripts/validate_release.py --write-checksums",
+    "test": "playwright test",
+    "test:update": "playwright test --update-snapshots",
+    "preview:capture": "node scripts/capture_previews.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  }
+}
