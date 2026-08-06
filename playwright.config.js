@@ -2,6 +2,7 @@ const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
   testDir: './tests',
+  testIgnore: 'webkit.spec.js',
   fullyParallel: false,
   timeout: 45_000,
   expect: {

@@ -6,7 +6,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 from html.parser import HTMLParser
+import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import zipfile
@@ -20,6 +22,9 @@ RELEASE_FILES = (
     Path("docs/Income-per-sed（说明文档）.docx"),
 )
 CHECKSUM_FILE = ROOT / "SHA256SUMS.txt"
+MANIFEST_FILE = ROOT / "release-manifest.json"
+PACKAGE_FILE = ROOT / "package.json"
+CHECKSUM_TARGETS = RELEASE_FILES + (Path("release-manifest.json"),)
 LEGACY_MANUAL = ROOT / "docs/Income-per-sed（说明文档）"
 REQUIRED_IDS = (
     "incomeMainCard",
@@ -31,6 +36,13 @@ REQUIRED_IDS = (
     "funSummaryCard",
     "taskStopwatchPanel",
     "themeCycle",
+)
+RELEASE_FIELDS = (
+    "version",
+    "productVersion",
+    "sourceTag",
+    "buildId",
+    "releaseDate",
 )
 
 
@@ -81,8 +93,62 @@ def digest(path: Path) -> str:
 def checksum_text() -> str:
     return "".join(
         f"{digest(ROOT / relative)}  {relative.as_posix()}\n"
-        for relative in RELEASE_FILES
+        for relative in CHECKSUM_TARGETS
     )
+
+
+def read_json(path: Path) -> dict[str, object]:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        raise RuntimeError(f"Invalid JSON in {path.relative_to(ROOT)}: {exc}") from exc
+
+
+def extract_release_fields(path: Path) -> dict[str, str]:
+    text = path.read_text(encoding="utf-8")
+    fields: dict[str, str] = {}
+    for field in RELEASE_FIELDS:
+        match = re.search(rf"\b{re.escape(field)}\s*:\s*['\"]([^'\"]+)['\"]", text)
+        if not match:
+            fail(f"{path.name}: APP_RELEASE is missing {field}")
+        fields[field] = match.group(1)
+    return fields
+
+
+def validate_manifest(release_tag: str | None) -> None:
+    manifest = read_json(MANIFEST_FILE)
+    package = read_json(PACKAGE_FILE)
+    product_version = str(manifest.get("productVersion", ""))
+    expected_tag = f"v{product_version}"
+    if package.get("version") != product_version:
+        fail("package.json version does not match release-manifest.json")
+    if manifest.get("releaseTag") != expected_tag:
+        fail("release-manifest.json releaseTag must equal v + productVersion")
+    if release_tag and release_tag != expected_tag:
+        fail(f"Release tag {release_tag} does not match manifest tag {expected_tag}")
+    if manifest.get("canonicalSource") != RELEASE_FILES[1].as_posix():
+        fail("Develop HTML must remain the canonical source")
+    if manifest.get("derivedArtifacts") != [RELEASE_FILES[0].as_posix()]:
+        fail("Push HTML must remain the declared derived artifact")
+
+    expected_artifacts = [path.as_posix() for path in RELEASE_FILES] + [
+        CHECKSUM_FILE.name,
+        MANIFEST_FILE.name,
+    ]
+    if manifest.get("releaseArtifacts") != expected_artifacts:
+        fail("release-manifest.json releaseArtifacts is incomplete or out of order")
+
+    expected_fields = {
+        "version": str(manifest.get("internalVersion", "")),
+        "productVersion": product_version,
+        "sourceTag": expected_tag,
+        "buildId": str(manifest.get("buildId", "")),
+        "releaseDate": str(manifest.get("releaseDate", "")),
+    }
+    for relative in RELEASE_FILES[:2]:
+        actual_fields = extract_release_fields(ROOT / relative)
+        if actual_fields != expected_fields:
+            fail(f"{relative.name}: APP_RELEASE does not match release-manifest.json")
 
 
 def validate_files() -> None:
@@ -104,6 +170,12 @@ def validate_html(path: Path) -> None:
     for element_id in REQUIRED_IDS:
         if f'id="{element_id}"' not in text:
             fail(f"{path.name}: missing required element #{element_id}")
+    if path.name.endswith("Push.html"):
+        if 'name="income-per-sed-channel" content="push"' not in text:
+            fail(f"{path.name}: missing push channel metadata")
+        for marker in ("__incomeClockDiagnostics", "运行诊断", "DEVELOP REGRESSION EXPORT"):
+            if marker in text:
+                fail(f"{path.name}: Develop-only marker leaked into Push: {marker}")
 
     parser = InlineScriptParser()
     parser.feed(text)
@@ -178,10 +250,15 @@ def main() -> int:
         action="store_true",
         help="Regenerate SHA256SUMS.txt after validating all artifacts.",
     )
+    parser.add_argument(
+        "--release-tag",
+        help="Validate an existing release tag against release-manifest.json.",
+    )
     args = parser.parse_args()
 
     try:
         validate_files()
+        validate_manifest(args.release_tag)
         validate_widget()
         validate_html(ROOT / RELEASE_FILES[0])
         validate_html(ROOT / RELEASE_FILES[1])

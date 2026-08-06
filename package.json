@@ -1,16 +1,20 @@
 {
   "name": "income-per-sed-quality",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "private": true,
   "description": "Release validation and visual regression for Income-per-sed.",
   "scripts": {
+    "build:push": "node scripts/build_push.mjs --write",
+    "build:check": "node scripts/build_push.mjs --check",
     "validate": "python scripts/validate_release.py",
     "checksums": "python scripts/validate_release.py --write-checksums",
     "test": "playwright test",
+    "test:webkit": "playwright test --config=playwright.webkit.config.js",
     "test:update": "playwright test --update-snapshots",
     "preview:capture": "node scripts/capture_previews.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "1.62.1"
+    "@playwright/test": "1.62.1",
+    "html-minifier-terser": "7.2.0"
   }
 }

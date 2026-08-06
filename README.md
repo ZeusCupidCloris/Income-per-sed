@@ -2,6 +2,7 @@
 
 [![Quality](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/quality.yml/badge.svg)](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/quality.yml)
 [![Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/pages.yml/badge.svg)](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/pages.yml)
+[![License: All rights reserved](https://img.shields.io/badge/license-all%20rights%20reserved-6b625c)](#版权与使用限制)
 
 一个离线运行的收入仪表与任务计价工具。页面采用机械表盘、数字滚轮和怀表码表视觉语言，按工作时间实时展示今日收入、本月累计、工作进度，并支持历史回溯。
 
@@ -20,6 +21,16 @@
 | `SHA256SUMS.txt` | 正式交付文件的完整性校验值 |
 
 推荐从 [GitHub Releases](https://github.com/ZeusCupidCloris/Income-per-sed/releases) 下载已标记版本。日常运行使用 Push 版；排查动画、布局、存储、日历或计算问题时使用 Develop 版。
+
+## 源文件与发布关系
+
+- `Income-per-sed-Develop.html` 是唯一维护源文件。
+- `Income-per-sed-Push.html` 是由 Develop 自动去除开发诊断代码并压缩后得到的发布文件，不应直接编辑。
+- `release-manifest.json` 统一记录产品版本、内部版本、构建编号、发布日期和交付文件。
+- Pull Request 必须通过发布校验、Windows Edge 视觉回归和 WebKit 基础检查。
+- 正式版本必须从 `main` 上的 `v*` 标签发布，Release 工作流会重新生成 Push、校验版本和 SHA-256 后再上传。
+
+维护规则与发版步骤见 [仓库维护与发布策略](docs/REPOSITORY_POLICY.md)。
 
 ## 主要能力
 
@@ -68,28 +79,36 @@ GitHub Pages 会将 Push 版作为静态页面发布。在线版与下载版使�
 
 每次提交会自动执行：
 
+- Develop 到 Push 的可重复构建检查
 - Push、Develop 与 Widget 必需结构检查
 - JavaScript 语法检查
 - Word 说明书 OOXML/ZIP 完整性检查
 - SHA-256 校验文件一致性检查
 - 390、768、1440、2560 像素宽度布局检查
 - 浅色、深色、手机版快速回溯面板截图回归
+- Safari/WebKit 的手机版启动和快速回溯面板检查
 
 本地验证：
 
 ```powershell
 npm ci
+npm run build:check
 npm run validate
 npm test
+npm run test:webkit
 ```
 
 ## 当前版本
 
-- 应用版本：`2.5.0`
+- 应用版本：`2.5.1`
 - 页面基线：Pocket Watch v35 / R35
-- 构建日期：2026-08-01
+- 构建日期：2026-08-06
 - 更新记录：[CHANGELOG.md](CHANGELOG.md)
 
-## License
+## 版权与使用限制
 
-当前仓库暂未声明开源许可证。除非仓库所有者另行授权，否则保留全部权利。
+Copyright © 2026 ZeusCupidCloris. All rights reserved.
+
+本仓库公开仅用于作品展示、在线预览和版本存档，**不是开源软件**。除非仓库所有者事先书面授权，否则不授予任何人复制、修改、分发、再发布、转售、再许可或制作衍生作品的权利。公开可见不代表获得使用授权。
+
+允许访问者通过本仓库提供的 GitHub Pages 在线查看页面，并为个人评估目的下载未经修改的正式 Release 文件；任何其他用途均需事先取得仓库所有者的书面许可。
