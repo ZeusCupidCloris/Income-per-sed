@@ -7724,8 +7724,10 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v35',
+productVersion: '2.5.1',
+sourceTag: 'v2.5.1',
 buildId: 'pocket-watch-v35-r35-mobile-history-sheet-portal-2026-08-01',
-releaseDate: '2026-08-01',
+releaseDate: '2026-08-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
@@ -7962,6 +7964,7 @@ const mobile = typeof mobileOverride === 'boolean' ? mobileOverride : isMobileVi
 return mobile ? MOBILE_INTERACTION_PROFILE : DESKTOP_INTERACTION_PROFILE;
 }
 /* ======================== Diagnostics module ======================== */
+/* DEVELOP DIAGNOSTIC STORE START */
 const DIAGNOSTIC_EVENT_LIMIT = 48;
 const diagnosticEventStore = (() => {
 const events = [];
@@ -7988,6 +7991,7 @@ return Object.freeze({ record, recent, snapshot, clear });
 function recordDiagnosticEvent(type, message, detail = null) {
 return diagnosticEventStore.record(type, message, detail);
 }
+/* DEVELOP DIAGNOSTIC STORE END */
 
 /* ======================== Clock module ======================== */
 const PREVIEW_SCENARIOS = Object.freeze({
@@ -8245,6 +8249,7 @@ lastCheckedAt
 
 return Object.freeze({ check, snapshot });
 })();
+/* DEVELOP DEBUG PANEL START */
 const motionDebug = {
 enabled: false,
 node: null,
@@ -8266,6 +8271,7 @@ node.innerHTML = `
 <span class="motion-debug-badge" data-debug-field="badge">FULL</span>
 </div>
 <div class="motion-debug-grid">
+<div class="motion-debug-metric wide"><span class="motion-debug-label">发布版本</span><span class="motion-debug-value" data-debug-field="release">--</span></div>
 <div class="motion-debug-metric"><span class="motion-debug-label">状态机</span><span class="motion-debug-value" data-debug-field="state">--</span></div>
 <div class="motion-debug-metric"><span class="motion-debug-label">工作状态</span><span class="motion-debug-value" data-debug-field="status">--</span></div>
 <div class="motion-debug-metric"><span class="motion-debug-label">滚筒钥匙</span><span class="motion-debug-value" data-debug-field="rollerOwner">--</span></div>
@@ -8386,6 +8392,7 @@ const displayedDate = new Date(historicalVisual.displayedTimeMs || getNow().getT
 const targetDate = new Date(historicalVisual.targetTimeMs || displayedDate.getTime());
 const handoff = timeTravel.historyPlayHandoff;
 setDebugField('badge', performancePolicy.mode.toUpperCase());
+setDebugField('release', `${APP_RELEASE.productVersion} · ${APP_RELEASE.sourceTag} · ${APP_RELEASE.buildId}`);
 setDebugField('state', `${timeTravel.state} · ${handoff.active ? handoff.phase : 'idle'}`);
 setDebugField('status', status);
 setDebugField('rollerOwner', `${rollerControl.owner}#${rollerControl.generation}`);
@@ -8442,6 +8449,7 @@ setDebugField('calendar', calendarCoverageDiagnostics.fallbackActive ? `回退�
 setDebugField('eventCount', `${diagnosticEventStore.snapshot().length} / ${DIAGNOSTIC_EVENT_LIMIT}`);
 renderDiagnosticEvents();
 }
+/* DEVELOP DEBUG PANEL END */
 
 /* R30 DEVELOP MOTION QUALITY START */
 const MotionQualityMonitor = (() => {
@@ -16949,6 +16957,7 @@ return repaired;
  * 仅供开发或发布前主动调用。
  * 正常打开页面时不会自动执行交互测试。
  */
+/* DEVELOP REGRESSION EXPORT START */
 function runBoundaryRegressionChecks() {
 const failures = [];
 const base = new Date(2026, 6, 22, 0, 0, 0, 0);
@@ -18299,6 +18308,7 @@ performanceMode: performancePolicy.mode,
 frameBudget: { ...frameBudgetDiagnostics }
 })
 });
+/* DEVELOP REGRESSION EXPORT END */
 function cancelTimelineOwnedMotions() {
 clearReturnMotionProfile();
 cancelStartupSync(

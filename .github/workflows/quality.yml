@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   release-validation:
     name: Release validation
@@ -23,6 +27,7 @@ jobs:
         with:
           python-version: '3.13'
       - run: npm ci
+      - run: npm run build:check
       - run: npm run validate
 
   visual-regression:
@@ -44,6 +49,32 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: playwright-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  webkit-smoke:
+    name: WebKit smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - run: npm run test:webkit
+      - name: Upload WebKit diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webkit-diagnostics
           path: |
             playwright-report/
             test-results/

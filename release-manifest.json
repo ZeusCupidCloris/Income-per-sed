@@ -1,0 +1,19 @@
+{
+  "productVersion": "2.5.1",
+  "releaseTag": "v2.5.1",
+  "internalVersion": "v35",
+  "buildId": "pocket-watch-v35-r35-mobile-history-sheet-portal-2026-08-01",
+  "releaseDate": "2026-08-06",
+  "canonicalSource": "Income-per-sed-Develop.html",
+  "derivedArtifacts": [
+    "Income-per-sed-Push.html"
+  ],
+  "releaseArtifacts": [
+    "Income-per-sed-Push.html",
+    "Income-per-sed-Develop.html",
+    "IncomeWidget.js",
+    "docs/Income-per-sed（说明文档）.docx",
+    "SHA256SUMS.txt",
+    "release-manifest.json"
+  ]
+}
