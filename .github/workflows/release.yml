@@ -12,14 +12,15 @@ on:
         type: string
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release-${{ github.event.inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
-  publish:
+  validate:
+    name: Validate release
     runs-on: windows-latest
     env:
       PYTHONUTF8: '1'
@@ -28,15 +29,15 @@ jobs:
       - name: Preserve repository file bytes
         shell: pwsh
         run: git config --global core.autocrlf false
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ env.RELEASE_TAG }}
           fetch-depth: 0
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
           cache: npm
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.13'
       - run: npm ci
@@ -48,17 +49,26 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw "Release tag $env:RELEASE_TAG is not part of main"
           }
-      - run: npm run build:push
-      - name: Verify generated Push is committed
-        shell: pwsh
-        run: |
-          git diff --exit-code -- Income-per-sed-Push.html
-          if ($LASTEXITCODE -ne 0) {
-            throw "Push artifact is stale; regenerate and commit it before tagging"
-          }
-      - run: npm run checksums
+      - run: npm run build:check
       - run: python scripts/validate_release.py --release-tag $env:RELEASE_TAG
       - run: npm test
+
+  publish:
+    name: Publish release
+    needs: validate
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    env:
+      PYTHONUTF8: '1'
+      RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - name: Preserve repository file bytes
+        shell: pwsh
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ env.RELEASE_TAG }}
       - name: Publish GitHub Release
         shell: pwsh
         env:

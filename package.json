@@ -8,9 +8,9 @@
     "build:check": "node scripts/build_push.mjs --check",
     "validate": "python scripts/validate_release.py",
     "checksums": "python scripts/validate_release.py --write-checksums",
-    "test": "playwright test",
-    "test:webkit": "playwright test --config=playwright.webkit.config.js",
-    "test:update": "playwright test --update-snapshots",
+    "test": "playwright test --config=config/playwright.config.js",
+    "test:webkit": "playwright test --config=config/playwright.webkit.config.js",
+    "test:update": "playwright test --config=config/playwright.config.js --update-snapshots",
     "preview:capture": "node scripts/capture_previews.mjs"
   },
   "devDependencies": {

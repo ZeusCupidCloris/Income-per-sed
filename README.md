@@ -22,6 +22,17 @@
 
 推荐从 [GitHub Releases](https://github.com/ZeusCupidCloris/Income-per-sed/releases) 下载已标记版本。日常运行使用 Push 版；排查动画、布局、存储、日历或计算问题时使用 Develop 版。
 
+## 仓库结构
+
+根目录只保留正式交付文件、版本清单、校验值和标准项目元数据：
+
+- `.github/`：自动检查、Pages、Release、依赖更新和安全策略；
+- `config/`：Playwright 浏览器测试配置；
+- `docs/`：Word 说明书、预览图、发布说明和维护策略；
+- `scripts/`：Push 构建、发布校验、预览生成和 Pages 在线核验；
+- `tests/`：功能、韧性、视觉回归及 WebKit 测试；
+- 根目录的三个应用文件：正式 Push、Develop 源文件和 iPhone 小组件。
+
 ## 源文件与发布关系
 
 - `Income-per-sed-Develop.html` 是唯一维护源文件。
@@ -109,6 +120,6 @@ npm run test:webkit
 
 Copyright © 2026 ZeusCupidCloris. All rights reserved.
 
-本仓库公开仅用于作品展示、在线预览和版本存档，**不是开源软件**。除非仓库所有者事先书面授权，否则不授予任何人复制、修改、分发、再发布、转售、再许可或制作衍生作品的权利。公开可见不代表获得使用授权。
+本仓库公开仅用于作品展示、在线预览和版本存档，**不是开源软件**。除非仓库所有者事先书面授权，否则不授予任何人复制、修改、分发、再发布、转售、再许可或制作衍生作品的权利。公开可见不代表获得使用授权。完整条款见 [LICENSE](LICENSE)，安全问题请按 [安全策略](.github/SECURITY.md) 私密报告。
 
 允许访问者通过本仓库提供的 GitHub Pages 在线查看页面，并为个人评估目的下载未经修改的正式 Release 文件；任何其他用途均需事先取得仓库所有者的书面许可。

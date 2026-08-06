@@ -1,7 +1,10 @@
+const path = require('node:path');
 const { defineConfig } = require('@playwright/test');
 
+const root = path.resolve(__dirname, '..');
+
 module.exports = defineConfig({
-  testDir: './tests',
+  testDir: path.join(root, 'tests'),
   testIgnore: 'webkit.spec.js',
   fullyParallel: false,
   timeout: 45_000,
@@ -29,6 +32,7 @@ module.exports = defineConfig({
   },
   webServer: {
     command: 'python -m http.server 4173 --bind 127.0.0.1',
+    cwd: root,
     url: 'http://127.0.0.1:4173/Income-per-sed-Push.html',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
