@@ -1,11 +1,11 @@
 # Income-per-sed
 
-[![Quality](https://github.com/Bulinbuluo/lncome-per-sed/actions/workflows/quality.yml/badge.svg)](https://github.com/Bulinbuluo/lncome-per-sed/actions/workflows/quality.yml)
-[![Pages](https://github.com/Bulinbuluo/lncome-per-sed/actions/workflows/pages.yml/badge.svg)](https://github.com/Bulinbuluo/lncome-per-sed/actions/workflows/pages.yml)
+[![Quality](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/quality.yml/badge.svg)](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/quality.yml)
+[![Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/pages.yml/badge.svg)](https://github.com/ZeusCupidCloris/Income-per-sed/actions/workflows/pages.yml)
 
-一个离线运行的收入仪表与任务计价工具。采用 Apple 设计规范，以简洁的卡片式布局、翻牌数字和圆形进度表盘呈现今日收入、本月累计、工作进度，支持历史回溯与任务独立计价。
+一个离线运行的收入仪表与任务计价工具。页面采用机械表盘、数字滚轮和怀表码表视觉语言，按工作时间实时展示今日收入、本月累计、工作进度，并支持历史回溯。
 
-[在线体验](https://bulinbuluo.github.io/lncome-per-sed/) · [下载最新版本](https://github.com/Bulinbuluo/lncome-per-sed/releases/latest) · [查看完整说明书](docs/Income-per-sed（说明文档）.docx)
+[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/) · [下载最新版本](https://github.com/ZeusCupidCloris/Income-per-sed/releases/latest) · [查看完整说明书](docs/Income-per-sed（说明文档）.docx)
 
 ![Income-per-sed 桌面版预览](docs/images/preview-desktop.png)
 
@@ -19,7 +19,7 @@
 | `docs/Income-per-sed（说明文档）.docx` | 使用、计算、维护与验证手册 |
 | `SHA256SUMS.txt` | 正式交付文件的完整性校验值 |
 
-推荐从 [GitHub Releases](https://github.com/Bulinbuluo/lncome-per-sed/releases) 下载已标记版本。日常运行使用 Push 版；排查动画、布局、存储、日历或计算问题时使用 Develop 版。
+推荐从 [GitHub Releases](https://github.com/ZeusCupidCloris/Income-per-sed/releases) 下载已标记版本。日常运行使用 Push 版；排查动画、布局、存储、日历或计算问题时使用 Develop 版。
 
 ## 主要能力
 
@@ -27,7 +27,7 @@
 - 按上午、午休、下午工作时段实时计算
 - 今日收入、时薪、秒薪、本月累计和年度估算
 - 历史日期回溯、暂停、播放与返回实时
-- 独立任务计价秒表
+- 独立任务计价码表
 - 浅色、深色及跟随系统主题
 - 桌面、手机、平板和超宽屏响应式布局
 - 浏览器本地存储、多窗口同步与 Scriptable 设置同步
@@ -37,8 +37,8 @@
 ## 快速开始
 
 1. 下载并打开 `Income-per-sed-Push.html`。
-2. 点击"每小时收入"卡片设置收入计算方式。
-3. 点击"今日工作进度"卡片设置工作时间。
+2. 点击“每小时收入”卡片设置收入计算方式。
+3. 点击“今日工作进度”卡片设置工作时间。
 4. 页面会根据当前时间自动计算收入和进度。
 5. iPhone 用户可将 `IncomeWidget.js` 与 Push 页面放入 iCloud Drive 的 Scriptable 目录。
 
@@ -46,7 +46,9 @@
 
 GitHub Pages 会将 Push 版作为静态页面发布。在线版与下载版使用相同 HTML；下载后仍可完全离线运行。
 
-![Income-per-sed 手机版预览](docs/images/preview-mobile.png)
+手机版首屏预览：
+
+<img src="docs/images/preview-mobile.png" alt="Income-per-sed 手机版预览" width="390">
 
 ## 隐私与数据
 
@@ -84,7 +86,7 @@ npm test
 ## 当前版本
 
 - 应用版本：`2.5.0`
-- 页面基线：Apple Design Edition
+- 页面基线：Pocket Watch v35 / R35
 - 构建日期：2026-08-01
 - 更新记录：[CHANGELOG.md](CHANGELOG.md)
 
