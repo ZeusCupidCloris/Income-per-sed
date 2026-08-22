@@ -1,16 +1,23 @@
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const configPath = path.join(root, 'config', 'readme-previews.json');
 const readmePath = path.join(root, 'README.md');
+const manifestPath = path.join(root, 'docs', 'images', 'previews-manifest.json');
+const sourcePath = path.join(root, 'Income-per-sed-Push.html');
 const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const sha256 = (data) => createHash('sha256').update(data).digest('hex');
 
-const [configText, readme] = await Promise.all([
+const [configText, readme, manifestText, sourceData] = await Promise.all([
   readFile(configPath, 'utf8'),
   readFile(readmePath, 'utf8'),
+  readFile(manifestPath, 'utf8'),
+  readFile(sourcePath),
 ]);
 const previews = JSON.parse(configText);
+const manifest = JSON.parse(manifestText);
 const errors = [];
 
 if (!Array.isArray(previews) || previews.length === 0) {
@@ -18,6 +25,19 @@ if (!Array.isArray(previews) || previews.length === 0) {
 }
 
 const configuredPaths = new Set();
+const manifestPreviews = new Map(
+  Array.isArray(manifest.previews)
+    ? manifest.previews.map((preview) => [preview.readmePath, preview])
+    : [],
+);
+
+if (manifest.schemaVersion !== 1 || manifest.source !== 'Income-per-sed-Push.html') {
+  errors.push('docs/images/previews-manifest.json has an unsupported schema or source.');
+}
+if (manifest.sourceSha256 !== sha256(sourceData)) {
+  errors.push('README previews are stale: the manifest does not match Income-per-sed-Push.html.');
+}
+
 for (const preview of previews) {
   const { file, readmePath: assetPath, width, height, colorScheme } = preview;
   if (!file || !assetPath || !Number.isInteger(width) || !Number.isInteger(height)) {
@@ -56,6 +76,19 @@ for (const preview of previews) {
     if (actualWidth !== width || actualHeight !== height) {
       errors.push(`${assetPath} must be ${width}x${height}; found ${actualWidth}x${actualHeight}.`);
     }
+    const manifestPreview = manifestPreviews.get(assetPath);
+    if (!manifestPreview) {
+      errors.push(`${assetPath} is missing from docs/images/previews-manifest.json.`);
+    } else {
+      for (const key of ['file', 'readmePath', 'width', 'height', 'colorScheme']) {
+        if (manifestPreview[key] !== preview[key]) {
+          errors.push(`${assetPath} manifest field ${key} does not match config/readme-previews.json.`);
+        }
+      }
+      if (manifestPreview.sha256 !== sha256(data)) {
+        errors.push(`${assetPath} SHA-256 does not match docs/images/previews-manifest.json.`);
+      }
+    }
   } catch (error) {
     errors.push(`Cannot read ${assetPath}: ${error.message}`);
   }
@@ -69,6 +102,11 @@ for (const assetPath of readmePreviewPaths) {
     errors.push(`README preview is missing from config/readme-previews.json: ${assetPath}`);
   }
 }
+for (const assetPath of manifestPreviews.keys()) {
+  if (!configuredPaths.has(assetPath)) {
+    errors.push(`Preview manifest entry is missing from config/readme-previews.json: ${assetPath}`);
+  }
+}
 
 if (errors.length > 0) {
   console.error('README preview validation failed:');
@@ -77,6 +115,7 @@ if (errors.length > 0) {
 }
 
 console.log('README preview validation passed.');
+console.log(`  Income-per-sed-Push.html: ${manifest.sourceSha256}`);
 for (const { readmePath: assetPath, width, height, colorScheme } of previews) {
   console.log(`  ${assetPath}: ${width}x${height}, ${colorScheme}`);
 }
