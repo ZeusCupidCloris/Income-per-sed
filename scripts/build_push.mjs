@@ -21,6 +21,7 @@ function stripMarkedBlock(source, start, end, replacement = '') {
 
 async function buildPush() {
   let source = await readFile(developPath, 'utf8');
+  source = source.replace(/\r\n?/g, '\n');
 
   for (const [start, end, replacement] of [
     ['/* R28 DEVELOP MOTION DEBUG CSS START */', '/* R28 DEVELOP MOTION DEBUG CSS END */', ''],
