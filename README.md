@@ -102,7 +102,7 @@ Pull Request 必须通过以下检查后才能合并到 `main`：
 
 | 检查 | 覆盖内容 |
 | --- | --- |
-| Release validation | Push 可重复构建、HTML/Widget 结构、JavaScript、Word OOXML、版本与 SHA-256 |
+| Release validation | Push 可重复构建、README 预览图引用、尺寸与源文件哈希同步、HTML/Widget 结构、JavaScript、Word OOXML、版本与 SHA-256 |
 | Windows Edge visual regression | 390、768、1440、2560 像素布局，以及关键浅色、深色和回溯状态 |
 | WebKit smoke | iPhone 尺寸启动、主要交互与手机版快速回溯面板 |
 
