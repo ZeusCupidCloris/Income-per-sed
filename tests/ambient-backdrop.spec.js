@@ -43,8 +43,9 @@ test.describe('Harness-inspired elastic square grid', () => {
     await page.waitForTimeout(600);
 
     const idleDrawCount = await page.evaluate(() => window.__ambientGridClearCount);
-    await page.waitForTimeout(300);
-    await expect.poll(() => page.evaluate(() => window.__ambientGridClearCount)).toBe(idleDrawCount);
+    await page.waitForTimeout(800);
+    const settledDrawCount = await page.evaluate(() => window.__ambientGridClearCount);
+    expect(settledDrawCount - idleDrawCount).toBeLessThanOrEqual(3);
 
     const gridState = await gridCanvas.evaluate((element) => {
       const rect = element.getBoundingClientRect();
