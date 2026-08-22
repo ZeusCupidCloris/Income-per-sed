@@ -85,10 +85,10 @@ GitHub Pages 发布的内容与仓库中的 `Income-per-sed-Push.html` 保持字
 
 ```powershell
 npm ci
-npm run release:prepare
-npm test
-npm run test:webkit
+npm run quality:local
 ```
+
+`npm run quality:local` 会依次运行发布流程测试、统一发布准备、README 预览资源校验、Windows Edge 视觉回归和 WebKit 移动端检查。任一阶段失败后命令会立即停止并显示对应阶段，适合在提交 Pull Request 前执行。
 
 `npm run release:prepare` 会按固定顺序完成：
 
