@@ -21,6 +21,7 @@ function stripMarkedBlock(source, start, end, replacement = '') {
 
 async function buildPush() {
   let source = await readFile(developPath, 'utf8');
+  source = source.replace(/\r\n?/g, '\n');
 
   for (const [start, end, replacement] of [
     ['/* R28 DEVELOP MOTION DEBUG CSS START */', '/* R28 DEVELOP MOTION DEBUG CSS END */', ''],
@@ -36,6 +37,7 @@ async function buildPush() {
   source = source
     .replace(/\/\* R30 DEVELOP MOTION QUALITY HOOK \*\/[^\r\n]*(?:\r?\n)?/g, '')
     .replace(/motionDebug\.enabled/g, 'false')
+    .replace('<meta name="income-per-sed-channel" content="develop">', '')
     .replace(
       '<title>Income-per-sed · Pocket Watch v35 · R31 Visual · R35 Kinetic Interaction</title>',
       '<title>Income-per-sed · Pocket Watch v35 · R31 Visual · R35 Kinetic Interaction · Push</title><meta name="income-per-sed-channel" content="push">',

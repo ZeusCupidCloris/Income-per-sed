@@ -31,7 +31,7 @@ module.exports = defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'python -m http.server 4173 --bind 127.0.0.1',
+    command: 'node scripts/static_server.mjs',
     cwd: root,
     url: 'http://127.0.0.1:4173/Income-per-sed-Push.html',
     reuseExistingServer: !process.env.CI,
