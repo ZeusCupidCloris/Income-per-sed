@@ -49,8 +49,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw "Release tag $env:RELEASE_TAG is not part of main"
           }
-      - run: npm run build:check
-      - run: python scripts/validate_release.py --release-tag $env:RELEASE_TAG
+      - run: npm run release:prepare -- --release-tag $env:RELEASE_TAG
+      - run: git diff --exit-code
       - run: npm test
 
   publish:

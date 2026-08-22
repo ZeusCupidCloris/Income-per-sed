@@ -226,8 +226,26 @@ def validate_docx() -> None:
             bad_member = archive.testzip()
             if bad_member:
                 fail(f"DOCX contains a corrupt entry: {bad_member}")
+            document_xml = archive.read("word/document.xml")
     except zipfile.BadZipFile as exc:
         raise RuntimeError(f"DOCX is not a valid OOXML ZIP package: {exc}") from exc
+
+    embedded_hashes = [
+        match.group(0).decode("ascii").lower()
+        for match in re.finditer(
+            rb"(?<![0-9A-Fa-f])[0-9A-Fa-f]{64}(?![0-9A-Fa-f])",
+            document_xml,
+        )
+    ]
+    expected_hashes = [
+        digest(ROOT / RELEASE_FILES[1]),
+        digest(ROOT / RELEASE_FILES[0]),
+    ]
+    if embedded_hashes != expected_hashes:
+        fail(
+            "Word manual HTML hashes are stale; run npm run release:prepare "
+            f"(expected Develop {expected_hashes[0]} and Push {expected_hashes[1]})"
+        )
 
 
 def validate_checksums(write: bool) -> None:
