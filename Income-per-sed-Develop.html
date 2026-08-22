@@ -6416,9 +6416,9 @@ html[data-theme="dark"]{
     --theme-control-icon:#b9afa2;
     --month-data-accent:rgba(143,164,145,.34);
     --field-error-bg:rgba(255,112,67,.075);
-    --dial-label-color:color-mix(in srgb,#f1e8dc 91%,var(--dial-face-ink));
-    --dial-label-highlight:0 .65px 0 rgba(255,255,255,.11);
-    --dial-label-shadow:0 .55px .72px rgba(0,0,0,.54);
+    --dial-label-color:color-mix(in srgb,#151513 97%,transparent);
+    --dial-label-highlight:0 .45px 0 rgba(255,255,255,.24);
+    --dial-label-shadow:0 .45px .58px rgba(24,22,18,.30);
 }
 
 html[data-theme] body{
@@ -7374,10 +7374,169 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
     }
 }
 
+/* Harness-inspired R38 ambient scene: elastic square grid without the koi motif. */
+:root{
+    --ambient-grid-line:rgba(72,91,82,.105);
+    --ambient-grid-node:rgba(72,91,82,.18);
+    --ambient-grid-active:rgba(159,128,84,.28);
+    --traditional-pattern-line:rgba(123,94,57,.17);
+    --traditional-pattern-inner:rgba(73,101,90,.11);
+    --traditional-water-line:rgba(86,112,101,.18);
+}
+
+body,
+html[data-theme] body{
+    background-image:linear-gradient(180deg,var(--page-backdrop-top),var(--page-backdrop-bottom));
+    background-size:auto;
+}
+
+html[data-theme="dark"]{
+    --ambient-grid-line:rgba(151,177,165,.075);
+    --ambient-grid-node:rgba(151,177,165,.15);
+    --ambient-grid-active:rgba(211,181,126,.27);
+    --traditional-pattern-line:rgba(188,156,110,.14);
+    --traditional-pattern-inner:rgba(132,159,147,.085);
+    --traditional-water-line:rgba(136,169,154,.16);
+}
+
+.ambient-motion-layer{
+    pointer-events:none;
+    transform:translateZ(0);
+    contain:strict;
+    transition:opacity var(--theme-material-duration) cubic-bezier(.22,.8,.32,1);
+}
+
+.ambient-grid-backdrop{
+    position:fixed;
+    z-index:var(--z-page-decoration);
+    inset:0;
+    width:100%;
+    height:100%;
+    opacity:.82;
+}
+
+html[data-theme="dark"] .ambient-grid-backdrop{opacity:.7;}
+html.theme-transitioning .ambient-motion-layer{opacity:.28;}
+body.performance-degraded .ambient-grid-backdrop{opacity:.38;}
+
+html[data-theme="light"] .income-main-card{
+    background:
+        linear-gradient(138deg,rgba(255,255,255,.22),transparent 36%),
+        rgba(250,247,242,.86);
+}
+
+html[data-theme="light"] .progress-card,
+html[data-theme="light"] .info-cards-row > .card,
+html[data-theme="light"] .month-card{
+    background:
+        linear-gradient(135deg,rgba(255,255,255,.16),transparent 42%),
+        rgba(250,247,242,.84);
+}
+
+html[data-theme="dark"] .income-main-card{
+    background:
+        linear-gradient(138deg,rgba(246,230,209,.025),transparent 36%),
+        rgba(35,34,30,.88);
+}
+
+html[data-theme="dark"] .progress-card,
+html[data-theme="dark"] .info-cards-row > .card,
+html[data-theme="dark"] .month-card{
+    background:
+        linear-gradient(135deg,rgba(255,255,255,.018),transparent 42%),
+        rgba(37,35,31,.84);
+}
+
+.income-main-card > .traditional-card-frame{
+    position:absolute;
+    z-index:0;
+    inset:18px;
+    pointer-events:none;
+    opacity:.82;
+}
+
+html[data-theme="dark"] .income-main-card > .traditional-card-frame{
+    opacity:.70;
+}
+
+.traditional-corner{
+    position:absolute;
+    width:27px;
+    height:27px;
+    color:var(--traditional-pattern-line);
+    background:
+        linear-gradient(currentColor,currentColor) 0 0/24px 1px no-repeat,
+        linear-gradient(currentColor,currentColor) 0 0/1px 24px no-repeat,
+        linear-gradient(var(--traditional-pattern-inner),var(--traditional-pattern-inner)) 6px 6px/15px 1px no-repeat,
+        linear-gradient(var(--traditional-pattern-inner),var(--traditional-pattern-inner)) 20px 6px/1px 12px no-repeat,
+        linear-gradient(var(--traditional-pattern-inner),var(--traditional-pattern-inner)) 10px 17px/11px 1px no-repeat,
+        linear-gradient(var(--traditional-pattern-inner),var(--traditional-pattern-inner)) 10px 11px/1px 7px no-repeat,
+        linear-gradient(var(--traditional-pattern-inner),var(--traditional-pattern-inner)) 10px 11px/7px 1px no-repeat;
+}
+
+.traditional-corner--tl{top:0;left:0;}
+.traditional-corner--tr{top:0;right:0;transform:rotate(90deg);}
+.traditional-corner--br{right:0;bottom:0;transform:rotate(180deg);}
+.traditional-corner--bl{bottom:0;left:0;transform:rotate(270deg);}
+
+#flipContainer{
+    position:relative;
+}
+
+#flipContainer::before{
+    content:"";
+    position:absolute;
+    z-index:-1;
+    left:50%;
+    pointer-events:none;
+    transform:translateX(-50%);
+    background-repeat:repeat-x;
+    opacity:.72;
+}
+
+#flipContainer::before{
+    top:calc(100% + 3px);
+    width:min(66%,220px);
+    height:6px;
+    background-image:radial-gradient(ellipse 12px 5px at 50% 100%,transparent 64%,var(--traditional-water-line) 68% 72%,transparent 76%);
+    background-size:24px 6px;
+    opacity:.60;
+}
+
+#rateBadge{margin-top:15px;}
+
+body.performance-critical .ambient-motion-layer,
+html.compatibility-safe-mode .ambient-motion-layer{display:none;}
+
+body.performance-critical .traditional-card-frame,
+body.performance-critical #flipContainer::before,
+html.compatibility-safe-mode .traditional-card-frame,
+html.compatibility-safe-mode #flipContainer::before{display:none;}
+
+@media (max-width:620px){
+    .ambient-grid-backdrop{opacity:.42;}
+    html[data-theme="dark"] .ambient-grid-backdrop{opacity:.5;}
+    .traditional-card-frame,
+    #flipContainer::before{display:none;}
+    #rateBadge{margin-top:12px;}
+}
+
+@media (prefers-reduced-motion:reduce){
+    .ambient-motion-layer{transition-duration:1ms;}
+    .ambient-grid-backdrop{opacity:.34;}
+}
+
+@media (forced-colors:active){
+    .ambient-motion-layer,
+    .traditional-card-frame,
+    #flipContainer::before{display:none;}
+}
+
 /* End R31 consolidated release layer. */
 </style>
 </head>
 <body class="startup-presentation-active">
+    <canvas class="ambient-motion-layer ambient-grid-backdrop" id="ambientGridBackdrop" aria-hidden="true"></canvas>
     <div class="bg-decoration"></div>
     <div class="bg-decoration"></div>
     <div class="bg-decoration"></div>
@@ -7474,6 +7633,12 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
         </section>
 
         <section class="card income-main-card full-width" id="incomeMainCard" aria-label="今日实时收入">
+            <span class="traditional-card-frame" aria-hidden="true">
+                <span class="traditional-corner traditional-corner--tl"></span>
+                <span class="traditional-corner traditional-corner--tr"></span>
+                <span class="traditional-corner traditional-corner--br"></span>
+                <span class="traditional-corner traditional-corner--bl"></span>
+            </span>
             <div class="income-hero-layout">
                 <div class="income-dial-panel" id="incomeDialPanel" data-visual-component="incomeDial" data-visual-priority="primary">
                     <div class="income-dial" id="incomeDial" role="img" aria-label="实时收入圆形机械表盘" title="按住并拖动，整个机械仪表会作为一个总成倾斜并归中">
@@ -7783,7 +7948,7 @@ historyMinuteMaxExtraTurns: 0.75,
 historyHourMaxExtraTurns: 0.2,
 taskStopwatchFaceLayout: 'clear-functional-zones-v2',
 scrollbarRevision: 'quiet-native-thin-v2',
-backgroundDepthRevision: 'center-attenuated-workshop-grid-v2',
+backgroundDepthRevision: 'dynamic-grid-only-v1',
 lightCaptionContrast: 'semantic-four-tier-contrast-v2',
 calendarDataPolicy: 'validated-import-export-v1',
 pushBuildPolicy: 'develop-code-stripped-minified-v1',
@@ -7799,6 +7964,7 @@ ultraWideRhythm: 'height-aware-optical-dashboard-v2',
 fixedPushBuild: 'r31-production-pipeline-v9',
 mobileStatusLayout: 'two-row-system-strip-v1',
 settingsSurfaceHierarchy: 'quiet-section-boundaries-v1',
+ambientBackdrop: 'harness-elastic-square-grid-66-flat-idle-no-koi-v3',
 motionQualityMonitor: 'develop-only-read-only-ring-buffer-v1',
 historyInputSequence: 'single-sequence-profile-lock-v1',
 contentPressureLayout: 'measured-hysteresis-edge-guard-v1',
@@ -7812,6 +7978,303 @@ dialGlareInertia: 'bounded-decorative-lag-v1',
 mobileScrubHint: 'unclipped-elevated-feedback-v1',
 mobileHistorySheetPortal: 'body-visual-viewport-v1'
 });
+
+const AmbientGridScene = (() => {
+const canvas = document.getElementById('ambientGridBackdrop');
+if (!canvas) return Object.freeze({ redraw() {} });
+
+const context = canvas.getContext('2d', { alpha: true, desynchronized: true });
+if (!context) return Object.freeze({ redraw() {} });
+
+const root = document.documentElement;
+const finePointerQuery = matchMedia('(hover:hover) and (pointer:fine)');
+const coarsePointerQuery = matchMedia('(hover:none), (pointer:coarse)');
+const reducedMotionQuery = matchMedia('(prefers-reduced-motion:reduce)');
+const state = {
+viewportWidth: 0,
+viewportHeight: 0,
+dpr: 1,
+pointerX: innerWidth * .72,
+pointerY: innerHeight * .3,
+smoothX: innerWidth * .72,
+smoothY: innerHeight * .3,
+pointerVX: 0,
+pointerVY: 0,
+pointerSpeed: 0,
+pointerEngaged: false,
+lastPointerX: innerWidth * .72,
+lastPointerY: innerHeight * .3,
+lastPointerAt: performance.now(),
+points: [],
+columns: 0,
+rows: 0,
+layoutKey: '',
+rebuildCount: 0,
+paletteKey: '',
+palette: null,
+frameId: 0,
+lastFrameAt: 0,
+lastRenderAt: 0
+};
+
+function clamp(value, min, max) {
+return Math.max(min, Math.min(max, value));
+}
+
+function isCritical() {
+return document.body.classList.contains('performance-critical') || root.classList.contains('compatibility-safe-mode');
+}
+
+function readPalette() {
+const dark = root.dataset.theme === 'dark';
+const degraded = document.body.classList.contains('performance-degraded');
+const key = dark + ':' + degraded;
+if (state.palette && state.paletteKey === key) return state.palette;
+const styles = getComputedStyle(root);
+const read = (name, fallback) => styles.getPropertyValue(name).trim() || fallback;
+state.paletteKey = key;
+state.palette = Object.freeze({
+line: read('--ambient-grid-line', 'rgba(72,91,82,.105)'),
+node: read('--ambient-grid-node', 'rgba(72,91,82,.18)'),
+active: read('--ambient-grid-active', 'rgba(159,128,84,.28)')
+});
+return state.palette;
+}
+
+function rebuild() {
+const spacing = 66;
+state.columns = Math.ceil(state.viewportWidth / spacing) + 3;
+state.rows = Math.ceil(state.viewportHeight / spacing) + 3;
+state.points = [];
+state.rebuildCount += 1;
+for (let row = 0; row < state.rows; row += 1) {
+for (let column = 0; column < state.columns; column += 1) {
+const restX = (column - 1) * spacing;
+const restY = (row - 1) * spacing;
+state.points.push({
+restX,
+restY,
+x: restX,
+y: restY,
+vx: 0,
+vy: 0
+});
+}
+}
+}
+
+function resize() {
+const width = Math.max(1, innerWidth);
+const height = Math.max(1, innerHeight);
+const degraded = document.body.classList.contains('performance-degraded');
+const layoutKey = degraded ? 'degraded' : 'normal';
+const dprLimit = degraded ? 1 : (width <= 620 ? 1.05 : 1.35);
+const dpr = Math.min(devicePixelRatio || 1, dprLimit);
+if (state.viewportWidth === width && state.viewportHeight === height && Math.abs(state.dpr - dpr) < .01 && state.layoutKey === layoutKey) return false;
+state.viewportWidth = width;
+state.viewportHeight = height;
+state.dpr = dpr;
+state.layoutKey = layoutKey;
+canvas.width = Math.max(1, Math.round(width * dpr));
+canvas.height = Math.max(1, Math.round(height * dpr));
+canvas.style.width = width + 'px';
+canvas.style.height = height + 'px';
+context.setTransform(dpr, 0, 0, dpr, 0, 0);
+rebuild();
+return true;
+}
+
+function applyPointerForce(point, pointerX, pointerY, radius, force, responseScale, swirl = 0) {
+const dx = point.x - pointerX;
+const dy = point.y - pointerY;
+const distance = Math.hypot(dx, dy);
+if (distance >= radius || distance < .1) return 0;
+const falloff = Math.pow(1 - distance / radius, 2.2);
+const impulse = falloff * force * responseScale;
+point.vx += (dx / distance) * impulse - (dy / distance) * impulse * swirl;
+point.vy += (dy / distance) * impulse + (dx / distance) * impulse * swirl;
+return falloff;
+}
+
+function draw(delta) {
+const palette = readPalette();
+const responseScale = clamp(delta / 16.67, .45, 2.2);
+const pointerActive = state.pointerEngaged && finePointerQuery.matches && !reducedMotionQuery.matches;
+context.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+context.clearRect(0, 0, state.viewportWidth, state.viewportHeight);
+
+for (const point of state.points) {
+if (pointerActive) {
+const force = 1.7 + Math.min(3.9, state.pointerSpeed * .015);
+applyPointerForce(point, state.smoothX, state.smoothY, 150, force, responseScale, .08);
+}
+point.vx += (point.restX - point.x) * .045 * responseScale;
+point.vy += (point.restY - point.y) * .045 * responseScale;
+const damping = Math.pow(.86, responseScale);
+point.vx *= damping;
+point.vy *= damping;
+point.x += point.vx * responseScale;
+point.y += point.vy * responseScale;
+}
+
+const gridLines = new Path2D();
+for (let row = 0; row < state.rows; row += 1) {
+for (let column = 0; column < state.columns - 1; column += 1) {
+const point = state.points[row * state.columns + column];
+const next = state.points[row * state.columns + column + 1];
+gridLines.moveTo(point.x, point.y);
+gridLines.lineTo(next.x, next.y);
+}
+}
+for (let column = 0; column < state.columns; column += 1) {
+for (let row = 0; row < state.rows - 1; row += 1) {
+const point = state.points[row * state.columns + column];
+const next = state.points[(row + 1) * state.columns + column];
+gridLines.moveTo(point.x, point.y);
+gridLines.lineTo(next.x, next.y);
+}
+}
+context.strokeStyle = palette.line;
+context.lineWidth = .7;
+context.stroke(gridLines);
+
+context.fillStyle = palette.node;
+for (const point of state.points) {
+context.fillRect(point.x - .75, point.y - .75, 1.5, 1.5);
+}
+if (pointerActive) {
+context.fillStyle = palette.active;
+for (const point of state.points) {
+const dx = point.x - state.smoothX;
+const dy = point.y - state.smoothY;
+const distanceSquared = dx * dx + dy * dy;
+if (distanceSquared > 142 * 142) continue;
+const distance = Math.sqrt(distanceSquared);
+const strength = 1 - distance / 142;
+const size = 1.4 + strength * 1.8;
+context.globalAlpha = .3 + strength * .7;
+context.fillRect(point.x - size * .5, point.y - size * .5, size, size);
+}
+context.globalAlpha = 1;
+}
+}
+
+function targetFrameInterval() {
+if (document.body.classList.contains('performance-degraded')) return 1000 / 24;
+if (coarsePointerQuery.matches) return 1000 / 20;
+return 1000 / 45;
+}
+
+function schedule() {
+if (state.frameId || document.hidden || isCritical()) return;
+state.frameId = requestAnimationFrame(tick);
+}
+
+function tick(timestamp) {
+state.frameId = 0;
+if (document.hidden || isCritical()) return;
+const interval = targetFrameInterval();
+if (state.lastRenderAt && timestamp - state.lastRenderAt < interval) {
+schedule();
+return;
+}
+const delta = state.lastFrameAt ? Math.min(50, timestamp - state.lastFrameAt) : interval;
+state.lastFrameAt = timestamp;
+state.lastRenderAt = timestamp - ((timestamp - state.lastRenderAt) % interval);
+resize();
+const smoothing = reducedMotionQuery.matches ? 1 : 1 - Math.exp(-delta / 92);
+state.smoothX += (state.pointerX - state.smoothX) * smoothing;
+state.smoothY += (state.pointerY - state.smoothY) * smoothing;
+state.pointerVX *= Math.pow(.82, delta / 16.67);
+state.pointerVY *= Math.pow(.82, delta / 16.67);
+state.pointerSpeed = Math.hypot(state.pointerVX, state.pointerVY);
+draw(delta);
+if (!reducedMotionQuery.matches) schedule();
+}
+
+function handlePointerMove(event) {
+if (!finePointerQuery.matches || reducedMotionQuery.matches || event.pointerType === 'touch') return;
+const now = performance.now();
+const elapsed = Math.max(8, now - state.lastPointerAt);
+const nextX = clamp(event.clientX, 0, state.viewportWidth);
+const nextY = clamp(event.clientY, 0, state.viewportHeight);
+state.pointerVX = clamp((nextX - state.lastPointerX) * 1000 / elapsed, -1400, 1400);
+state.pointerVY = clamp((nextY - state.lastPointerY) * 1000 / elapsed, -1400, 1400);
+state.pointerX = nextX;
+state.pointerY = nextY;
+state.pointerEngaged = true;
+state.lastPointerX = nextX;
+state.lastPointerY = nextY;
+state.lastPointerAt = now;
+schedule();
+}
+
+function resetPointer() {
+state.pointerX = state.viewportWidth * .72;
+state.pointerY = state.viewportHeight * .3;
+state.pointerVX = 0;
+state.pointerVY = 0;
+state.pointerEngaged = false;
+schedule();
+}
+
+function refreshPaletteAndSchedule() {
+state.paletteKey = '';
+schedule();
+}
+
+function handleBodyClassMutation() {
+if (isCritical()) {
+if (state.frameId) cancelAnimationFrame(state.frameId);
+state.frameId = 0;
+return;
+}
+resize();
+schedule();
+}
+
+function handleVisibilityChange() {
+if (document.hidden) {
+if (state.frameId) cancelAnimationFrame(state.frameId);
+state.frameId = 0;
+state.lastFrameAt = 0;
+state.lastRenderAt = 0;
+return;
+}
+state.smoothX = state.pointerX;
+state.smoothY = state.pointerY;
+schedule();
+}
+
+resize();
+window.addEventListener('pointermove', handlePointerMove, { passive: true });
+root.addEventListener('pointerleave', resetPointer, { passive: true });
+window.addEventListener('resize', schedule, { passive: true });
+document.addEventListener('visibilitychange', handleVisibilityChange, { passive: true });
+finePointerQuery.addEventListener?.('change', resetPointer);
+reducedMotionQuery.addEventListener?.('change', schedule);
+new MutationObserver(() => {
+state.paletteKey = '';
+rebuild();
+schedule();
+}).observe(root, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+new MutationObserver(handleBodyClassMutation).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+schedule();
+return Object.freeze({
+redraw() {
+state.paletteKey = '';
+schedule();
+},
+diagnostics() {
+return Object.freeze({
+rebuildCount: state.rebuildCount,
+layoutKey: state.layoutKey,
+pointCount: state.points.length
+});
+}
+});
+})();
 
 /*
  * 双时钟服务：wall clock 用于跨刷新/跨窗口持久化，monotonic clock
@@ -17857,7 +18320,7 @@ if (APP_RELEASE.bottomCardIdentity !== 'r26-low-tier-glass-restored-v2') failure
 if (APP_RELEASE.heroOpticalAlignment !== 'digit-and-viewport-calibrated-v1') failures.push('主卡三组件未启用位数与视口光学校准');
 if (APP_RELEASE.quickPresetMotion !== 'quintic-zero-terminal-v1') failures.push('快速回溯按钮未启用零终点速度曲线');
 if (APP_RELEASE.keyboardFocusPolicy !== 'unified-visible-ring-v1') failures.push('键盘焦点样式未统一');
-if (APP_RELEASE.backgroundDepthRevision !== 'center-attenuated-workshop-grid-v2') failures.push('页面背景未启用中心弱化网格');
+if (APP_RELEASE.backgroundDepthRevision !== 'dynamic-grid-only-v1') failures.push('页面背景未启用纯动态网格');
 if (APP_RELEASE.touchTargetPolicy !== 'coarse-pointer-44px-v2') failures.push('触控范围策略未升级');
 if (APP_RELEASE.calendarDataSchema !== CalendarDataStore.schemaVersion) failures.push('日历数据 schema 不一致');
 if (APP_RELEASE.motionQualityMonitor !== 'develop-only-read-only-ring-buffer-v1') failures.push('Develop 动效质量记录策略不正确');
