@@ -27,8 +27,9 @@ jobs:
         with:
           python-version: '3.13'
       - run: npm ci
-      - run: npm run build:check
-      - run: npm run validate
+      - run: npm run test:release
+      - run: npm run release:prepare
+      - run: git diff --exit-code
 
   visual-regression:
     name: Windows Edge visual regression

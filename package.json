@@ -6,8 +6,10 @@
   "scripts": {
     "build:push": "node scripts/build_push.mjs --write",
     "build:check": "node scripts/build_push.mjs --check",
-    "validate": "python scripts/validate_release.py",
-    "checksums": "python scripts/validate_release.py --write-checksums",
+    "release:prepare": "node scripts/run_python.mjs scripts/prepare_release.py",
+    "validate": "node scripts/run_python.mjs scripts/validate_release.py",
+    "checksums": "node scripts/run_python.mjs scripts/validate_release.py --write-checksums",
+    "test:release": "node scripts/run_python.mjs -m unittest discover -s tests -p test_prepare_release.py",
     "test": "playwright test --config=config/playwright.config.js",
     "test:webkit": "playwright test --config=config/playwright.webkit.config.js",
     "test:update": "playwright test --config=config/playwright.config.js --update-snapshots",

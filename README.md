@@ -38,6 +38,7 @@
 - `Income-per-sed-Develop.html` 是唯一维护源文件。
 - `Income-per-sed-Push.html` 是由 Develop 自动去除开发诊断代码并压缩后得到的发布文件，不应直接编辑。
 - `release-manifest.json` 统一记录产品版本、内部版本、构建编号、发布日期和交付文件。
+- `npm run release:prepare` 一次完成换行规范化、Push 构建、Word 哈希同步、校验清单生成和最终验证。
 - Pull Request 必须通过发布校验、Windows Edge 视觉回归和 WebKit 基础检查。
 - 正式版本必须从 `main` 上的 `v*` 标签发布，Release 工作流会重新生成 Push、校验版本和 SHA-256 后再上传。
 
@@ -103,8 +104,8 @@ GitHub Pages 会将 Push 版作为静态页面发布。在线版与下载版使�
 
 ```powershell
 npm ci
-npm run build:check
-npm run validate
+npm run test:release
+npm run release:prepare
 npm test
 npm run test:webkit
 ```
