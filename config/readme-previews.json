@@ -1,0 +1,23 @@
+[
+  {
+    "file": "preview-desktop.png",
+    "readmePath": "docs/images/preview-desktop.png",
+    "width": 1440,
+    "height": 1000,
+    "colorScheme": "light"
+  },
+  {
+    "file": "preview-mobile.png",
+    "readmePath": "docs/images/preview-mobile.png",
+    "width": 390,
+    "height": 844,
+    "colorScheme": "light"
+  },
+  {
+    "file": "preview-dark.png",
+    "readmePath": "docs/images/preview-dark.png",
+    "width": 1440,
+    "height": 1000,
+    "colorScheme": "dark"
+  }
+]

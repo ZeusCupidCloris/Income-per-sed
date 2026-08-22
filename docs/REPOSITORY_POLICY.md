@@ -15,12 +15,13 @@
 ```powershell
 npm ci
 npm run test:release
+npm run test:readme
 npm run release:prepare
 npm test
 npm run test:webkit
 ```
 
-`release:prepare` 会统一发布文本文件换行、从 Develop 生成 Push、同步 Word 说明书中的两个 HTML SHA-256、重建 `SHA256SUMS.txt`，并执行最终发布校验。该命令可重复运行；在文件已同步时不会继续改写 Word。构建脚本会移除 Develop 专用诊断面板、动效质量记录和回归导出接口，再压缩 HTML、CSS 与 JavaScript。自动检查会拒绝过期或无法重现的 Push、说明书哈希或校验清单。
+`test:readme` 会确认 README 引用的三张预览图均存在、PNG 头有效，且尺寸与 `config/readme-previews.json` 中的共享截图清单一致。Windows Edge 检查还会重新生成三张预览图并要求 `docs/images` 保持零差异，从而拒绝未随页面同步的 README 截图。`release:prepare` 会统一发布文本文件换行、从 Develop 生成 Push、同步 Word 说明书中的两个 HTML SHA-256、重建 `SHA256SUMS.txt`，并执行最终发布校验。该命令可重复运行；在文件已同步时不会继续改写 Word。构建脚本会移除 Develop 专用诊断面板、动效质量记录和回归导出接口，再压缩 HTML、CSS 与 JavaScript。自动检查会拒绝过期或无法重现的 Push、说明书哈希或校验清单。
 
 ## 版本更新
 
