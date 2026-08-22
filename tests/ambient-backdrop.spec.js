@@ -25,6 +25,12 @@ test.describe('Harness-inspired elastic square grid', () => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.addInitScript(() => {
       localStorage.setItem('income-per-sed-theme-v1', 'light');
+      const clearRect = CanvasRenderingContext2D.prototype.clearRect;
+      window.__ambientGridClearCount = 0;
+      CanvasRenderingContext2D.prototype.clearRect = function (...args) {
+        if (this.canvas?.id === 'ambientGridBackdrop') window.__ambientGridClearCount += 1;
+        return clearRect.apply(this, args);
+      };
     });
     await page.goto(APP_PATH, { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
@@ -35,6 +41,10 @@ test.describe('Harness-inspired elastic square grid', () => {
     await expect(hero).toBeVisible();
     await expect(page.locator('#ambientFishBackdrop')).toHaveCount(0);
     await page.waitForTimeout(600);
+
+    const idleDrawCount = await page.evaluate(() => window.__ambientGridClearCount);
+    await page.waitForTimeout(300);
+    await expect.poll(() => page.evaluate(() => window.__ambientGridClearCount)).toBe(idleDrawCount);
 
     const gridState = await gridCanvas.evaluate((element) => {
       const rect = element.getBoundingClientRect();

@@ -8100,6 +8100,7 @@ function draw(delta) {
 const palette = readPalette();
 const responseScale = clamp(delta / 16.67, .45, 2.2);
 const pointerActive = state.pointerEngaged && finePointerQuery.matches && !reducedMotionQuery.matches;
+let motionActive = pointerActive;
 context.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
 context.clearRect(0, 0, state.viewportWidth, state.viewportHeight);
 
@@ -8115,6 +8116,17 @@ point.vx *= damping;
 point.vy *= damping;
 point.x += point.vx * responseScale;
 point.y += point.vy * responseScale;
+if (!pointerActive) {
+const settled = Math.abs(point.restX - point.x) <= .012 && Math.abs(point.restY - point.y) <= .012 && Math.abs(point.vx) <= .012 && Math.abs(point.vy) <= .012;
+if (settled) {
+point.x = point.restX;
+point.y = point.restY;
+point.vx = 0;
+point.vy = 0;
+} else {
+motionActive = true;
+}
+}
 }
 
 const gridLines = new Path2D();
@@ -8157,6 +8169,7 @@ context.fillRect(point.x - size * .5, point.y - size * .5, size, size);
 }
 context.globalAlpha = 1;
 }
+return motionActive;
 }
 
 function targetFrameInterval() {
@@ -8188,8 +8201,8 @@ state.smoothY += (state.pointerY - state.smoothY) * smoothing;
 state.pointerVX *= Math.pow(.82, delta / 16.67);
 state.pointerVY *= Math.pow(.82, delta / 16.67);
 state.pointerSpeed = Math.hypot(state.pointerVX, state.pointerVY);
-draw(delta);
-if (!reducedMotionQuery.matches) schedule();
+const motionActive = draw(delta);
+if (!reducedMotionQuery.matches && motionActive) schedule();
 }
 
 function handlePointerMove(event) {
