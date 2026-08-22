@@ -1,13 +1,13 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { extractImageReferences, inspectPng } from './readme_assets_lib.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const configPath = path.join(root, 'config', 'readme-previews.json');
 const readmePath = path.join(root, 'README.md');
 const manifestPath = path.join(root, 'docs', 'images', 'previews-manifest.json');
 const sourcePath = path.join(root, 'Income-per-sed-Push.html');
-const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const sha256 = (data) => createHash('sha256').update(data).digest('hex');
 
 const [configText, readme, manifestText, sourceData] = await Promise.all([
@@ -19,6 +19,7 @@ const [configText, readme, manifestText, sourceData] = await Promise.all([
 const previews = JSON.parse(configText);
 const manifest = JSON.parse(manifestText);
 const errors = [];
+const imageReferences = extractImageReferences(readme);
 
 if (!Array.isArray(previews) || previews.length === 0) {
   errors.push('config/readme-previews.json must contain at least one preview.');
@@ -56,23 +57,14 @@ for (const preview of previews) {
   }
   configuredPaths.add(assetPath);
 
-  const referenceCount = readme.split(assetPath).length - 1;
+  const referenceCount = imageReferences.filter((reference) => reference === assetPath).length;
   if (referenceCount !== 1) {
     errors.push(`${assetPath} must be referenced exactly once in README.md; found ${referenceCount}.`);
   }
 
   try {
     const data = await readFile(path.join(root, ...assetPath.split('/')));
-    if (data.length < 24 || !data.subarray(0, 8).equals(pngSignature)) {
-      errors.push(`${assetPath} is not a valid PNG file.`);
-      continue;
-    }
-    if (data.subarray(12, 16).toString('ascii') !== 'IHDR') {
-      errors.push(`${assetPath} does not contain a PNG IHDR header.`);
-      continue;
-    }
-    const actualWidth = data.readUInt32BE(16);
-    const actualHeight = data.readUInt32BE(20);
+    const { width: actualWidth, height: actualHeight } = inspectPng(data);
     if (actualWidth !== width || actualHeight !== height) {
       errors.push(`${assetPath} must be ${width}x${height}; found ${actualWidth}x${actualHeight}.`);
     }
@@ -95,7 +87,7 @@ for (const preview of previews) {
 }
 
 const readmePreviewPaths = new Set(
-  [...readme.matchAll(/docs\/images\/preview-[a-z0-9-]+\.png/g)].map((match) => match[0]),
+  imageReferences.filter((reference) => /docs\/images\/preview-[a-z0-9-]+\.png/.test(reference)),
 );
 for (const assetPath of readmePreviewPaths) {
   if (!configuredPaths.has(assetPath)) {

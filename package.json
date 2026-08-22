@@ -10,7 +10,7 @@
     "validate": "node scripts/run_python.mjs scripts/validate_release.py",
     "checksums": "node scripts/run_python.mjs scripts/validate_release.py --write-checksums",
     "test:release": "node scripts/run_python.mjs -m unittest discover -s tests -p test_prepare_release.py",
-    "test:readme": "node scripts/validate_readme_assets.mjs",
+    "test:readme": "node --test tests/readme_assets.test.mjs && node scripts/validate_readme_assets.mjs",
     "test": "playwright test --config=config/playwright.config.js",
     "test:webkit": "playwright test --config=config/playwright.webkit.config.js",
     "test:update": "playwright test --config=config/playwright.config.js --update-snapshots",
