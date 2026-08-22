@@ -13,6 +13,7 @@
     "test:readme": "node --test tests/readme_assets.test.mjs && node scripts/validate_readme_assets.mjs",
     "test": "playwright test --config=config/playwright.config.js",
     "test:webkit": "playwright test --config=config/playwright.webkit.config.js",
+    "quality:local": "npm run test:release && npm run release:prepare && npm run test:readme && npm test && npm run test:webkit",
     "test:update": "playwright test --config=config/playwright.config.js --update-snapshots",
     "preview:capture": "node scripts/capture_previews.mjs"
   },
