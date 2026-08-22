@@ -10,10 +10,10 @@ const appUrl = pathToFileURL(path.join(root, 'Income-per-sed-Push.html')).href;
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ channel: 'msedge' });
 
-async function capture(name, viewport) {
+async function capture(name, viewport, colorScheme = 'light') {
   const context = await browser.newContext({
     viewport,
-    colorScheme: 'light',
+    colorScheme,
     locale: 'zh-CN',
     reducedMotion: 'reduce',
     timezoneId: 'Asia/Shanghai',
@@ -37,4 +37,5 @@ async function capture(name, viewport) {
 
 await capture('preview-desktop.png', { width: 1440, height: 1000 });
 await capture('preview-mobile.png', { width: 390, height: 844 });
+await capture('preview-dark.png', { width: 1440, height: 1000 }, 'dark');
 await browser.close();

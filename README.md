@@ -10,6 +10,13 @@
 
 ![Income-per-sed 桌面版预览](docs/images/preview-desktop.png)
 
+<details>
+<summary>查看深色模式预览</summary>
+
+![Income-per-sed 深色模式预览](docs/images/preview-dark.png)
+
+</details>
+
 ## 项目状态
 
 | 项目 | 当前状态 |
