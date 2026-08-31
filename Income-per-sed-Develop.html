@@ -4175,6 +4175,11 @@ body[data-work-status="day-off"] .dial-glass{opacity:.58;}
     display:none;
 }
 
+@keyframes history-motion-rewind{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(-360deg);}
+}
+
 @media (max-width:620px){
     .time-travel-control{
         position:relative;
@@ -4210,18 +4215,45 @@ body[data-work-status="day-off"] .dial-glass{opacity:.58;}
             transform var(--motion-instant) ease-out;
     }
 
-    .history-quick-open::before{
-        content:"";
-        width:15px;
-        height:15px;
+    .history-quick-open::before{content:none;}
+
+    .history-motion-icon{
+        width:16px;
+        height:16px;
         display:block;
-        background:currentColor;
-        -webkit-mask:
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.7 8.2V3.8m0 4.4h4.4'/%3E%3Cpath d='M5.1 7.2A8.2 8.2 0 1 1 4 15.9'/%3E%3Cpath d='M12 7.8v4.7l3.1 1.8'/%3E%3C/g%3E%3C/svg%3E")
-            center / contain no-repeat;
-        mask:
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.7 8.2V3.8m0 4.4h4.4'/%3E%3Cpath d='M5.1 7.2A8.2 8.2 0 1 1 4 15.9'/%3E%3Cpath d='M12 7.8v4.7l3.1 1.8'/%3E%3C/g%3E%3C/svg%3E")
-            center / contain no-repeat;
+        overflow:visible;
+        fill:none;
+        stroke:currentColor;
+        stroke-width:1.75;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+    }
+
+    .history-motion-icon .history-motion-arrow,
+    .history-motion-icon .history-motion-hour,
+    .history-motion-icon .history-motion-minute{
+        transform-box:view-box;
+        transform-origin:12px 12px;
+    }
+
+    .history-motion-icon .history-motion-arrow{
+        transition:transform 360ms cubic-bezier(.2,.78,.28,1);
+    }
+
+    .history-motion-icon .history-motion-minute{
+        transition:transform 500ms cubic-bezier(.4,0,.2,1);
+    }
+
+    .history-quick-open[aria-expanded="true"] .history-motion-arrow{
+        transform:rotate(-50deg);
+    }
+
+    .history-quick-open[aria-expanded="true"] .history-motion-minute{
+        transform:rotate(-45deg);
+    }
+
+    .history-quick-open[aria-expanded="true"] .history-motion-hour{
+        animation:history-motion-rewind 600ms cubic-bezier(.4,0,.2,1) both;
     }
 
     .history-quick-open:active{
@@ -5842,6 +5874,8 @@ body.timeline-scrubbing .current-time{
 
 #incomeSettingsCard,
 #scheduleSettingsCard{
+    --editable-optic-x:50%;
+    --editable-optic-y:-180px;
     border-color:var(--tier-two-border);
     overflow:visible;
     translate:0 0;
@@ -5850,6 +5884,19 @@ body.timeline-scrubbing .current-time{
         border-color 180ms var(--ease-interface),
         background-color 180ms var(--ease-interface),
         box-shadow 180ms var(--ease-interface);
+}
+
+#incomeSettingsCard::before,
+#scheduleSettingsCard::before{
+    background:
+        radial-gradient(
+            circle 168px at var(--editable-optic-x) var(--editable-optic-y),
+            color-mix(in srgb,var(--glass-edge-light) 38%,transparent),
+            color-mix(in srgb,var(--accent-blue) 6%,transparent) 42%,
+            transparent 72%
+        ),
+        radial-gradient(circle at 20% 5%,rgba(255,255,255,.14),transparent 34%),
+        linear-gradient(115deg,rgba(255,255,255,.075),transparent 34% 72%,rgba(255,255,255,.025));
 }
 
 @media (hover:hover) and (pointer:fine){
@@ -7180,6 +7227,7 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
 
 .settings-data-heading.settings-data-toggle{
     width:100%;
+    align-items:center;
     padding:2px 0;
     border:0;
     background:transparent;
@@ -7187,6 +7235,70 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
     font:inherit;
     text-align:left;
     cursor:pointer;
+}
+
+.settings-data-icon{
+    width:30px;
+    height:30px;
+    flex:0 0 30px;
+    display:grid;
+    place-items:center;
+    border:1px solid color-mix(in srgb,var(--border-light) 74%,transparent);
+    border-radius:9px;
+    background:color-mix(in srgb,var(--bg-soft) 72%,transparent);
+    color:color-mix(in srgb,var(--text-muted) 88%,var(--text-secondary));
+    transition:
+        color 180ms var(--ease-interface),
+        border-color 180ms var(--ease-interface),
+        background-color 180ms var(--ease-interface),
+        translate 180ms var(--ease-interface);
+}
+
+.settings-data-icon svg{
+    width:17px;
+    height:17px;
+    display:block;
+    overflow:visible;
+    fill:none;
+    stroke:currentColor;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.settings-data-icon .iconsax-calendar-bindings,
+.settings-data-icon .iconsax-calendar-dots,
+.settings-data-icon .iconsax-calendar-frame{
+    transform-box:view-box;
+    transform-origin:center;
+    transition:
+        transform 260ms cubic-bezier(.2,.76,.3,1),
+        opacity 180ms var(--ease-interface);
+}
+
+.settings-data-toggle:hover .settings-data-icon,
+.settings-data-toggle:focus-visible .settings-data-icon,
+.settings-data-toggle[aria-expanded="true"] .settings-data-icon{
+    border-color:color-mix(in srgb,var(--accent-green) 26%,var(--border-light));
+    background:color-mix(in srgb,var(--accent-green) 7%,var(--bg-soft));
+    color:color-mix(in srgb,var(--accent-green) 68%,var(--text-primary));
+    translate:0 -1px;
+}
+
+.settings-data-toggle:hover .iconsax-calendar-bindings,
+.settings-data-toggle:focus-visible .iconsax-calendar-bindings,
+.settings-data-toggle[aria-expanded="true"] .iconsax-calendar-bindings{
+    transform:translateY(-1.2px);
+}
+
+.settings-data-toggle:hover .iconsax-calendar-dots,
+.settings-data-toggle:focus-visible .iconsax-calendar-dots,
+.settings-data-toggle[aria-expanded="true"] .iconsax-calendar-dots{
+    transform:scale(1.07);
+    opacity:.86;
+}
+
+.settings-data-toggle[aria-expanded="true"] .iconsax-calendar-frame{
+    transform:translateY(.35px);
 }
 
 .settings-data-copy{
@@ -7368,9 +7480,17 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
     .kinetic-tooltip,
     .settings-data-content,
     .settings-data-chevron,
+    .settings-data-icon,
+    .settings-data-icon *,
+    .history-motion-icon *,
     .storage-warning-toast{
         transition-duration:1ms !important;
         transition-delay:0ms !important;
+    }
+    .history-motion-icon *,
+    .settings-data-icon *{
+        animation:none !important;
+        transform:none !important;
     }
 }
 
@@ -7513,6 +7633,13 @@ body.performance-critical #flipContainer::before,
 html.compatibility-safe-mode .traditional-card-frame,
 html.compatibility-safe-mode #flipContainer::before{display:none;}
 
+body.performance-critical #incomeSettingsCard,
+body.performance-critical #scheduleSettingsCard,
+html.compatibility-safe-mode #incomeSettingsCard,
+html.compatibility-safe-mode #scheduleSettingsCard{
+    --editable-optic-y:-180px !important;
+}
+
 @media (max-width:620px){
     .ambient-grid-backdrop{opacity:.42;}
     html[data-theme="dark"] .ambient-grid-backdrop{opacity:.5;}
@@ -7580,7 +7707,17 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
                         aria-controls="historyQuickPanel"
                         aria-expanded="false"
                         title="快速回溯"
-                    ></button>
+                    >
+                        <!-- Lucide Animated History, adapted for the offline vanilla runtime. -->
+                        <svg class="history-motion-icon" viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-animated-history">
+                            <g class="history-motion-arrow">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                <path d="M3 3v5h5"></path>
+                            </g>
+                            <line class="history-motion-hour" x1="12" x2="12" y1="12" y2="7"></line>
+                            <line class="history-motion-minute" x1="12" x2="16" y1="12" y2="14"></line>
+                        </svg>
+                    </button>
                     <button
                         class="live-anchor"
                         id="liveAnchor"
@@ -7859,6 +7996,19 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
 
             <section class="settings-data-section" id="calendarDataSection" aria-labelledby="calendarDataTitle">
                 <button class="settings-data-heading settings-data-toggle" id="calendarDataToggle" type="button" aria-controls="calendarDataContent" aria-expanded="false">
+                    <!-- Iconsax Calendar Linear, adapted with one-shot disclosure motion. -->
+                    <span class="settings-data-icon" aria-hidden="true" data-icon-source="iconsax-calendar-linear">
+                        <svg viewBox="0 0 24 24">
+                            <g class="iconsax-calendar-bindings" stroke-width="1.5">
+                                <path d="M8 2v3M16 2v3"></path>
+                            </g>
+                            <g class="iconsax-calendar-frame" stroke-width="1.5">
+                                <path d="M3.5 9.09h17"></path>
+                                <path d="M21 8.5V17c0 3-1.5 5-5 5H8c-3.5 0-5-2-5-5V8.5c0-3 1.5-5 5-5h8c3.5 0 5 2 5 5Z"></path>
+                            </g>
+                            <path class="iconsax-calendar-dots" d="M15.695 13.7h.009M15.695 16.7h.009M11.995 13.7h.01M11.995 16.7h.01M8.294 13.7h.01M8.294 16.7h.01" stroke-width="2"></path>
+                        </svg>
+                    </span>
                     <span class="settings-data-copy">
                         <span class="settings-data-title" id="calendarDataTitle">日历数据</span>
                         <span class="settings-data-meta" id="calendarDataMeta">正在读取内置工作日清单…</span>
@@ -7938,7 +8088,7 @@ touchTargetPolicy: 'coarse-pointer-44px-v2',
 darkModeRevision: 'explicit-system-light-dark-v5',
 dialNumeralRevision: 'theme-dpr-calibrated-instrument-v2',
 dialShellSizing: 'proportional-clamp-v1',
-editableCardHover: 'single-shared-boundary-v2',
+editableCardHover: 'single-shared-boundary-pointer-optics-v3',
 viewportCentering: 'safe-flex-center-v1',
 presentationLayer: 'single-authoritative-r31-v1',
 referenceMotionSource: 'push15-trajectory-v1',
@@ -7953,7 +8103,7 @@ lightCaptionContrast: 'semantic-four-tier-contrast-v2',
 calendarDataPolicy: 'validated-import-export-v1',
 pushBuildPolicy: 'develop-code-stripped-minified-v1',
 visualRegression: 'real-browser-critical-state-baseline-v3',
-visualDesignRevision: 'optical-continuity-system-ui-v18',
+visualDesignRevision: 'optical-continuity-system-ui-v19',
 themeControl: 'system-light-dark-material-transition-v2',
 settingsErrorFeedback: 'stable-field-and-wheel-scoped-v3',
 keyboardFocusPolicy: 'unified-visible-ring-v1',
@@ -7976,7 +8126,8 @@ settingsAccordion: 'measured-height-interruptible-v1',
 notificationMotion: 'restrained-slide-v1',
 dialGlareInertia: 'bounded-decorative-lag-v1',
 mobileScrubHint: 'unclipped-elevated-feedback-v1',
-mobileHistorySheetPortal: 'body-visual-viewport-v1'
+mobileHistorySheetPortal: 'body-visual-viewport-v1',
+interactionIconMotion: 'lucide-history-iconsax-calendar-offline-v1'
 });
 
 const AmbientGridScene = (() => {
@@ -10756,6 +10907,73 @@ settingsSaveButton: document.getElementById('settingsSaveButton'),
 kineticTooltip: document.getElementById('kineticTooltip')
 };
 const body = document.body;
+
+const EditableCardOptics = (() => {
+const finePointerQuery = window.matchMedia('(hover:hover) and (pointer:fine)');
+const states = [];
+
+function enabled() {
+return finePointerQuery.matches &&
+!reduceMotionQuery.matches &&
+!body.classList.contains('performance-critical') &&
+!document.documentElement.classList.contains('compatibility-safe-mode');
+}
+
+function reset(state) {
+if (!state?.card) return;
+if (state.frame) AppLifecycle.cancelFrame(state.frame);
+state.frame = 0;
+state.card.removeAttribute('data-kinetic-optic-active');
+state.card.style.setProperty('--editable-optic-x', '50%');
+state.card.style.setProperty('--editable-optic-y', '-180px');
+}
+
+function commit(state) {
+state.frame = 0;
+if (!enabled() || !state.card.isConnected) {
+reset(state);
+return;
+}
+const rect = state.card.getBoundingClientRect();
+if (rect.width <= 0 || rect.height <= 0) return;
+const x = clamp(state.pointerX - rect.left, 0, rect.width);
+const y = clamp(state.pointerY - rect.top, 0, rect.height);
+state.card.style.setProperty('--editable-optic-x', `${x.toFixed(2)}px`);
+state.card.style.setProperty('--editable-optic-y', `${y.toFixed(2)}px`);
+}
+
+function schedule(state, event) {
+if (!enabled() || event.pointerType !== 'mouse') {
+reset(state);
+return;
+}
+state.pointerX = event.clientX;
+state.pointerY = event.clientY;
+state.card.dataset.kineticOpticActive = 'true';
+if (!state.frame) state.frame = AppLifecycle.requestFrame(() => commit(state));
+}
+
+function bindCard(card) {
+if (!card) return;
+const state = { card, frame: 0, pointerX: 0, pointerY: 0 };
+states.push(state);
+ComponentScopes.app.listen(card, 'pointerenter', (event) => schedule(state, event), { passive: true });
+ComponentScopes.app.listen(card, 'pointermove', (event) => schedule(state, event), { passive: true });
+ComponentScopes.app.listen(card, 'pointerleave', () => reset(state), { passive: true });
+}
+
+function bind() {
+bindCard(dom.incomeSettingsCard);
+bindCard(dom.scheduleSettingsCard);
+AppLifecycle.on('destroy', () => {
+for (const state of states) reset(state);
+states.length = 0;
+});
+}
+
+return Object.freeze({ bind });
+})();
+
 const KineticTooltip = (() => {
 const SELECTOR = [
 '.theme-option',
@@ -24914,6 +25132,7 @@ initializeMotionDebug();
 EnvironmentHealth.check(performance.now(), true);
 bindDynamicViewportHeight();
 ThemeUI.bind();
+EditableCardOptics.bind();
 KineticTooltip.bind();
 SettingsUI.bind();
 body.dataset.performanceMode = performancePolicy.mode;
