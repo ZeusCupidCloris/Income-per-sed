@@ -123,4 +123,4 @@ Copyright © 2026 ZeusCupidCloris. All rights reserved.
 
 本仓库公开仅用于作品展示、在线预览和版本存档，**不是开源软件**。除非仓库所有者事先书面授权，否则不授予任何人复制、修改、分发、再发布、转售、再许可或制作衍生作品的权利。公开可见不代表获得使用授权。
 
-允许访问者通过本仓库提供的 GitHub Pages 在线查看页面，并为个人评估目的下载未经修改的正式 Release 文件；任何其他用途均需事先取得仓库所有者的书面许可。完整条款见 [LICENSE](LICENSE)，第三方组件许可见 [Third-Party Notices](docs/THIRD_PARTY_NOTICES.md)，安全问题请按 [安全策略](.github/SECURITY.md) 私密报告。
+允许访问者通过本仓库提供的 GitHub Pages 在线查看页面，并为个人评估目的下载未经修改的正式 Release 文件；任何其他用途均需事先取得仓库所有者的书面许可。完整条款见 [LICENSE](LICENSE)，安全问题请按 [安全策略](.github/SECURITY.md) 私密报告。
