@@ -1,9 +1,9 @@
 {
-  "productVersion": "2.5.1",
-  "releaseTag": "v2.5.1",
+  "productVersion": "2.5.2",
+  "releaseTag": "v2.5.2",
   "internalVersion": "v35",
-  "buildId": "pocket-watch-v35-r35-mobile-history-sheet-portal-2026-08-01",
-  "releaseDate": "2026-08-06",
+  "buildId": "pocket-watch-v35-r35-diagonal-theme-transition-2026-09-03",
+  "releaseDate": "2026-09-03",
   "canonicalSource": "Income-per-sed-Develop.html",
   "derivedArtifacts": [
     "Income-per-sed-Push.html"

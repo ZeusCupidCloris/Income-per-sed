@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: pocket-watch-v35-r35-mobile-history-sheet-portal-2026-08-01 -->
+<!-- build: pocket-watch-v35-r35-diagonal-theme-transition-2026-09-03 -->
 <!--
   Income-per-sed · Develop · Pocket Watch v35 · R31 Visual Baseline · R35 Kinetic Interaction
   开发源码版：保留结构化注释、诊断接口和可维护代码。
@@ -8191,10 +8191,10 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v35',
-productVersion: '2.5.1',
-sourceTag: 'v2.5.1',
-buildId: 'pocket-watch-v35-r35-mobile-history-sheet-portal-2026-08-01',
-releaseDate: '2026-08-06',
+productVersion: '2.5.2',
+sourceTag: 'v2.5.2',
+buildId: 'pocket-watch-v35-r35-diagonal-theme-transition-2026-09-03',
+releaseDate: '2026-09-03',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
@@ -18431,7 +18431,45 @@ failures.push(`${status} 时段不应启动历史滚筒入口制动`);
 }
 }
 if (!shouldStartHistoricalRollerEntryBrake('working', 0.01, 0)) failures.push('工作时段应保留历史滚筒入口制动');
-return Object.freeze({ passed: failures.length === 0, failures: Object.freeze(failures), profiles: Object.freeze({ smallProfile, hugeProfile, desktopProfile, mobileProfile }) });
+function simulateSubhandCadence(frameRate) {
+const durationSeconds = 1.5;
+const frameSeconds = 1 / frameRate;
+let elapsed = 0;
+let motion = Object.freeze({ angle: 0, velocity: 0, acceleration: 0, active: true });
+while (elapsed < durationSeconds - 1e-9) {
+const deltaSeconds = Math.min(frameSeconds, durationSeconds - elapsed);
+motion = stepHistoricalSubhandAngle(
+motion.angle,
+90,
+motion.velocity,
+motion.acceleration,
+deltaSeconds,
+HISTORY_MINUTE_HAND_MAX_SPEED,
+HISTORY_MINUTE_HAND_MAX_ACCELERATION,
+HISTORY_MINUTE_HAND_MAX_JERK
+);
+elapsed += deltaSeconds;
+}
+return Object.freeze({
+frameRate,
+durationSeconds,
+angle: motion.angle,
+velocity: motion.velocity,
+acceleration: motion.acceleration,
+active: motion.active
+});
+}
+const cadence60 = simulateSubhandCadence(60);
+const cadence120 = simulateSubhandCadence(120);
+if (Math.abs(cadence60.angle - cadence120.angle) > 0.03) failures.push('60Hz 与 120Hz 分针终点角度不一致');
+if (Math.abs(cadence60.velocity - cadence120.velocity) > 0.18) failures.push('60Hz 与 120Hz 分针终点速度不一致');
+if (Math.abs(cadence60.acceleration - cadence120.acceleration) > 4) failures.push('60Hz 与 120Hz 分针终点加速度不一致');
+return Object.freeze({
+passed: failures.length === 0,
+failures: Object.freeze(failures),
+profiles: Object.freeze({ smallProfile, hugeProfile, desktopProfile, mobileProfile }),
+cadence: Object.freeze({ hz60: cadence60, hz120: cadence120 })
+});
 }
 
 function runBusinessTimeZoneRegressionChecks() {
