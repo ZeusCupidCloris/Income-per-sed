@@ -4175,6 +4175,11 @@ body[data-work-status="day-off"] .dial-glass{opacity:.58;}
     display:none;
 }
 
+@keyframes history-motion-rewind{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(-360deg);}
+}
+
 @media (max-width:620px){
     .time-travel-control{
         position:relative;
@@ -4210,18 +4215,45 @@ body[data-work-status="day-off"] .dial-glass{opacity:.58;}
             transform var(--motion-instant) ease-out;
     }
 
-    .history-quick-open::before{
-        content:"";
-        width:15px;
-        height:15px;
+    .history-quick-open::before{content:none;}
+
+    .history-motion-icon{
+        width:16px;
+        height:16px;
         display:block;
-        background:currentColor;
-        -webkit-mask:
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.7 8.2V3.8m0 4.4h4.4'/%3E%3Cpath d='M5.1 7.2A8.2 8.2 0 1 1 4 15.9'/%3E%3Cpath d='M12 7.8v4.7l3.1 1.8'/%3E%3C/g%3E%3C/svg%3E")
-            center / contain no-repeat;
-        mask:
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.7 8.2V3.8m0 4.4h4.4'/%3E%3Cpath d='M5.1 7.2A8.2 8.2 0 1 1 4 15.9'/%3E%3Cpath d='M12 7.8v4.7l3.1 1.8'/%3E%3C/g%3E%3C/svg%3E")
-            center / contain no-repeat;
+        overflow:visible;
+        fill:none;
+        stroke:currentColor;
+        stroke-width:1.75;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+    }
+
+    .history-motion-icon .history-motion-arrow,
+    .history-motion-icon .history-motion-hour,
+    .history-motion-icon .history-motion-minute{
+        transform-box:view-box;
+        transform-origin:12px 12px;
+    }
+
+    .history-motion-icon .history-motion-arrow{
+        transition:transform 360ms cubic-bezier(.2,.78,.28,1);
+    }
+
+    .history-motion-icon .history-motion-minute{
+        transition:transform 500ms cubic-bezier(.4,0,.2,1);
+    }
+
+    .history-quick-open[aria-expanded="true"] .history-motion-arrow{
+        transform:rotate(-50deg);
+    }
+
+    .history-quick-open[aria-expanded="true"] .history-motion-minute{
+        transform:rotate(-45deg);
+    }
+
+    .history-quick-open[aria-expanded="true"] .history-motion-hour{
+        animation:history-motion-rewind 600ms cubic-bezier(.4,0,.2,1) both;
     }
 
     .history-quick-open:active{
@@ -5023,7 +5055,10 @@ body{
 /* R31 consolidated release layer: authoritative optical, responsive, theme and feedback rules. */
 :root{
     --adaptive-amount-size:3.8rem;
-    --theme-material-duration:220ms;
+    --theme-material-duration:260ms;
+    --theme-material-ease:cubic-bezier(.22,.72,.28,1);
+    --theme-diagonal-duration:520ms;
+    --theme-diagonal-ease:cubic-bezier(.45,0,.55,1);
     --hero-dial-optical-x:-5px;
     --hero-income-optical-x:-2px;
     --hero-income-optical-y:-6px;
@@ -5137,10 +5172,21 @@ body::after{
 .income-dial{
     --dial-shell-inset:clamp(6px,4.46%,10px);
     --dial-rim-inset:clamp(5px,3.58%,8px);
+    --dial-label-color:color-mix(in srgb,var(--dial-face-ink) 96%,transparent);
+    --dial-label-highlight:0 1px 0 rgba(255,255,255,.26);
+    --dial-label-shadow:0 .45px .58px rgba(28,23,20,.20);
+    color:#4a3f38;
 }
 
+.income-dial::before{
+    border-color:rgba(227,220,211,.66);
+    box-shadow:inset 0 0 0 5px rgba(250,247,242,.44);
+}
 .income-dial::after{inset:var(--dial-rim-inset);}
-.dial-moving-surface{inset:var(--dial-shell-inset);}
+.dial-moving-surface{
+    inset:var(--dial-shell-inset);
+    filter:none;
+}
 
 .dial-label{
     color:var(
@@ -5990,7 +6036,11 @@ body.timeline-scrubbing .current-time{
 
 /* Read the timeline as current phase, remaining time, then percentage. */
 .progress-readout{
-    min-width:124px;
+    inline-size:124px;
+    min-inline-size:124px;
+    max-inline-size:124px;
+    grid-template-rows:repeat(2,1em);
+    row-gap:3px;
     align-content:start;
 }
 
@@ -6000,12 +6050,17 @@ body.timeline-scrubbing .current-time{
     font-family:var(--numeric-font);
     font-size:.80rem;
     font-weight:590;
+    line-height:1;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
 .progress-readout strong{
     color:var(--text-muted);
     font-size:.68rem;
     font-weight:560;
+    line-height:1;
 }
 
 .progress-marker{
@@ -6019,6 +6074,71 @@ body.timeline-scrubbing .current-time{
 
 .lunch-gap::before{
     opacity:.55;
+}
+
+/* Keep two work rails while handing one cursor continuously across lunch. */
+.work-timeline{
+    position:relative;
+    isolation:isolate;
+    --timeline-cursor-x:0px;
+}
+
+.work-timeline .work-segment > .progress-marker{
+    visibility:hidden !important;
+    opacity:0 !important;
+}
+
+.timeline-handoff-marker{
+    position:absolute;
+    z-index:5;
+    top:50%;
+    left:0;
+    width:7px;
+    height:13px;
+    border:1px solid color-mix(in srgb,var(--workshop-brass) 60%,#6d563d);
+    border-radius:3px;
+    background:linear-gradient(90deg,#765d42 0%,#cfb687 43%,#9e8058 64%,#69523c 100%);
+    box-shadow:
+        0 0 0 2px color-mix(in srgb,var(--card) 66%,transparent),
+        0 2px 4px rgba(68,48,31,.15);
+    opacity:1;
+    pointer-events:none;
+    transform:translate3d(calc(var(--timeline-cursor-x) - 50%),-50%,0);
+    transition:
+        opacity var(--motion-fast) var(--ease-settle),
+        transform var(--motion-slow) linear;
+}
+
+body[data-work-status="day-off"] .timeline-handoff-marker{
+    opacity:.28;
+}
+
+body[data-work-status="break"] .timeline-handoff-marker{
+    background:linear-gradient(90deg,#82513d 0%,#c88b69 50%,#774633 100%);
+}
+
+body.timeline-scrubbing .timeline-handoff-marker,
+body.timeline-history-hold .timeline-handoff-marker,
+body.timeline-history-play .timeline-handoff-marker,
+body.timeline-returning-live .timeline-handoff-marker,
+body.foreground-catchup-active .timeline-handoff-marker,
+body.midnight-reset-active .timeline-handoff-marker,
+body.day-end-braking .timeline-handoff-marker{
+    transition:none;
+}
+
+@media (prefers-reduced-motion:reduce){
+    .timeline-handoff-marker{
+        transition-duration:100ms;
+    }
+}
+
+@media (forced-colors:active){
+    .timeline-handoff-marker{
+        border-color:Highlight;
+        background:Highlight;
+        box-shadow:0 0 0 2px Canvas;
+    }
 }
 
 /* Give the stopwatch face distinct zones without changing hand layering. */
@@ -6182,7 +6302,9 @@ body.timeline-scrubbing .current-time{
     }
 
     .progress-readout{
-        min-width:106px;
+        inline-size:106px;
+        min-inline-size:106px;
+        max-inline-size:106px;
         padding-left:10px;
     }
 
@@ -6309,9 +6431,6 @@ body.timeline-scrubbing .current-time{
         filter:saturate(.86) brightness(.96) contrast(.98);
     }
 
-    .dial-moving-surface{
-        filter:brightness(.965) sepia(.012);
-    }
 }
 
 /* R28 silky motion: transform values are sampled by JavaScript, never eased a second time by CSS. */
@@ -6371,9 +6490,6 @@ html[data-theme="light"]{
     --scrollbar-track:rgba(139,125,114,.08);
     --scrollbar-thumb:#b8ada3;
     --scrollbar-thumb-hover:#9e9186;
-    --dial-label-color:color-mix(in srgb,var(--dial-face-ink) 96%,transparent);
-    --dial-label-highlight:0 1px 0 rgba(255,255,255,.26);
-    --dial-label-shadow:0 .45px .58px rgba(28,23,20,.20);
 }
 
 html[data-theme="dark"]{
@@ -6416,9 +6532,6 @@ html[data-theme="dark"]{
     --theme-control-icon:#b9afa2;
     --month-data-accent:rgba(143,164,145,.34);
     --field-error-bg:rgba(255,112,67,.075);
-    --dial-label-color:color-mix(in srgb,#151513 97%,transparent);
-    --dial-label-highlight:0 .45px 0 rgba(255,255,255,.24);
-    --dial-label-shadow:0 .45px .58px rgba(24,22,18,.30);
 }
 
 html[data-theme] body{
@@ -6443,10 +6556,6 @@ html.theme-transitioning .rate-badge,
 html.theme-transitioning .flip-digit-container,
 html.theme-transitioning .flip-digit-recess,
 html.theme-transitioning .flip-digit-item,
-html.theme-transitioning .income-dial,
-html.theme-transitioning .dial-moving-surface,
-html.theme-transitioning .dial-label,
-html.theme-transitioning .dial-tick::before,
 html.theme-transitioning .task-stopwatch,
 html.theme-transitioning .task-stopwatch-face,
 html.theme-transitioning .settings-sheet,
@@ -6461,19 +6570,64 @@ html.theme-transitioning .history-quick-panel{
         border-color,
         box-shadow,
         text-shadow,
-        filter;
+        filter,
+        opacity;
     transition-duration:var(--theme-material-duration);
-    transition-timing-function:cubic-bezier(.22,.8,.32,1);
+    transition-timing-function:var(--theme-material-ease);
 }
 
-html.theme-transitioning .flip-digit-list,
-html.theme-transitioning .dial-hand-wrap,
-html.theme-transitioning .dial-hand-shadow-wrap,
-html.theme-transitioning .dial-subhand-wrap,
-html.theme-transitioning .task-stopwatch-second-hand-wrap,
-html.theme-transitioning .task-stopwatch-second-shadow-wrap,
-html.theme-transitioning .task-stopwatch-minute-hand-wrap{
-    transition:none !important;
+/* Theme changes never replace the live transform channel used by the dial and hands. */
+html.theme-transitioning{
+    transition-property:
+        --page-backdrop-top,
+        --page-backdrop-bottom,
+        --page-backdrop-sheen,
+        --page-backdrop-shade,
+        --theme-hero-card-base,
+        --theme-hero-card-sheen,
+        --theme-secondary-card-base,
+        --theme-secondary-card-sheen,
+        --ambient-grid-opacity;
+    transition-duration:var(--theme-material-duration);
+    transition-timing-function:var(--theme-material-ease);
+}
+
+/* The new theme is revealed as one restrained diagonal surface. */
+::view-transition-group(root),
+::view-transition-image-pair(root),
+::view-transition-old(root),
+::view-transition-new(root){
+    animation:none;
+    mix-blend-mode:normal;
+}
+
+::view-transition-old(root){z-index:1;}
+::view-transition-new(root){z-index:2;}
+
+html[data-theme-wipe="to-dark"]::view-transition-new(root){
+    -webkit-mask-image:linear-gradient(135deg,#000 0 49.88%,rgba(0,0,0,.5) 50%,transparent 50.12% 100%);
+    mask-image:linear-gradient(135deg,#000 0 49.88%,rgba(0,0,0,.5) 50%,transparent 50.12% 100%);
+    -webkit-mask-size:300% 300%;
+    mask-size:300% 300%;
+    animation:themeRevealTopLeft var(--theme-diagonal-duration) var(--theme-diagonal-ease) both;
+}
+
+html[data-theme-wipe="to-light"]::view-transition-new(root){
+    -webkit-mask-image:linear-gradient(315deg,#000 0 49.88%,rgba(0,0,0,.5) 50%,transparent 50.12% 100%);
+    mask-image:linear-gradient(315deg,#000 0 49.88%,rgba(0,0,0,.5) 50%,transparent 50.12% 100%);
+    -webkit-mask-size:300% 300%;
+    mask-size:300% 300%;
+    animation:themeRevealBottomRight var(--theme-diagonal-duration) var(--theme-diagonal-ease) both;
+}
+
+@keyframes themeRevealTopLeft{
+    from{-webkit-mask-position:100% 100%;mask-position:100% 100%;}
+    to{-webkit-mask-position:0 0;mask-position:0 0;}
+}
+
+@keyframes themeRevealBottomRight{
+    from{-webkit-mask-position:0 0;mask-position:0 0;}
+    to{-webkit-mask-position:100% 100%;mask-position:100% 100%;}
 }
 
 @media (min-resolution:1.5dppx){
@@ -6491,6 +6645,8 @@ html.theme-transitioning .task-stopwatch-minute-hand-wrap{
     html.theme-transitioning *::after{
         transition-duration:1ms !important;
     }
+    ::view-transition-old(root),
+    ::view-transition-new(root){animation-duration:1ms !important;}
 }
 
 html[data-theme="light"] .income-main-card{
@@ -6615,14 +6771,6 @@ html[data-theme="dark"] .task-stopwatch{
 }
 
 html[data-theme="light"] .task-stopwatch{
-    filter:none;
-}
-
-html[data-theme="dark"] .dial-moving-surface{
-    filter:brightness(.965) sepia(.012);
-}
-
-html[data-theme="light"] .dial-moving-surface{
     filter:none;
 }
 
@@ -6976,15 +7124,17 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
 
     .progress-readout span{
         max-width:100px;
-        white-space:normal;
-        line-height:1.22;
+        white-space:nowrap;
+        line-height:1;
         text-align:right;
     }
 }
 
 @media (max-width:390px){
     .progress-readout{
-        min-width:92px;
+        inline-size:92px;
+        min-inline-size:92px;
+        max-inline-size:92px;
         padding-left:7px;
     }
 
@@ -7180,6 +7330,7 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
 
 .settings-data-heading.settings-data-toggle{
     width:100%;
+    align-items:center;
     padding:2px 0;
     border:0;
     background:transparent;
@@ -7187,6 +7338,70 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
     font:inherit;
     text-align:left;
     cursor:pointer;
+}
+
+.settings-data-icon{
+    width:30px;
+    height:30px;
+    flex:0 0 30px;
+    display:grid;
+    place-items:center;
+    border:1px solid color-mix(in srgb,var(--border-light) 74%,transparent);
+    border-radius:9px;
+    background:color-mix(in srgb,var(--bg-soft) 72%,transparent);
+    color:color-mix(in srgb,var(--text-muted) 88%,var(--text-secondary));
+    transition:
+        color 180ms var(--ease-interface),
+        border-color 180ms var(--ease-interface),
+        background-color 180ms var(--ease-interface),
+        translate 180ms var(--ease-interface);
+}
+
+.settings-data-icon svg{
+    width:17px;
+    height:17px;
+    display:block;
+    overflow:visible;
+    fill:none;
+    stroke:currentColor;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.settings-data-icon .iconsax-calendar-bindings,
+.settings-data-icon .iconsax-calendar-dots,
+.settings-data-icon .iconsax-calendar-frame{
+    transform-box:view-box;
+    transform-origin:center;
+    transition:
+        transform 260ms cubic-bezier(.2,.76,.3,1),
+        opacity 180ms var(--ease-interface);
+}
+
+.settings-data-toggle:hover .settings-data-icon,
+.settings-data-toggle:focus-visible .settings-data-icon,
+.settings-data-toggle[aria-expanded="true"] .settings-data-icon{
+    border-color:color-mix(in srgb,var(--accent-green) 26%,var(--border-light));
+    background:color-mix(in srgb,var(--accent-green) 7%,var(--bg-soft));
+    color:color-mix(in srgb,var(--accent-green) 68%,var(--text-primary));
+    translate:0 -1px;
+}
+
+.settings-data-toggle:hover .iconsax-calendar-bindings,
+.settings-data-toggle:focus-visible .iconsax-calendar-bindings,
+.settings-data-toggle[aria-expanded="true"] .iconsax-calendar-bindings{
+    transform:translateY(-1.2px);
+}
+
+.settings-data-toggle:hover .iconsax-calendar-dots,
+.settings-data-toggle:focus-visible .iconsax-calendar-dots,
+.settings-data-toggle[aria-expanded="true"] .iconsax-calendar-dots{
+    transform:scale(1.07);
+    opacity:.86;
+}
+
+.settings-data-toggle[aria-expanded="true"] .iconsax-calendar-frame{
+    transform:translateY(.35px);
 }
 
 .settings-data-copy{
@@ -7368,10 +7583,65 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
     .kinetic-tooltip,
     .settings-data-content,
     .settings-data-chevron,
+    .settings-data-icon,
+    .settings-data-icon *,
+    .history-motion-icon *,
     .storage-warning-toast{
         transition-duration:1ms !important;
         transition-delay:0ms !important;
     }
+    .history-motion-icon *,
+    .settings-data-icon *{
+        animation:none !important;
+        transform:none !important;
+    }
+}
+
+/* Theme colors are registered so gradients interpolate instead of switching in one frame. */
+@property --page-backdrop-top{
+    syntax:"<color>";
+    inherits:true;
+    initial-value:#ebe3d9;
+}
+@property --page-backdrop-bottom{
+    syntax:"<color>";
+    inherits:true;
+    initial-value:#e5ddd3;
+}
+@property --page-backdrop-sheen{
+    syntax:"<color>";
+    inherits:true;
+    initial-value:rgba(255,255,255,.10);
+}
+@property --page-backdrop-shade{
+    syntax:"<color>";
+    inherits:true;
+    initial-value:rgba(78,58,42,.025);
+}
+@property --theme-hero-card-base{
+    syntax:"<color>";
+    inherits:true;
+    initial-value:rgba(250,247,242,.86);
+}
+@property --theme-hero-card-sheen{
+    syntax:"<color>";
+    inherits:true;
+    initial-value:rgba(255,255,255,.22);
+}
+@property --theme-secondary-card-base{
+    syntax:"<color>";
+    inherits:true;
+    initial-value:rgba(250,247,242,.84);
+}
+@property --theme-secondary-card-sheen{
+    syntax:"<color>";
+    inherits:true;
+    initial-value:rgba(255,255,255,.16);
+}
+@property --ambient-grid-opacity{
+    syntax:"<number>";
+    inherits:true;
+    initial-value:.82;
 }
 
 /* Harness-inspired R38 ambient scene: elastic square grid without the koi motif. */
@@ -7382,6 +7652,11 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
     --traditional-pattern-line:rgba(123,94,57,.17);
     --traditional-pattern-inner:rgba(73,101,90,.11);
     --traditional-water-line:rgba(86,112,101,.18);
+    --theme-hero-card-base:rgba(250,247,242,.86);
+    --theme-hero-card-sheen:rgba(255,255,255,.22);
+    --theme-secondary-card-base:rgba(250,247,242,.84);
+    --theme-secondary-card-sheen:rgba(255,255,255,.16);
+    --ambient-grid-opacity:.82;
 }
 
 body,
@@ -7397,13 +7672,18 @@ html[data-theme="dark"]{
     --traditional-pattern-line:rgba(188,156,110,.14);
     --traditional-pattern-inner:rgba(132,159,147,.085);
     --traditional-water-line:rgba(136,169,154,.16);
+    --theme-hero-card-base:rgba(35,34,30,.88);
+    --theme-hero-card-sheen:rgba(246,230,209,.025);
+    --theme-secondary-card-base:rgba(37,35,31,.84);
+    --theme-secondary-card-sheen:rgba(255,255,255,.018);
+    --ambient-grid-opacity:.7;
 }
 
 .ambient-motion-layer{
     pointer-events:none;
     transform:translateZ(0);
     contain:strict;
-    transition:opacity var(--theme-material-duration) cubic-bezier(.22,.8,.32,1);
+    transition:opacity var(--theme-material-duration) var(--theme-material-ease);
 }
 
 .ambient-grid-backdrop{
@@ -7412,39 +7692,37 @@ html[data-theme="dark"]{
     inset:0;
     width:100%;
     height:100%;
-    opacity:.82;
+    opacity:var(--ambient-grid-opacity);
 }
 
-html[data-theme="dark"] .ambient-grid-backdrop{opacity:.7;}
-html.theme-transitioning .ambient-motion-layer{opacity:.28;}
 body.performance-degraded .ambient-grid-backdrop{opacity:.38;}
 
 html[data-theme="light"] .income-main-card{
     background:
-        linear-gradient(138deg,rgba(255,255,255,.22),transparent 36%),
-        rgba(250,247,242,.86);
+        linear-gradient(138deg,var(--theme-hero-card-sheen),transparent 36%),
+        var(--theme-hero-card-base);
 }
 
 html[data-theme="light"] .progress-card,
 html[data-theme="light"] .info-cards-row > .card,
 html[data-theme="light"] .month-card{
     background:
-        linear-gradient(135deg,rgba(255,255,255,.16),transparent 42%),
-        rgba(250,247,242,.84);
+        linear-gradient(135deg,var(--theme-secondary-card-sheen),transparent 42%),
+        var(--theme-secondary-card-base);
 }
 
 html[data-theme="dark"] .income-main-card{
     background:
-        linear-gradient(138deg,rgba(246,230,209,.025),transparent 36%),
-        rgba(35,34,30,.88);
+        linear-gradient(138deg,var(--theme-hero-card-sheen),transparent 36%),
+        var(--theme-hero-card-base);
 }
 
 html[data-theme="dark"] .progress-card,
 html[data-theme="dark"] .info-cards-row > .card,
 html[data-theme="dark"] .month-card{
     background:
-        linear-gradient(135deg,rgba(255,255,255,.018),transparent 42%),
-        rgba(37,35,31,.84);
+        linear-gradient(135deg,var(--theme-secondary-card-sheen),transparent 42%),
+        var(--theme-secondary-card-base);
 }
 
 .income-main-card > .traditional-card-frame{
@@ -7514,8 +7792,8 @@ html.compatibility-safe-mode .traditional-card-frame,
 html.compatibility-safe-mode #flipContainer::before{display:none;}
 
 @media (max-width:620px){
-    .ambient-grid-backdrop{opacity:.42;}
-    html[data-theme="dark"] .ambient-grid-backdrop{opacity:.5;}
+    html[data-theme="light"]{--ambient-grid-opacity:.42;}
+    html[data-theme="dark"]{--ambient-grid-opacity:.5;}
     .traditional-card-frame,
     #flipContainer::before{display:none;}
     #rateBadge{margin-top:12px;}
@@ -7580,7 +7858,17 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
                         aria-controls="historyQuickPanel"
                         aria-expanded="false"
                         title="快速回溯"
-                    ></button>
+                    >
+                        <!-- Lucide Animated History, adapted for the offline vanilla runtime. -->
+                        <svg class="history-motion-icon" viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-animated-history">
+                            <g class="history-motion-arrow">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                <path d="M3 3v5h5"></path>
+                            </g>
+                            <line class="history-motion-hour" x1="12" x2="12" y1="12" y2="7"></line>
+                            <line class="history-motion-minute" x1="12" x2="16" y1="12" y2="14"></line>
+                        </svg>
+                    </button>
                     <button
                         class="live-anchor"
                         id="liveAnchor"
@@ -7776,6 +8064,7 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
                     <div class="segment-fill" id="afternoonProgress"></div>
                     <span class="progress-marker" id="afternoonMarker" aria-hidden="true"></span>
                 </div>
+                <span class="timeline-handoff-marker" aria-hidden="true"></span>
             </div>
             <div class="schedule-labels">
                 <div class="schedule-range"><span id="scheduleStart">9:00</span><span id="scheduleLunchStart">11:30</span></div>
@@ -7859,6 +8148,19 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
 
             <section class="settings-data-section" id="calendarDataSection" aria-labelledby="calendarDataTitle">
                 <button class="settings-data-heading settings-data-toggle" id="calendarDataToggle" type="button" aria-controls="calendarDataContent" aria-expanded="false">
+                    <!-- Iconsax Calendar Linear, adapted with one-shot disclosure motion. -->
+                    <span class="settings-data-icon" aria-hidden="true" data-icon-source="iconsax-calendar-linear">
+                        <svg viewBox="0 0 24 24">
+                            <g class="iconsax-calendar-bindings" stroke-width="1.5">
+                                <path d="M8 2v3M16 2v3"></path>
+                            </g>
+                            <g class="iconsax-calendar-frame" stroke-width="1.5">
+                                <path d="M3.5 9.09h17"></path>
+                                <path d="M21 8.5V17c0 3-1.5 5-5 5H8c-3.5 0-5-2-5-5V8.5c0-3 1.5-5 5-5h8c3.5 0 5 2 5 5Z"></path>
+                            </g>
+                            <path class="iconsax-calendar-dots" d="M15.695 13.7h.009M15.695 16.7h.009M11.995 13.7h.01M11.995 16.7h.01M8.294 13.7h.01M8.294 16.7h.01" stroke-width="2"></path>
+                        </svg>
+                    </span>
                     <span class="settings-data-copy">
                         <span class="settings-data-title" id="calendarDataTitle">日历数据</span>
                         <span class="settings-data-meta" id="calendarDataMeta">正在读取内置工作日清单…</span>
@@ -7954,7 +8256,7 @@ calendarDataPolicy: 'validated-import-export-v1',
 pushBuildPolicy: 'develop-code-stripped-minified-v1',
 visualRegression: 'real-browser-critical-state-baseline-v3',
 visualDesignRevision: 'optical-continuity-system-ui-v18',
-themeControl: 'system-light-dark-material-transition-v2',
+themeControl: 'system-light-dark-diagonal-transition-v3',
 settingsErrorFeedback: 'stable-field-and-wheel-scoped-v3',
 keyboardFocusPolicy: 'unified-visible-ring-v1',
 bottomCardIdentity: 'r26-low-tier-glass-restored-v2',
@@ -10872,6 +11174,8 @@ let mode = MODES.includes(document.documentElement.dataset.themeMode)
 ? document.documentElement.dataset.themeMode
 : 'system';
 let transitionTimer = 0;
+let diagonalTransition = null;
+let diagonalTransitionToken = 0;
 function effectiveTheme(nextMode = mode) {
 return nextMode === 'system' ? (systemQuery.matches ? 'dark' : 'light') : nextMode;
 }
@@ -10903,9 +11207,9 @@ root.classList.add('theme-transitioning');
 transitionTimer = AppLifecycle.setTimeout(() => {
 transitionTimer = 0;
 root.classList.remove('theme-transitioning');
-}, 260);
+}, 300);
 }
-function apply(nextMode, options = {}) {
+function commitTheme(nextMode, options = {}) {
 mode = MODES.includes(nextMode) ? nextMode : 'system';
 const effective = effectiveTheme(mode);
 beginMaterialTransition(effective, options);
@@ -10923,6 +11227,46 @@ catch (_) {}
 document.dispatchEvent(new CustomEvent('income-theme-change', {
 detail: Object.freeze({ mode, effective })
 }));
+}
+function apply(nextMode, options = {}) {
+const normalizedMode = MODES.includes(nextMode) ? nextMode : 'system';
+const currentEffective = root.dataset.theme || effectiveTheme(mode);
+const nextEffective = effectiveTheme(normalizedMode);
+const supportsDiagonalTransition =
+options.animate !== false &&
+!themeReduceMotionQuery.matches &&
+currentEffective !== nextEffective &&
+typeof document.startViewTransition === 'function';
+if (!supportsDiagonalTransition) {
+diagonalTransitionToken += 1;
+diagonalTransition?.skipTransition?.();
+diagonalTransition = null;
+root.classList.remove('theme-diagonal-transition');
+delete root.dataset.themeWipe;
+return commitTheme(normalizedMode, options);
+}
+const token = ++diagonalTransitionToken;
+diagonalTransition?.skipTransition?.();
+root.dataset.themeWipe = nextEffective === 'dark' ? 'to-dark' : 'to-light';
+root.classList.add('theme-diagonal-transition');
+try {
+diagonalTransition = document.startViewTransition(() => {
+if (token !== diagonalTransitionToken) return;
+commitTheme(normalizedMode, { ...options, animate: false });
+});
+} catch (_) {
+root.classList.remove('theme-diagonal-transition');
+delete root.dataset.themeWipe;
+diagonalTransition = null;
+return commitTheme(normalizedMode, options);
+}
+diagonalTransition.finished.catch(() => {}).finally(() => {
+if (token !== diagonalTransitionToken) return;
+root.classList.remove('theme-diagonal-transition');
+delete root.dataset.themeWipe;
+diagonalTransition = null;
+});
+return diagonalTransition;
 }
 function handleSystemChange() {
 if (mode === 'system') apply('system', { persist: false });
@@ -11659,17 +12003,35 @@ node.className = value;
 }
 const progressGeometry = {
 morningWidth: 0,
-afternoonWidth: 0
+afternoonWidth: 0,
+morningStartX: 0,
+afternoonStartX: 0,
+trackWidth: 0
 };
 function refreshProgressGeometry() {
-progressGeometry.morningWidth =
+const trackRect =
+dom.progressTrack
+?.getBoundingClientRect();
+const morningRect =
 dom.morningMarker.parentElement
-?.getBoundingClientRect()
-.width || 0;
-progressGeometry.afternoonWidth =
+?.getBoundingClientRect();
+const afternoonRect =
 dom.afternoonMarker.parentElement
-?.getBoundingClientRect()
-.width || 0;
+?.getBoundingClientRect();
+progressGeometry.trackWidth =
+trackRect?.width || 0;
+progressGeometry.morningWidth =
+morningRect?.width || 0;
+progressGeometry.afternoonWidth =
+afternoonRect?.width || 0;
+progressGeometry.morningStartX =
+trackRect && morningRect
+? morningRect.left - trackRect.left
+: 0;
+progressGeometry.afternoonStartX =
+trackRect && afternoonRect
+? afternoonRect.left - trackRect.left
+: progressGeometry.morningWidth;
 }
 function writeProgressPosition(
 fillNode,
@@ -15879,6 +16241,10 @@ isolateBackground(true);
 const income = panel === 'income';
 dom.incomeSettingsPanel.hidden = !income;
 dom.scheduleSettingsPanel.hidden = income;
+dom.calendarDataSection.hidden = income;
+if (income) {
+setCalendarDataExpanded(false, { immediate: true });
+}
 dom.settingsDialogTitle.textContent = income ? '收入设置' : '工作时间设置';
 dom.settingsDialogSubtitle.textContent = income ? '选择计算口径并修改工资金额。' : '滚动滚轮或上下拖动，数值会沿弧面逐格停靠。';
 updateCalendarDataPresentation();
@@ -16564,8 +16930,36 @@ return {
 morning: lerp(from.morning, to.morning, progress),
 afternoon: lerp(from.afternoon, to.afternoon, progress),
 overall: lerp(from.overall, to.overall, progress),
-workSeconds: lerp(from.workSeconds, to.workSeconds, progress)
+workSeconds: lerp(from.workSeconds, to.workSeconds, progress),
+routeX: lerp(
+progressRouteXForVisual(from),
+progressRouteXForVisual(to),
+progress
+)
 };
+}
+function progressRouteXForVisual(visual, status = '') {
+const morningRatio = Math.min(
+1,
+Math.max(0,(visual?.morning || 0) / 100)
+);
+const afternoonRatio = Math.min(
+1,
+Math.max(0,(visual?.afternoon || 0) / 100)
+);
+const workSeconds = visual?.workSeconds || 0;
+if (
+afternoonRatio > 0 ||
+workSeconds > morningSeconds ||
+(status === 'working' && workSeconds >= morningSeconds)
+) {
+return progressGeometry.afternoonStartX +
+progressGeometry.afternoonWidth *
+afternoonRatio;
+}
+return progressGeometry.morningStartX +
+progressGeometry.morningWidth *
+morningRatio;
 }
 function applyProgressVisual(visual, status) {
 writeProgressPosition(
@@ -16594,6 +16988,20 @@ dom.afternoonMarker.classList.add('visible');
 dom.morningMarker.classList.add('visible');
 }
 const overallValue = visual.overall.toFixed(1);
+const routeX = Math.min(
+progressGeometry.trackWidth,
+Math.max(
+0,
+Number.isFinite(visual.routeX)
+? visual.routeX
+: progressRouteXForVisual(visual,status)
+)
+);
+setStylePropertyIfChanged(
+dom.progressTrack,
+'--timeline-cursor-x',
+`${routeX.toFixed(3)}px`
+);
 setTextIfChanged(dom.progressPercent, `${overallValue}%`);
 setAttributeIfChanged(dom.progressTrack, 'aria-valuenow', overallValue);
 }
@@ -18327,7 +18735,7 @@ if (APP_RELEASE.presentationLayer !== 'single-authoritative-r31-v1') failures.pu
 if (APP_RELEASE.responsiveLayout !== 'continuous-dashboard-grid-v3') failures.push('响应式布局未升级为连续网格');
 if (APP_RELEASE.darkModeRevision !== 'explicit-system-light-dark-v5') failures.push('页面内主题控制与深色材质未升级');
 if (APP_RELEASE.taskStopwatchFaceLayout !== 'clear-functional-zones-v2') failures.push('任务码表表面功能分区未保持');
-if (APP_RELEASE.themeControl !== 'system-light-dark-material-transition-v2') failures.push('页面内主题材质过渡未启用');
+if (APP_RELEASE.themeControl !== 'system-light-dark-diagonal-transition-v3') failures.push('页面内主题对角切换未启用');
 if (APP_RELEASE.settingsErrorFeedback !== 'stable-field-and-wheel-scoped-v3') failures.push('设置错误未采用稳定字段或滚轮反馈');
 if (APP_RELEASE.bottomCardIdentity !== 'r26-low-tier-glass-restored-v2') failures.push('底部卡片未恢复 R26 低层级玻璃外壳');
 if (APP_RELEASE.heroOpticalAlignment !== 'digit-and-viewport-calibrated-v1') failures.push('主卡三组件未启用位数与视口光学校准');
@@ -23138,6 +23546,145 @@ applySubhandShadow(dom.dialDayHand, minuteLag, FOREGROUND_MINUTE_SHADOW_MAX);
 applySubhandShadow(dom.dialMonthHand, hourLag, FOREGROUND_HOUR_SHADOW_MAX);
 }
 
+function historyReturnProgressVisual(frame) {
+const startVisual =
+frame.motion.snapshot.progress;
+const targetVisual =
+frame.targetProgress ||
+progressVisualForWorkSeconds(
+frame.targetWorkSeconds
+);
+const startWorkSeconds = Number.isFinite(
+startVisual?.workSeconds
+)
+? startVisual.workSeconds
+: 0;
+const targetWorkSeconds = Number.isFinite(
+targetVisual?.workSeconds
+)
+? targetVisual.workSeconds
+: frame.targetWorkSeconds;
+const crossesLunch =
+startWorkSeconds < morningSeconds &&
+targetWorkSeconds > morningSeconds;
+if (!crossesLunch) {
+const workSeconds = lerp(
+startWorkSeconds,
+targetWorkSeconds,
+frame.progress
+);
+const visual =
+progressVisualForWorkSeconds(
+workSeconds
+);
+visual.routeX = lerp(
+progressRouteXForVisual(
+startVisual,
+frame.motion.snapshot.status
+),
+progressRouteXForVisual(
+targetVisual,
+frame.targetStatus
+),
+frame.progress
+);
+return visual;
+}
+const startX = progressRouteXForVisual(
+startVisual,
+frame.motion.snapshot.status
+);
+const morningEndX =
+progressGeometry.morningStartX +
+progressGeometry.morningWidth;
+const afternoonStartX =
+progressGeometry.afternoonStartX;
+const targetX = progressRouteXForVisual(
+targetVisual,
+frame.targetStatus
+);
+const totalDistance = Math.max(
+1,
+targetX - startX
+);
+const bridgeDistance = Math.max(
+0,
+afternoonStartX - morningEndX
+);
+const bridgeShare = clamp(
+bridgeDistance / totalDistance,
+0.14,
+0.36
+);
+const crossingShare = clamp(
+(
+morningSeconds -
+startWorkSeconds
+) /
+Math.max(
+1,
+targetWorkSeconds -
+startWorkSeconds
+),
+0,
+1
+);
+const beforeEnd =
+crossingShare *
+(1 - bridgeShare);
+const bridgeEnd =
+beforeEnd +
+bridgeShare;
+let workSeconds;
+let routeX;
+if (frame.progress <= beforeEnd) {
+const localProgress =
+beforeEnd > 0
+? frame.progress / beforeEnd
+: 1;
+workSeconds = lerp(
+startWorkSeconds,
+morningSeconds,
+localProgress
+);
+routeX = lerp(
+startX,
+morningEndX,
+localProgress
+);
+} else if (frame.progress < bridgeEnd) {
+const localProgress =
+(frame.progress - beforeEnd) /
+Math.max(0.001,bridgeShare);
+workSeconds = morningSeconds;
+routeX = lerp(
+morningEndX,
+afternoonStartX,
+localProgress
+);
+} else {
+const localProgress =
+(frame.progress - bridgeEnd) /
+Math.max(0.001,1 - bridgeEnd);
+workSeconds = lerp(
+morningSeconds,
+targetWorkSeconds,
+localProgress
+);
+routeX = lerp(
+afternoonStartX,
+targetX,
+localProgress
+);
+}
+const visual =
+progressVisualForWorkSeconds(
+workSeconds
+);
+visual.routeX = routeX;
+return visual;
+}
+
 function updateHistoryReturnRollerAndProgress(frame) {
 const displayedIncomeTarget =
 Number.isFinite(
@@ -23203,14 +23750,8 @@ rollerMotion.lastStatus = frame.status;
 rollerMotion.stop = null;
 frame.motion.lastRollerVisualAt = frame.timestamp;
 }
-const progressVisual = interpolateProgressVisual(
-frame.motion.snapshot.progress,
-frame.targetProgress ||
-progressVisualForWorkSeconds(
-frame.targetWorkSeconds
-),
-frame.progress
-);
+const progressVisual =
+historyReturnProgressVisual(frame);
 applyProgressVisual(
 progressVisual,
 frame.targetStatus

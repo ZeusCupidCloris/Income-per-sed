@@ -57,6 +57,33 @@ test('desktop dark visual baseline', async ({ page }) => {
   await expect(page).toHaveScreenshot('desktop-dark.png', { fullPage: true });
 });
 
+test('latest theme selection wins during an interrupted diagonal transition', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('income-per-sed-theme-v1', 'light');
+    Object.defineProperty(Document.prototype, 'startViewTransition', {
+      configurable: true,
+      value(update) {
+        let resolveFinished;
+        const finished = new Promise((resolve) => { resolveFinished = resolve; });
+        setTimeout(() => Promise.resolve(update()).finally(resolveFinished), 80);
+        return {
+          finished,
+          ready: Promise.resolve(),
+          updateCallbackDone: finished,
+          skipTransition() {},
+        };
+      },
+    });
+  });
+  await page.goto(APP_PATH, { waitUntil: 'load' });
+  await page.locator('#themeControl [data-theme-mode="dark"]').click();
+  await page.locator('#themeControl [data-theme-mode="light"]').click();
+  await page.waitForTimeout(150);
+
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  expect(await page.evaluate(() => localStorage.getItem('income-per-sed-theme-v1'))).toBe('light');
+});
+
 test('mobile page and quick history panel stay inside the viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openApp(page, 'light');
