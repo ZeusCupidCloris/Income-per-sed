@@ -40,12 +40,21 @@ test.describe('Harness-inspired elastic square grid', () => {
     await expect(gridCanvas).toBeVisible();
     await expect(hero).toBeVisible();
     await expect(page.locator('#ambientFishBackdrop')).toHaveCount(0);
-    await page.waitForTimeout(600);
+    await page.waitForFunction(() => {
+      const count = window.__ambientGridClearCount;
+      const now = performance.now();
+      const probe = window.__ambientGridIdleProbe;
+      if (!probe || probe.count !== count) {
+        window.__ambientGridIdleProbe = { count, changedAt: now };
+        return false;
+      }
+      return now - probe.changedAt >= 300;
+    }, null, { timeout: 4000, polling: 50 });
 
     const idleDrawCount = await page.evaluate(() => window.__ambientGridClearCount);
-    await page.waitForTimeout(800);
+    await page.waitForTimeout(500);
     const settledDrawCount = await page.evaluate(() => window.__ambientGridClearCount);
-    expect(settledDrawCount - idleDrawCount).toBeLessThanOrEqual(3);
+    expect(settledDrawCount - idleDrawCount).toBeLessThanOrEqual(1);
 
     const gridState = await gridCanvas.evaluate((element) => {
       const rect = element.getBoundingClientRect();
