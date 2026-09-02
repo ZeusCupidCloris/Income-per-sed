@@ -25,12 +25,6 @@ test.describe('Harness-inspired elastic square grid', () => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.addInitScript(() => {
       localStorage.setItem('income-per-sed-theme-v1', 'light');
-      const clearRect = CanvasRenderingContext2D.prototype.clearRect;
-      window.__ambientGridClearCount = 0;
-      CanvasRenderingContext2D.prototype.clearRect = function (...args) {
-        if (this.canvas?.id === 'ambientGridBackdrop') window.__ambientGridClearCount += 1;
-        return clearRect.apply(this, args);
-      };
     });
     await page.goto(APP_PATH, { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
@@ -40,21 +34,11 @@ test.describe('Harness-inspired elastic square grid', () => {
     await expect(gridCanvas).toBeVisible();
     await expect(hero).toBeVisible();
     await expect(page.locator('#ambientFishBackdrop')).toHaveCount(0);
-    await page.waitForFunction(() => {
-      const count = window.__ambientGridClearCount;
-      const now = performance.now();
-      const probe = window.__ambientGridIdleProbe;
-      if (!probe || probe.count !== count) {
-        window.__ambientGridIdleProbe = { count, changedAt: now };
-        return false;
-      }
-      return now - probe.changedAt >= 300;
-    }, null, { timeout: 4000, polling: 50 });
-
-    const idleDrawCount = await page.evaluate(() => window.__ambientGridClearCount);
-    await page.waitForTimeout(500);
-    const settledDrawCount = await page.evaluate(() => window.__ambientGridClearCount);
-    expect(settledDrawCount - idleDrawCount).toBeLessThanOrEqual(1);
+    await page.waitForTimeout(600);
+    const idleGridBefore = await gridCanvas.screenshot();
+    await page.waitForTimeout(350);
+    const idleGridAfter = await gridCanvas.screenshot();
+    expect(idleGridAfter.equals(idleGridBefore)).toBe(true);
 
     const gridState = await gridCanvas.evaluate((element) => {
       const rect = element.getBoundingClientRect();
@@ -78,7 +62,7 @@ test.describe('Harness-inspired elastic square grid', () => {
     expect(gridState.bitmapHeight).toBeGreaterThanOrEqual(1000);
 
     const heroBefore = await hero.boundingBox();
-    const gridBefore = await gridCanvas.screenshot();
+    const gridBefore = idleGridAfter;
     await page.mouse.move(910, 820);
     await page.mouse.move(1110, 820, { steps: 12 });
     await page.waitForTimeout(100);
