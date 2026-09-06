@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- build: pocket-watch-v35-r35-diagonal-theme-transition-2026-09-03 -->
+<!-- build: pocket-watch-v35-r44-calibrated-rail-breathing-cards-preview-2026-09-06 -->
 <!--
-  Income-per-sed · Develop · Pocket Watch v35 · R31 Visual Baseline · R35 Kinetic Interaction
+  Income-per-sed · Develop · Pocket Watch v35 · R44 Calibrated Rail & Breathing Cards Preview
   开发源码版：保留结构化注释、诊断接口和可维护代码。
   日常运行及分发请使用 Income-per-sed-Push.html。
 -->
@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="income-per-sed-theme" content="warm-mechanical-workshop-r31-visual-closure">
     <meta name="theme-color" id="themeColorMeta" content="#e8dfd3">
-    <title>Income-per-sed · Pocket Watch v35 · R31 Visual · R35 Kinetic Interaction</title>
+    <title>Income-per-sed · Pocket Watch v35 · R44 Calibrated Rail & Breathing Cards Preview</title>
     <meta name="income-per-sed-channel" content="develop">
     <script>
     (function () {
@@ -693,7 +693,7 @@ transition:transform var(--motion-fast) var(--ease-settle),background-color var(
 }
 .settings-close::before,
 .settings-close::after{
-content:"";position:absolute;left:50%;top:50%;width:12px;height:1.5px;border-radius:999px;background:currentColor;transform-origin:center;
+content:"";position:absolute;left:50%;top:50%;width:14px;height:1.25px;border-radius:999px;background:currentColor;transform-origin:center;
 }
 .settings-close::before{transform:translate(-50%,-50%) rotate(45deg);}
 .settings-close::after{transform:translate(-50%,-50%) rotate(-45deg);}
@@ -708,7 +708,7 @@ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;
 padding:5px;border:1px solid var(--border-light);border-radius:15px;background:var(--bg-soft);
 }
 .income-mode-button{
-min-height:40px;padding:7px 8px;border:0;border-radius:11px;background:transparent;color:var(--text-secondary);font:inherit;font-size:0.76rem;cursor:pointer;
+min-height:40px;padding:7px 8px;border:0;border-radius:var(--settings-control-radius);background:transparent;color:var(--text-secondary);font:inherit;font-size:0.76rem;cursor:pointer;
 }
 .income-mode-button.active{
 background:var(--card-hover);color:var(--text-primary);box-shadow:0 2px 8px rgba(74,63,56,.08),inset 0 1px 0 rgba(255,255,255,.35);
@@ -718,7 +718,7 @@ background:var(--card-hover);color:var(--text-primary);box-shadow:0 2px 8px rgba
 .settings-field label{display:block;margin-bottom:7px;color:var(--text-secondary);font-size:0.75rem;}
 .settings-input-wrap{
 height:50px;display:flex;align-items:center;gap:8px;padding:0 14px;
-border:1px solid var(--border-light);border-radius:15px;background:var(--bg-soft);
+border:1px solid var(--border-light);border-radius:var(--settings-field-radius);background:var(--bg-soft);
 }
 .settings-input-prefix{color:var(--text-muted);font-size:1rem;}
 .settings-input{
@@ -728,11 +728,11 @@ width:100%;border:0;outline:0;background:transparent;color:var(--text-primary);f
 .settings-help{margin-top:10px;padding:10px 12px;border-radius:12px;color:var(--text-secondary);font-size:0.72rem;line-height:1.55;}
 .settings-error{min-height:1.35em;margin-top:10px;color:var(--needle-red);font-size:0.72rem;}
 .schedule-wheel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
-.time-wheel-card{padding:13px;border:1px solid var(--border-light);border-radius:18px;}
+.time-wheel-card{padding:13px;border:1px solid var(--border-light);border-radius:var(--settings-wheel-radius);}
 .time-wheel-title{text-align:center;font-size:0.76rem;margin-bottom:8px;}
 .time-wheel-picker{position:relative;display:grid;grid-template-columns:1fr 18px 1fr;align-items:center;gap:3px;overflow:hidden;}
 .time-wheel-picker::before{
-content:"";position:absolute;left:5px;right:5px;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);border-radius:10px;pointer-events:none;
+content:"";position:absolute;left:5px;right:5px;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);border-radius:8px;pointer-events:none;
 }
 .time-wheel-separator{text-align:center;color:var(--text-secondary);font-size:1.18rem;font-weight:600;}
 .time-wheel-column{
@@ -743,7 +743,7 @@ position:relative;overflow-y:auto;scrollbar-width:none;overscroll-behavior:conta
 width:100%;display:grid;place-items:center;border:0;background:transparent;color:var(--text-muted);font:inherit;font-size:0.92rem;font-variant-numeric:tabular-nums;cursor:pointer;
 }
 .settings-actions{position:sticky;z-index:4;bottom:0;display:flex;justify-content:flex-end;gap:10px;padding:16px 22px 22px;background:linear-gradient(to top,var(--card) 72%,color-mix(in srgb,var(--card) 86%,transparent));backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
-.settings-action{min-width:92px;height:42px;border-radius:13px;border:1px solid var(--border-light);background:var(--bg-soft);color:var(--text-secondary);font:inherit;cursor:pointer;}
+.settings-action{min-width:92px;height:42px;border-radius:var(--settings-control-radius);border:1px solid var(--border-light);background:var(--bg-soft);color:var(--text-secondary);font:inherit;cursor:pointer;}
 .settings-action.primary{font-weight:620;}
 body.settings-open{overflow:hidden;}
 @keyframes settingsSheetIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
@@ -758,17 +758,28 @@ font-size: 0.68rem;
 opacity: 0.78;
 }
 .fun-fact{
-display: flex;
-flex-wrap: wrap;
-justify-content: center;
-gap: 6px;
+display: grid;
+grid-template-columns: repeat(2,minmax(0,1fr));
+align-items: start;
+gap: 8px 14px;
 font-size: 0.7rem;
 }
 .fun-item{
-border: 1px solid color-mix(in srgb, var(--border-light) 65%, transparent);
-border-radius: 999px;
-white-space: nowrap;
+display: grid;
+grid-template-columns: 1.25em minmax(0,1fr);
+align-items: baseline;
+column-gap: 5px;
+min-width: 0;
+border: 0;
+border-radius: 0;
+white-space: normal;
 }
+.fun-copy{min-width:0;overflow-wrap:anywhere;line-height:1.45;}
+.fun-count{font-weight:600;color:var(--text-primary);font-variant-numeric:tabular-nums;}
+.readout-unit{font-size:.8em;font-weight:400;color:var(--text-secondary);vertical-align:baseline;}
+#workedTime .readout-unit{margin-inline:.03em .12em;}
+#workedTime .readout-unit:last-child{margin-inline-end:0;}
+#hourlyRateDisplay .readout-unit{margin-inline-end:.12em;}
 .progress-header,
 .schedule-labels,
 .month-card{
@@ -924,6 +935,9 @@ animation-delay: var(--motion-stagger);
 background:
 radial-gradient(circle at 20% 5%, rgba(255, 255, 255, 0.14), transparent 34%),
 linear-gradient(115deg, rgba(255, 255, 255, 0.075), transparent 34% 72%, rgba(255, 255, 255, 0.025));
+}
+html[data-theme="dark"] .status-card::before{
+background:linear-gradient(180deg,rgba(255,255,255,.036),rgba(255,255,255,.016));
 }
 .status-dot {
 transition:
@@ -2854,7 +2868,6 @@ text-rendering:geometricPrecision;
 }
 @media (hover:hover) and (pointer:fine){
     .editable-card:hover{
-        transform:translateY(-2px);
         border-color:color-mix(in srgb,var(--accent-blue) 22%,var(--border-light));
         background:color-mix(in srgb,var(--card-hover) 96%,transparent);
         box-shadow:
@@ -4224,7 +4237,7 @@ body[data-work-status="day-off"] .dial-glass{opacity:.58;}
         overflow:visible;
         fill:none;
         stroke:currentColor;
-        stroke-width:1.75;
+        stroke-width:1.8;
         stroke-linecap:round;
         stroke-linejoin:round;
     }
@@ -4731,7 +4744,7 @@ body.page-resumed-once .card{
 @keyframes productHeroEnter{
     from{
         opacity:.84;
-        transform:translateY(4px);
+        transform:none;
     }
     to{
         opacity:1;
@@ -6168,6 +6181,9 @@ body.day-end-braking .timeline-handoff-marker{
 
 /* Settings use a denser system-sheet rhythm. */
 .settings-sheet{
+    --settings-field-radius:12px;
+    --settings-control-radius:10px;
+    --settings-wheel-radius:16px;
     border-radius:22px;
 }
 
@@ -6803,8 +6819,8 @@ html[data-theme="light"] .task-stopwatch{
 .theme-option::before,
 .theme-cycle::before{
     content:"";
-    width:15px;
-    height:15px;
+    width:var(--theme-glyph-size,16px);
+    height:var(--theme-glyph-size,16px);
     background:currentColor;
     -webkit-mask:center / contain no-repeat;
     mask:center / contain no-repeat;
@@ -6812,6 +6828,7 @@ html[data-theme="light"] .task-stopwatch{
 
 .theme-option.system::before,
 .theme-cycle[data-theme-mode="system"]::before{
+    --theme-glyph-size:17px;
     -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='12' rx='2'/%3E%3Cpath d='M8 20h8M12 16v4'/%3E%3C/g%3E%3C/svg%3E");
     mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='12' rx='2'/%3E%3Cpath d='M8 20h8M12 16v4'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -6824,6 +6841,7 @@ html[data-theme="light"] .task-stopwatch{
 
 .theme-option.dark::before,
 .theme-cycle[data-theme-mode="dark"]::before{
+    --theme-glyph-size:17px;
     -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
@@ -6865,12 +6883,7 @@ html[data-theme="light"] .task-stopwatch{
 }
 
 .fun-item{
-    padding:3px 8px;
-    border-color:color-mix(
-        in srgb,
-        var(--border-light) 45%,
-        transparent
-    );
+    padding:0;
     background:transparent;
     color:color-mix(in srgb,var(--text-primary) 82%,var(--text-secondary));
 }
@@ -7812,6 +7825,796 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
 
 /* End R31 consolidated release layer. */
 </style>
+<style id="r40-surface-typography-refinement-preview">
+/*
+  R41 Layout Stability Preview
+  Builds on the consolidated R40 visual layer with stable roller pitch,
+  consistent status radius and vertically balanced dashboard card content.
+  Typography scale and main-dial pointer palette intentionally return to the
+  supplied R36 reference; runtime, storage, calendar and stopwatch logic are untouched.
+*/
+:root{
+    /* Reference typography from the supplied R36 Develop build. */
+    --adaptive-amount-size:3.8rem;
+    --type-caption:.72rem;
+    --type-reading:1.12rem;
+    --type-summary:1.38rem;
+
+    /* R40 enclosure geometry. */
+    --radius-md:18px;
+    --radius-lg:24px;
+    --r40-radius-hero:24px;
+    --r40-radius-primary:21px;
+    --r40-radius-secondary:18px;
+    --r40-radius-nested:14px;
+    --r40-radius-control:10px;
+    --r40-radius-micro:8px;
+
+    /* 4px spacing rhythm. */
+    --r40-space-1:4px;
+    --r40-space-2:8px;
+    --r40-space-3:12px;
+    --r40-space-4:16px;
+    --r40-space-5:20px;
+    --r40-space-6:24px;
+
+    /* Surface hierarchy: material brightness carries more hierarchy than shadow. */
+    --r40-surface-hero:color-mix(in srgb,var(--card) 98%,#f2e9dd);
+    --r40-surface-primary:color-mix(in srgb,var(--card) 95%,var(--bg-soft));
+    --r40-surface-secondary:color-mix(in srgb,var(--card) 91%,var(--bg-soft));
+    --r40-surface-decorative:color-mix(in srgb,var(--bg-soft) 44%,transparent);
+
+    --r40-border-hero:color-mix(in srgb,#b8aa98 23%,var(--border-light));
+    --r40-border-primary:color-mix(in srgb,var(--border-light) 80%,transparent);
+    --r40-border-secondary:color-mix(in srgb,var(--border-light) 60%,transparent);
+    --r40-border-decorative:color-mix(in srgb,var(--border-light) 30%,transparent);
+    --r40-border-rail:color-mix(in srgb,var(--border-light) 56%,transparent);
+
+    --r40-shadow-surface:
+        inset 0 1px 0 color-mix(in srgb,var(--glass-edge-light) 30%,transparent),
+        0 3px 10px rgba(74,63,56,.018);
+    --r40-shadow-elevated:
+        inset 0 1px 0 color-mix(in srgb,var(--glass-edge-light) 42%,transparent),
+        inset 0 -1px 0 color-mix(in srgb,var(--glass-edge-dark) 42%,transparent),
+        0 7px 19px rgba(74,63,56,.036),
+        0 2px 5px rgba(74,63,56,.016);
+    --r40-shadow-hero:
+        inset 0 1px 0 color-mix(in srgb,var(--glass-edge-light) 52%,transparent),
+        inset 0 -1px 0 color-mix(in srgb,var(--glass-edge-dark) 50%,transparent),
+        0 13px 31px rgba(62,48,38,.058),
+        0 3px 7px rgba(62,48,38,.024);
+
+    /* Exact main pointer palette from the supplied reference HTML. */
+    --magma-needle:#e85f32;
+    --magma-needle-light:#f38a54;
+    --magma-needle-dark:#c84628;
+    --magma-shadow:rgba(210,75,39,.18);
+
+    --glass-noise-opacity:.018;
+}
+
+html[data-theme="dark"]{
+    --glass-noise-opacity:.016;
+    --r40-surface-hero:color-mix(in srgb,var(--card) 98%,#211f1c);
+    --r40-surface-primary:color-mix(in srgb,var(--card) 95%,#24221e);
+    --r40-surface-secondary:color-mix(in srgb,var(--card) 91%,#25231f);
+    --r40-surface-decorative:rgba(255,255,255,.010);
+    --r40-border-hero:rgba(255,255,255,.068);
+    --r40-border-primary:rgba(255,255,255,.052);
+    --r40-border-secondary:rgba(255,255,255,.040);
+    --r40-border-decorative:rgba(255,255,255,.021);
+    --r40-border-rail:rgba(255,255,255,.048);
+    --r40-shadow-surface:
+        inset 0 1px 0 rgba(255,255,255,.022),
+        0 3px 10px rgba(0,0,0,.055);
+    --r40-shadow-elevated:
+        inset 0 1px 0 rgba(255,255,255,.030),
+        inset 0 -1px 0 rgba(0,0,0,.16),
+        0 6px 17px rgba(0,0,0,.095);
+    --r40-shadow-hero:
+        inset 0 1px 0 rgba(255,255,255,.040),
+        inset 0 -1px 0 rgba(0,0,0,.20),
+        0 12px 30px rgba(0,0,0,.15),
+        0 3px 7px rgba(0,0,0,.075);
+}
+
+/* 01 — status-card is only layout; status-row owns the visual rail. */
+.status-card{
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    overflow:visible;
+}
+.status-card::before,
+.status-card::after{content:none !important;display:none !important;}
+.status-row{
+    min-height:44px;
+    padding:5px 7px 5px 12px;
+    gap:var(--r40-space-3);
+    border:1px solid var(--r40-border-rail);
+    border-radius:var(--r40-radius-secondary);
+    background:color-mix(in srgb,var(--status-strip-bg) 88%,transparent);
+    box-shadow:inset 0 1px 0 color-mix(in srgb,var(--glass-edge-light) 34%,transparent),0 2px 6px rgba(74,63,56,.014);
+    backdrop-filter:blur(9px) saturate(1.01);
+    -webkit-backdrop-filter:blur(9px) saturate(1.01);
+}
+.time-travel-control{
+    padding-left:var(--r40-space-3);
+    border-left-color:color-mix(in srgb,var(--border-light) 48%,transparent);
+}
+.current-time{
+    padding:5px 7px;
+    border:0;
+    border-radius:7px;
+    background:transparent;
+    box-shadow:none;
+}
+.current-time:hover,
+.current-time:focus-visible,
+body.timeline-history-active .current-time,
+body.timeline-scrubbing .current-time{
+    border:0;
+    background:color-mix(in srgb,var(--bg-soft) 45%,transparent);
+    box-shadow:none;
+    transform:none;
+}
+
+/* 02 — radius + surface hierarchy. */
+.income-main-card,
+.settings-sheet{border-radius:var(--r40-radius-hero);}
+.progress-card,
+.month-card{border-radius:var(--r40-radius-primary);}
+.info-cards-row > .card,
+.fun-card{border-radius:var(--r40-radius-secondary);}
+.schedule-calibration-summary,
+.time-wheel-card,
+.settings-input-wrap,
+.income-mode-segments{border-radius:var(--r40-radius-nested);}
+.settings-help,
+.settings-field-error,
+.calendar-warning{border-radius:var(--r40-radius-micro);}
+.income-mode-button,
+.settings-action,
+.settings-data-action{border-radius:var(--r40-radius-control);}
+
+.income-main-card{
+    border-color:var(--r40-border-hero);
+    background:
+        linear-gradient(138deg,rgba(255,255,255,.11),transparent 35%),
+        linear-gradient(315deg,color-mix(in srgb,#b8aa98 2.5%,transparent),transparent 48%),
+        var(--r40-surface-hero);
+    box-shadow:var(--r40-shadow-hero);
+}
+.progress-card{
+    border-color:var(--r40-border-primary);
+    background:linear-gradient(135deg,color-mix(in srgb,white 6%,transparent),transparent 36%),var(--r40-surface-primary);
+    box-shadow:var(--r40-shadow-elevated);
+}
+.month-card,
+.info-cards-row > .card{
+    border-color:var(--r40-border-secondary);
+    background:linear-gradient(135deg,color-mix(in srgb,white 3.5%,transparent),transparent 38%),var(--r40-surface-secondary);
+    box-shadow:var(--r40-shadow-surface);
+}
+.fun-card{
+    opacity:1;
+    border-color:var(--r40-border-decorative);
+    background:var(--r40-surface-decorative);
+    box-shadow:none;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+}
+.fun-card::before,
+.fun-card::after{content:none !important;display:none !important;}
+.fun-title{opacity:.78;}
+.fun-fact{opacity:.88;}
+
+/* 03 — preserve R36 typography scale exactly; only restore responsive amount sizes. */
+.flip-digits:not(.task-income-roller){font-size:var(--adaptive-amount-size);}
+.section-kicker,
+.info-label,
+.month-workdays-label,
+.fun-title{font-size:var(--type-caption);}
+.info-value{font-size:var(--type-reading);}
+.month-value{font-size:var(--type-summary);}
+.status-label{font-size:.82rem;}
+.info-sub,
+.month-detail{font-size:.70rem;}
+.fun-fact{font-size:.70rem;}
+.schedule-labels{font-size:.68rem;}
+.progress-readout span{font-size:.80rem;}
+.progress-readout strong{font-size:.68rem;}
+.year-estimate{font-size:.70rem;}
+.rate-badge{font-size:.76rem;}
+.settings-sheet-title{font-size:1.05rem;}
+.settings-sheet-subtitle{font-size:.68rem;}
+.settings-field label{font-size:.75rem;}
+.time-wheel-title{font-size:.76rem;}
+.time-wheel-item.selected{font-size:1.04rem;}
+
+/* 04 — digit windows: narrower, quieter bezels and smaller corner energy. */
+.flip-digit-container{
+    width:.615em;
+    border-radius:6.5px;
+    border-color:color-mix(in srgb,var(--workshop-brass) 28%,var(--border));
+    box-shadow:
+        inset 0 1px 2px rgba(55,40,27,.13),
+        inset 0 -1px 1px rgba(255,255,255,.26),
+        0 1px 0 rgba(255,255,255,.30),
+        0 1px 3px rgba(72,50,31,.045);
+}
+.flip-digit-recess{
+    inset:2.5px 2px 2px;
+    border-radius:4px;
+    border-color:color-mix(in srgb,var(--border) 58%,rgba(52,40,34,.24));
+}
+.flip-digit-recess::after{
+    box-shadow:
+        inset 0 1.5px 2px rgba(34,25,22,.15),
+        inset 0 -1px 1px rgba(255,255,255,.10),
+        inset 1px 0 1px rgba(34,25,22,.055),
+        inset -1px 0 1px rgba(255,255,255,.03);
+}
+.flip-digit-viewport{inset:1px;border-radius:2.8px;}
+.flip-digit-item{font-size:.76em;}
+.decimal-point{width:.27em;margin-inline:1px;}
+html[data-theme="light"] .flip-digit-container{
+    background:linear-gradient(180deg,#ddd4c8 0%,#c0b09d 49%,#e8dfd4 100%);
+}
+html[data-theme="dark"] .flip-digit-container{
+    border-color:rgba(192,161,127,.17);
+    background:linear-gradient(180deg,#484139 0%,#34302b 50%,#4c453c 100%);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.24),inset 0 -1px 1px rgba(255,255,255,.045),0 1px 0 rgba(255,255,255,.025);
+}
+html[data-theme="dark"] .flip-digit-recess{
+    border-color:rgba(218,193,159,.10);
+    background:radial-gradient(ellipse at 50% 68%,#433e38 0%,#302d29 70%,#24221f 100%);
+}
+
+/* 05 — reference pointer colour, explicitly pinned at the rendered elements. */
+.dial-hand{background:var(--magma-needle);box-shadow:0 2px 3px rgba(0,0,0,.34),0 0 4px var(--magma-shadow);}
+.dial-hand::after{box-shadow:0 2px 2px rgba(0,0,0,.24),0 0 3px var(--magma-shadow);}
+.dial-fixed-hub::before{
+    background:radial-gradient(circle at 36% 28%,var(--magma-needle-light) 0%,var(--magma-needle) 52%,var(--magma-needle-dark) 100%);
+}
+
+/* 06 — dark mode relies on luminance steps, not oversized shadows. */
+html[data-theme="dark"] body[data-work-status="working"],
+html[data-theme="dark"] body[data-work-status="break"],
+html[data-theme="dark"] body[data-work-status="not-started"],
+html[data-theme="dark"] body[data-work-status="ended"],
+html[data-theme="dark"] body[data-work-status="day-off"]{
+    --dial-face-color:#d6d1c7;
+    --dial-face-ink:#201e1b;
+    --dial-face-muted:rgba(32,30,27,.46);
+}
+html[data-theme="dark"] .dial-glass::before{opacity:.72;}
+html[data-theme="dark"] .dial-glass::after{opacity:.70;}
+html[data-theme="dark"] .income-dial{filter:saturate(.86) brightness(.91) contrast(.97) drop-shadow(0 7px 12px rgba(0,0,0,.13));}
+
+/* 07 — theme selector keeps its hit target but reduces visual plate size. */
+.theme-control{border-radius:9px;padding:2px;gap:2px;}
+.theme-option{
+    position:relative;
+    width:28px;
+    height:28px;
+    border-radius:7px;
+    background:transparent !important;
+    box-shadow:none !important;
+    isolation:isolate;
+}
+.theme-option::after{
+    content:"";
+    position:absolute;
+    z-index:0;
+    inset:3px;
+    border:1px solid transparent;
+    border-radius:5.5px;
+    background:transparent;
+    box-shadow:none;
+    transition:background-color 150ms var(--ease-interface),border-color 150ms var(--ease-interface),box-shadow 150ms var(--ease-interface);
+}
+.theme-option::before{position:relative;z-index:1;}
+.theme-option[aria-pressed="true"]::after{
+    border-color:color-mix(in srgb,var(--border-light) 58%,transparent);
+    background:color-mix(in srgb,var(--theme-control-active) 82%,transparent);
+    box-shadow:inset 0 1px 0 color-mix(in srgb,var(--glass-edge-light) 30%,transparent);
+}
+
+/* 08 — setting sheet uses one nested geometry grammar. */
+.settings-sheet{
+    border-color:var(--r40-border-hero);
+    background:linear-gradient(145deg,color-mix(in srgb,white 6%,transparent),transparent 34%),var(--r40-surface-hero);
+    box-shadow:var(--r40-shadow-hero);
+}
+.settings-panel{padding:15px 18px 5px;}
+.settings-sheet-header{padding:14px 18px 10px;}
+.settings-actions{padding:11px 18px max(12px,env(safe-area-inset-bottom));}
+.settings-data-section{
+    margin:2px 18px 8px;
+    padding:12px 0 4px;
+    border:0;
+    border-top:1px solid color-mix(in srgb,var(--border-light) 48%,transparent);
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+}
+.income-mode-segments,
+.settings-input-wrap,
+.time-wheel-card,
+.schedule-calibration-summary{
+    border-color:color-mix(in srgb,var(--border-light) 72%,transparent);
+    background:color-mix(in srgb,var(--bg-soft) 82%,transparent);
+    box-shadow:inset 0 1px 1px color-mix(in srgb,var(--text-primary) 4%,transparent),inset 0 -1px 0 color-mix(in srgb,var(--glass-edge-light) 22%,transparent);
+}
+.income-mode-button.active{
+    border:1px solid color-mix(in srgb,var(--border-light) 64%,transparent);
+    background:color-mix(in srgb,var(--card-hover) 92%,transparent);
+    box-shadow:inset 0 1px 0 color-mix(in srgb,var(--glass-edge-light) 34%,transparent),0 1px 3px rgba(74,63,56,.035);
+}
+.settings-action.primary{
+    border-color:color-mix(in srgb,var(--workshop-green) 42%,var(--border-light));
+    background:color-mix(in srgb,var(--workshop-green) 78%,#38463d);
+    color:#f6f3eb;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 2px 4px rgba(46,61,51,.09);
+}
+
+/* 09 — rate badge becomes an instrument tag, not a soft app pill. */
+.rate-badge{
+    border-radius:9px;
+    padding:5px 12px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+}
+.rate-badge-dot{width:4px;height:4px;opacity:.76;}
+
+/* 10 — calibrated rail, restrained interaction and consistent vertical rhythm. */
+.main-container{row-gap:var(--r40-space-5);column-gap:var(--r40-space-5);}
+.info-cards-row{gap:var(--r40-space-3);}
+.progress-header,
+.month-card,
+.schedule-labels{gap:var(--r40-space-3);}
+.work-segment{
+    height:9px;
+    border-color:color-mix(in srgb,#b8aa98 20%,var(--border-light));
+    background:
+        repeating-linear-gradient(90deg,transparent 0 10px,color-mix(in srgb,var(--text-primary) 5%,transparent) 10px 11px),
+        repeating-linear-gradient(90deg,transparent 0 54px,color-mix(in srgb,var(--workshop-brass) 13%,transparent) 54px 55px),
+        color-mix(in srgb,var(--bg-soft) 90%,#b8aa98);
+    box-shadow:inset 0 1px 2px color-mix(in srgb,var(--text-primary) 8%,transparent),inset 0 -1px 0 color-mix(in srgb,var(--glass-edge-light) 28%,transparent);
+}
+.timeline-handoff-marker{
+    width:8px;
+    height:14px;
+    border-radius:2px;
+    border-color:color-mix(in srgb,var(--workshop-brass) 52%,#786d61);
+    background:linear-gradient(90deg,#786d61 0%,#d3bea0 40%,var(--workshop-brass) 64%,#66584b 100%);
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--card) 70%,transparent),0 2px 4px color-mix(in srgb,var(--text-primary) 13%,transparent);
+}
+.editable-card{
+    transition:transform var(--motion-fast) var(--ease-mechanical),background-color var(--motion-fast) var(--ease-settle),border-color var(--motion-fast) var(--ease-settle),box-shadow var(--motion-fast) var(--ease-settle);
+}
+@media (hover:hover){
+    .editable-card:hover{transform:translateY(-1px);}
+}
+.editable-card:active{transform:translateY(1px) scale(.997);}
+.settings-action:active,
+.income-mode-button:active{transform:translateY(1px) scale(.992);}
+
+/* R41 — stable card content placement: center compact readouts, preserve operational flow. */
+.info-cards-row > .card{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+.progress-card{
+    display:grid;
+    grid-template-rows:auto auto auto;
+    align-content:center;
+}
+.month-card{
+    align-items:center;
+}
+.fun-card{
+    justify-content:center;
+}
+
+/* 11 — quieter center, slightly more environmental information toward page edges. */
+.ambient-grid-backdrop{
+    opacity:calc(var(--ambient-grid-opacity) * .70);
+    -webkit-mask-image:radial-gradient(ellipse at 50% 42%,rgba(0,0,0,.20) 0%,rgba(0,0,0,.42) 38%,#000 80%);
+    mask-image:radial-gradient(ellipse at 50% 42%,rgba(0,0,0,.20) 0%,rgba(0,0,0,.42) 38%,#000 80%);
+}
+body::after{opacity:.012;}
+.income-main-card::before{width:58%;opacity:.46;}
+.card:not(.income-main-card)::after{opacity:calc(var(--glass-noise-opacity) * .66);}
+
+/* 12 — quieter native scrollbars. */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.settings-sheet::-webkit-scrollbar,
+.history-quick-panel::-webkit-scrollbar{width:6px;height:6px;}
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+.settings-sheet::-webkit-scrollbar-track,
+.history-quick-panel::-webkit-scrollbar-track{background:transparent;}
+
+/* 13 — move whitespace, not instruments, for final hero balance. */
+@media (min-width:1180px){
+    .income-main-card{padding:30px 34px 30px;}
+    .income-hero-layout{gap:clamp(30px,3vw,44px);}
+    .info-cards-row,
+    .progress-card{min-height:150px;}
+    .month-card,
+    .fun-card{min-height:116px;}
+}
+@media (min-width:621px) and (max-width:1179px){
+    .income-main-card{padding-block:27px 25px;}
+    .income-hero-layout{column-gap:clamp(20px,2.6vw,34px);}
+}
+
+/* Reference responsive amount scale. */
+@media (min-width:621px) and (max-width:720px){
+    .flip-digits:not(.task-income-roller){--adaptive-amount-size:3.2rem;}
+}
+@media (max-width:620px){
+    :root{
+        --adaptive-amount-size:3.05rem;
+        --r40-radius-hero:22px;
+        --r40-radius-primary:19px;
+        --r40-radius-secondary:17px;
+        --r40-radius-nested:13px;
+        --r40-radius-control:9px;
+        --r40-radius-micro:7px;
+    }
+    .main-container{row-gap:var(--r40-space-4);column-gap:var(--r40-space-4);}
+    .status-row{min-height:76px;border-radius:var(--r40-radius-secondary);gap:0;}
+    .current-time{border-radius:8px;}
+    .income-main-card{padding:16px 11px 18px;}
+    .progress-card,.month-card{padding:15px;}
+    .info-cards-row > .card,.fun-card{padding:14px;}
+    .settings-sheet-header{padding:11px 14px 8px;}
+    .settings-panel{padding:13px 14px 4px;}
+    .settings-actions{padding:11px 14px max(13px,env(safe-area-inset-bottom));}
+    .settings-data-section{margin-inline:14px;}
+    .rate-badge{margin-top:9px;padding:5px 11px;font-size:.70rem;}
+    .year-estimate{margin-top:6px;font-size:.66rem;}
+}
+@media (max-width:460px){:root{--adaptive-amount-size:2.86rem;}}
+@media (max-width:390px){
+    :root{
+        --adaptive-amount-size:2.72rem;
+        --r40-radius-hero:21px;
+        --r40-radius-primary:18px;
+        --r40-radius-secondary:16px;
+        --r40-radius-nested:12px;
+        --r40-radius-control:8px;
+    }
+    .progress-card,.month-card{padding:14px;}
+    .info-cards-row > .card,.fun-card{padding:13px;}
+}
+@media (max-width:340px){:root{--adaptive-amount-size:2.48rem;}.year-estimate{font-size:.66rem;}}
+
+@media (prefers-reduced-motion:reduce){
+    .editable-card,.settings-action,.income-mode-button,.theme-option::after,.status-row,.current-time{transition-duration:1ms !important;}
+}
+@media (forced-colors:active){
+    .status-row,.income-main-card,.progress-card,.month-card,.info-cards-row > .card,.fun-card,.settings-sheet,.settings-input-wrap,.income-mode-segments,.time-wheel-card,.settings-action.primary,.work-segment{
+        background:Canvas !important;color:CanvasText !important;border-color:CanvasText !important;box-shadow:none !important;filter:none !important;
+    }
+    .ambient-grid-backdrop{display:none !important;}
+}
+</style>
+
+
+
+<style id="r42-motion-refinement-preview">
+/*
+  R42 Motion Refinement Preview — mechanical motion language.
+  Static geometry remains R41. Motion is quieter at rest, faster in ordinary UI,
+  weighted on mechanical controls, and the ambient grid damps to rest after idle.
+*/
+:root{
+    --motion-instant:90ms;
+    --motion-fast:150ms;
+    --motion-normal:220ms;
+    --motion-slow:320ms;
+    --motion-state:720ms;
+    --motion-intro:360ms;
+    --motion-stagger:16ms;
+    --theme-material-duration:220ms;
+    --theme-diagonal-duration:340ms;
+}
+
+/* Startup: one short instrument wake, not a cascade of independent card performances. */
+body.startup-presentation-active .income-main-card{
+    animation:productHeroEnter 240ms var(--ease-interface) 0ms both !important;
+}
+body.startup-presentation-active .info-cards-row > .card,
+body.startup-presentation-active .progress-card,
+body.startup-presentation-active .month-card,
+body.startup-presentation-active .fun-card{
+    animation:productCardEnter 180ms ease-out both !important;
+}
+body.startup-presentation-active .info-cards-row > .card{animation-delay:60ms !important;}
+body.startup-presentation-active .progress-card{animation-delay:90ms !important;}
+body.startup-presentation-active .month-card{animation-delay:120ms !important;}
+body.startup-presentation-active .fun-card{animation-delay:150ms !important;}
+body.startup-sync-active .dial-fixed-hub,
+body.startup-sync-active .dial-glass::before,
+body.startup-sync-active .flip-digits:not(.task-income-roller){animation-duration:520ms !important;}
+
+/* Status text changes by clean cross-fade; no blur haze. */
+.status-label.status-exit{
+    filter:none !important;
+    transform:none !important;
+    transition:opacity 100ms var(--ease-settle) !important;
+}
+.status-label.status-enter{animation:statusEnter 120ms var(--ease-settle) !important;}
+@keyframes statusEnter{from{opacity:0;filter:none;}to{opacity:1;filter:none;}}
+
+/* Theme transition: type responds first, surfaces second, mechanical materials last. */
+html.theme-transitioning .current-time,
+html.theme-transitioning .rate-badge,
+html.theme-transitioning .flip-digit-item{transition-duration:140ms !important;}
+html.theme-transitioning body,
+html.theme-transitioning body::before,
+html.theme-transitioning .card,
+html.theme-transitioning .status-row,
+html.theme-transitioning .theme-control,
+html.theme-transitioning .theme-cycle,
+html.theme-transitioning .theme-option,
+html.theme-transitioning .settings-sheet,
+html.theme-transitioning .settings-sheet-header,
+html.theme-transitioning .settings-actions,
+html.theme-transitioning .settings-input-wrap,
+html.theme-transitioning .time-wheel-card,
+html.theme-transitioning .history-quick-panel{transition-duration:220ms !important;}
+html.theme-transitioning .flip-digit-container,
+html.theme-transitioning .flip-digit-recess,
+html.theme-transitioning .task-stopwatch,
+html.theme-transitioning .task-stopwatch-face{transition-duration:280ms !important;}
+
+/* Settings behaves like a panel being released from its housing, not an app-modal zoom. */
+@keyframes settingsSheetIn{
+    from{opacity:0;transform:translateY(6px);}
+    to{opacity:1;transform:none;}
+}
+.settings-dialog.is-closing .settings-sheet{
+    transform:translateY(4px) !important;
+    transition-duration:140ms,160ms !important;
+}
+
+/* One physical key-travel grammar across controls. */
+:where(.theme-option,.theme-cycle,.history-quick-open,.live-anchor,.history-quick-grid button,.settings-close,.settings-action,.settings-data-action,.income-mode-button){
+    transition-duration:80ms,80ms,150ms,150ms,150ms,150ms;
+}
+:where(.theme-option,.theme-cycle,.history-quick-open,.live-anchor,.history-quick-grid button,.settings-close,.settings-action,.settings-data-action,.income-mode-button).is-kinetic-pressed{
+    --kinetic-key-travel:1px;
+    filter:brightness(.985);
+}
+.task-stopwatch-crown:active,
+.task-stopwatch-crown.is-pressed{
+    transform:translate3d(-50%,1px,10px) scaleY(.94);
+    transition-duration:80ms,150ms;
+}
+body.timeline-detent .dial-fixed-hub{animation-duration:150ms !important;}
+
+/* At rest, background movement becomes nearly silent. */
+.ambient-grid-backdrop{transition:opacity 300ms var(--ease-settle);}
+
+@media (prefers-reduced-motion:reduce){
+    .status-label.status-enter,.status-label.status-exit,
+    .ambient-grid-backdrop{animation:none !important;transition-duration:1ms !important;}
+}
+</style>
+
+<style id="r43-rounded-card-density-preview">
+/*
+  R43 Rounded Card Density Preview
+  Keeps R42 motion, R41 typography and all runtime behaviour unchanged.
+  Dashboard shells use one softer curvature family while vertical padding and
+  minimum heights are tightened to reduce dead space without shrinking text.
+*/
+:root{
+    --r43-dashboard-radius:26px;
+    --r43-status-radius:20px;
+    --r43-dashboard-gap:16px;
+}
+
+/* One curvature family across all dashboard cards. */
+.income-main-card,
+.progress-card,
+.month-card,
+.info-cards-row > .card,
+.fun-card{
+    border-radius:var(--r43-dashboard-radius);
+}
+.status-row{
+    min-height:42px;
+    padding:4px 6px 4px 11px;
+    border-radius:var(--r43-status-radius);
+}
+
+/* Reduce unused page/card air while keeping the established type scale. */
+.main-container{
+    row-gap:var(--r43-dashboard-gap);
+    column-gap:var(--r43-dashboard-gap);
+}
+.income-main-card{margin-block:0;}
+.info-cards-row{gap:12px;}
+
+@media (min-width:1180px){
+    .income-main-card{padding:24px 30px;}
+    .income-hero-layout{gap:clamp(26px,2.6vw,40px);}
+
+    .info-cards-row,
+    .progress-card{min-height:126px;}
+
+    .month-card,
+    .fun-card{min-height:96px;}
+
+    .info-cards-row > .card,
+    .progress-card{padding:18px 20px;}
+
+    .month-card{padding:16px 20px;}
+    .fun-card{padding:12px 18px;}
+}
+
+@media (min-width:621px) and (max-width:1179px){
+    :root{--r43-dashboard-gap:14px;}
+    .income-main-card{padding-block:22px 21px;}
+    .info-cards-row > .card,
+    .progress-card{padding:17px 18px;}
+    .month-card{padding:15px 18px;}
+    .fun-card{padding:12px 16px;}
+}
+
+@media (max-width:620px){
+    :root{
+        --r43-dashboard-radius:23px;
+        --r43-status-radius:20px;
+        --r43-dashboard-gap:12px;
+    }
+    .status-row{
+        min-height:72px;
+        padding:4px 6px 5px 9px;
+    }
+    .income-main-card{padding:15px 10px 16px;}
+    .progress-card,
+    .month-card{padding:13px 14px;}
+    .info-cards-row > .card,
+    .fun-card{padding:12px 13px;}
+}
+
+@media (max-width:390px){
+    :root{
+        --r43-dashboard-radius:22px;
+        --r43-status-radius:19px;
+        --r43-dashboard-gap:10px;
+    }
+    .income-main-card{padding:14px 9px 15px;}
+    .progress-card,
+    .month-card{padding:12px 13px;}
+    .info-cards-row > .card,
+    .fun-card{padding:11px 12px;}
+}
+
+@media (prefers-reduced-motion:reduce){
+    .income-main-card,
+    .progress-card,
+    .month-card,
+    .info-cards-row > .card,
+    .fun-card,
+    .status-row{transition-duration:1ms !important;}
+}
+</style>
+
+
+<style id="r44-calibrated-rail-breathing-cards-preview">
+/*
+  R44 Calibrated Rail & Breathing Cards Preview
+  Preserves R42 motion and the R43 curvature family.
+  Refines the progress rail into a restrained instrument ruler and restores
+  a small amount of breathing room without changing typography.
+*/
+:root{
+    --r44-rail-minor:color-mix(in srgb,var(--text-primary) 11%,transparent);
+    --r44-rail-major:color-mix(in srgb,var(--workshop-brass) 30%,var(--text-primary));
+}
+
+/* Calibrated ruler: work-segment widths follow the configured morning and
+   afternoon durations. Minor ticks are quarter-hour divisions; major ticks
+   are hourly divisions, so the scale remains correct after schedule edits. */
+.work-segment{
+    background:
+        linear-gradient(180deg,rgba(255,255,255,.13),transparent 48%),
+        color-mix(in srgb,var(--bg-soft) 90%,#b8aa98);
+}
+.work-segment::after{
+    inset:1px 2px;
+    border-radius:inherit;
+    background-image:
+        linear-gradient(90deg,var(--r44-rail-major) 0 1px,transparent 1px),
+        linear-gradient(90deg,var(--r44-rail-minor) 0 1px,transparent 1px);
+    background-position:left bottom,left bottom;
+    background-repeat:repeat-x,repeat-x;
+    pointer-events:none;
+    opacity:.82;
+}
+.work-timeline,
+.schedule-labels{
+    grid-template-columns:
+        minmax(0,var(--r44-morning-fr,2.5fr))
+        minmax(52px,.72fr)
+        minmax(0,var(--r44-afternoon-fr,4fr));
+}
+.work-segment:first-child::after{
+    background-size:
+        var(--r44-morning-hour-step,40%) 7px,
+        var(--r44-morning-quarter-step,10%) 4px;
+}
+.work-segment:nth-child(3)::after{
+    background-size:
+        var(--r44-afternoon-hour-step,25%) 7px,
+        var(--r44-afternoon-quarter-step,6.25%) 4px;
+}
+html[data-theme="dark"] .work-segment::after{opacity:.68;}
+
+/* R43 was intentionally compact; add back only a thin breathing margin. */
+.status-row{min-height:44px;}
+
+@media (min-width:1180px){
+    .income-main-card{padding:26px 31px;}
+    .income-hero-layout{gap:clamp(27px,2.7vw,41px);}
+
+    .info-cards-row,
+    .progress-card{min-height:134px;}
+
+    .month-card,
+    .fun-card{min-height:102px;}
+
+    .info-cards-row > .card,
+    .progress-card{padding:20px 21px;}
+
+    .month-card{padding:18px 21px;}
+    .fun-card{padding:14px 19px;}
+}
+
+@media (min-width:621px) and (max-width:1179px){
+    .income-main-card{padding-block:23px 22px;}
+    .info-cards-row > .card,
+    .progress-card{padding:18px 19px;}
+    .month-card{padding:16px 19px;}
+    .fun-card{padding:13px 17px;}
+}
+
+@media (max-width:620px){
+    :root{--r43-dashboard-gap:13px;}
+    .status-row{min-height:74px;padding:5px 7px 6px 10px;}
+    .income-main-card{padding:16px 11px 17px;}
+    .progress-card,
+    .month-card{padding:14px 15px;}
+    .info-cards-row > .card,
+    .fun-card{padding:13px 14px;}
+}
+
+@media (max-width:390px){
+    :root{--r43-dashboard-gap:11px;}
+    .income-main-card{padding:15px 10px 16px;}
+    .progress-card,
+    .month-card{padding:13px 14px;}
+    .info-cards-row > .card,
+    .fun-card{padding:12px 13px;}
+}
+
+@media (forced-colors:active){
+    .work-segment::after{display:none;}
+}
+</style>
 </head>
 <body class="startup-presentation-active">
     <canvas class="ambient-motion-layer ambient-grid-backdrop" id="ambientGridBackdrop" aria-hidden="true"></canvas>
@@ -8033,12 +8836,12 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
         <div class="info-cards-row full-width" id="summaryCardsRegion" data-visual-component="summaryCards" data-visual-priority="secondary">
             <section class="card">
                 <div class="info-label">今日已工作</div>
-                <div class="info-value" id="workedTime">0时0分0秒</div>
+                <div class="info-value" id="workedTime" data-readout-units="duration"><span class="readout-number">0</span><span class="readout-unit">时</span><span class="readout-number">0</span><span class="readout-unit">分</span><span class="readout-number">0</span><span class="readout-unit">秒</span></div>
                 <div class="info-sub" id="workedSub">正在计算…</div>
             </section>
             <section class="card editable-card" id="incomeSettingsCard" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="settingsDialog" aria-label="修改收入计算方式和工资金额">
                 <div class="info-label">每小时收入</div>
-                <div class="info-value" id="hourlyRateDisplay">¥0.00</div>
+                <div class="info-value" id="hourlyRateDisplay" data-readout-units="currency"><span class="readout-unit">¥</span><span class="readout-number">0.00</span></div>
                 <div class="info-sub" id="dailyRateDisplay">日均 ¥0.00 · 固定月薪</div>
             </section>
         </div>
@@ -8097,7 +8900,7 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
 
     <div class="settings-dialog" id="settingsDialog" hidden>
         <div class="settings-backdrop" data-settings-close></div>
-        <section class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsDialogTitle">
+        <section class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsDialogTitle" tabindex="-1">
             <header class="settings-sheet-header">
                 <div>
                     <h2 class="settings-sheet-title" id="settingsDialogTitle">设置</h2>
@@ -8191,15 +8994,15 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v35',
-productVersion: '2.5.2',
-sourceTag: 'v2.5.2',
-buildId: 'pocket-watch-v35-r35-diagonal-theme-transition-2026-09-03',
-releaseDate: '2026-09-03',
+productVersion: '2.5.4-rc.2',
+sourceTag: 'v2.5.4-rc.2',
+buildId: 'pocket-watch-v35-r44-calibrated-rail-breathing-cards-preview-2026-09-06',
+releaseDate: '2026-09-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
 calendarDataSchema: 1,
-architectureRevision: 30,
+architectureRevision: 31,
 businessTimeZone: 'Asia/Shanghai',
 calendarVersion: 'cn-mainland-2026-v1',
 calendarChecksum: 'd179932f',
@@ -8242,7 +9045,7 @@ dialNumeralRevision: 'theme-dpr-calibrated-instrument-v2',
 dialShellSizing: 'proportional-clamp-v1',
 editableCardHover: 'single-shared-boundary-v2',
 viewportCentering: 'safe-flex-center-v1',
-presentationLayer: 'single-authoritative-r31-v1',
+presentationLayer: 'single-authoritative-r41-v1',
 referenceMotionSource: 'push15-trajectory-v1',
 dialMotionSource: 'push15-main-bounded-subhands-nearest-retarget-v4',
 taskStopwatchLayerRevision: 'protected-readout-v4',
@@ -8253,9 +9056,9 @@ scrollbarRevision: 'quiet-native-thin-v2',
 backgroundDepthRevision: 'dynamic-grid-only-v1',
 lightCaptionContrast: 'semantic-four-tier-contrast-v2',
 calendarDataPolicy: 'validated-import-export-v1',
-pushBuildPolicy: 'develop-code-stripped-minified-v1',
+pushBuildPolicy: 'develop-ui-tests-stripped-runtime-guard-v3',
 visualRegression: 'real-browser-critical-state-baseline-v3',
-visualDesignRevision: 'optical-continuity-system-ui-v18',
+visualDesignRevision: 'r42-motion-refinement-preview-v1',
 themeControl: 'system-light-dark-diagonal-transition-v3',
 settingsErrorFeedback: 'stable-field-and-wheel-scoped-v3',
 keyboardFocusPolicy: 'unified-visible-ring-v1',
@@ -8263,7 +9066,7 @@ bottomCardIdentity: 'r26-low-tier-glass-restored-v2',
 heroOpticalAlignment: 'digit-and-viewport-calibrated-v1',
 quickPresetMotion: 'quintic-zero-terminal-v1',
 ultraWideRhythm: 'height-aware-optical-dashboard-v2',
-fixedPushBuild: 'r31-production-pipeline-v9',
+fixedPushBuild: 'r42-production-pipeline-v12',
 mobileStatusLayout: 'two-row-system-strip-v1',
 settingsSurfaceHierarchy: 'quiet-section-boundaries-v1',
 ambientBackdrop: 'harness-elastic-square-grid-66-flat-idle-no-koi-v3',
@@ -8278,6 +9081,7 @@ settingsAccordion: 'measured-height-interruptible-v1',
 notificationMotion: 'restrained-slide-v1',
 dialGlareInertia: 'bounded-decorative-lag-v1',
 mobileScrubHint: 'unclipped-elevated-feedback-v1',
+layoutStabilityRevision: 'roller-load-and-card-center-v1',
 mobileHistorySheetPortal: 'body-visual-viewport-v1'
 });
 
@@ -8503,6 +9307,12 @@ state.smoothY += (state.pointerY - state.smoothY) * smoothing;
 state.pointerVX *= Math.pow(.82, delta / 16.67);
 state.pointerVY *= Math.pow(.82, delta / 16.67);
 state.pointerSpeed = Math.hypot(state.pointerVX, state.pointerVY);
+if (state.pointerEngaged && timestamp - state.lastPointerAt > 650) {
+state.pointerEngaged = false;
+state.pointerVX = 0;
+state.pointerVY = 0;
+state.pointerSpeed = 0;
+}
 const motionActive = draw(delta);
 if (!reducedMotionQuery.matches && motionActive) schedule();
 }
@@ -8668,9 +9478,9 @@ const ROLLER_WORKING_LAG_MS = 220;
 const ROLLER_CARRY_DELAY_STEP = 5;
 const ROLLER_CARRY_DELAY_MAX = 16;
 const ROLLER_CARRY_SETTLE_DURATION = 144;
-const STARTUP_SYNC_DURATION = 820;
+const STARTUP_SYNC_DURATION = 520;
 const STARTUP_WORK_WINDOW = 1;
-const STARTUP_CLOCK_WINDOW = 820;
+const STARTUP_CLOCK_WINDOW = 520;
 const STARTUP_INCOME_WINDOW = 0.12;
 const FOREGROUND_PREP_DURATION = 180;
 const FOREGROUND_SECOND_CHASE_SPEED = 220;
@@ -11260,6 +12070,8 @@ delete root.dataset.themeWipe;
 diagonalTransition = null;
 return commitTheme(normalizedMode, options);
 }
+// Skipping an obsolete transition rejects ready, not only finished (notably in WebKit).
+diagonalTransition.ready.catch(() => {});
 diagonalTransition.finished.catch(() => {}).finally(() => {
 if (token !== diagonalTransitionToken) return;
 root.classList.remove('theme-diagonal-transition');
@@ -11880,6 +12692,31 @@ return motionGeneration[channel];
 function isMotionCurrent(channel, generation) {
 return motionGeneration[channel] === generation;
 }
+// Keep number/unit spans stable while the existing text-commit queue updates readings.
+function writeStyledReadout(node, value) {
+const duration = node.dataset.readoutUnits === 'duration';
+const match = String(value).match(duration ? /^(\d+)(时)(\d+)(分)(\d+)(秒)$/ : /^([¥￥])(.+)$/);
+if (!match) {
+node.textContent = value;
+return;
+}
+const parts = match.slice(1);
+if (node.children.length !== parts.length) {
+const fragment = document.createDocumentFragment();
+parts.forEach((part, index) => {
+const span = document.createElement('span');
+const unit = duration ? index % 2 === 1 : index === 0;
+span.className = unit ? 'readout-unit' : 'readout-number';
+span.textContent = part;
+fragment.appendChild(span);
+});
+node.replaceChildren(fragment);
+return;
+}
+parts.forEach((part, index) => {
+if (node.children[index].textContent !== part) node.children[index].textContent = part;
+});
+}
 function setTextIfChanged(node, value) {
 const current =
 readPendingDomValue(
@@ -11894,7 +12731,8 @@ DOM_MUTATION_CHANNEL.TEXT_CONTENT,
 value,
 () => {
 if (node.textContent !== value) {
-node.textContent = value;
+if (node.dataset.readoutUnits) writeStyledReadout(node, value);
+else node.textContent = value;
 }
 }
 );
@@ -12527,8 +13365,15 @@ const HISTORY_RAPID_SEEK_THRESHOLD_MS = 2 * 60 * 1000;
 const HISTORY_RAPID_SEEK_MIN_DURATION_MS = 120;
 const HISTORY_RAPID_SEEK_MAX_DURATION_MS = 300;
 const HISTORY_RAPID_SEEK_REFERENCE_MS = 8 * 60 * 60 * 1000;
-const HISTORY_PRESET_SEEK_MIN_DURATION_MS = 360;
-const HISTORY_PRESET_SEEK_MAX_DURATION_MS = 680;
+/*
+ * 快速回溯按钮是“选点到位”而不是连续拖拽：
+ * - 15 分钟约 180ms；
+ * - 1 小时约 270ms；
+ * - 4 小时及以上封顶约 330ms。
+ * 指针与时间读数共用同一寻位时钟，避免读数先到、指针随后慢慢追赶。
+ */
+const HISTORY_PRESET_SEEK_MIN_DURATION_MS = 165;
+const HISTORY_PRESET_SEEK_MAX_DURATION_MS = 330;
 const HISTORY_PRESET_SEEK_REFERENCE_MS = 4 * 60 * 60 * 1000;
 const HISTORY_MINUTE_MAX_EXTRA_TURNS = 0.75;
 const HISTORY_HOUR_MAX_EXTRA_TURNS = 0.2;
@@ -12881,9 +13726,9 @@ if (!dom.funFact) return 0;
 const items = [...dom.funFact.children];
 if (!items.length) return 0;
 const available = Math.max(1, availableInlineSize(dom.funFact, dom.funFact));
-const longest = Math.max(...items.map((item) => measuredTextWidth(item) + 18));
-const preferredColumns = available >= 420 ? 4 : available >= 240 ? 2 : 1;
-return longest / Math.max(1, available / preferredColumns);
+const longest = Math.max(...items.map((item) => measuredTextWidth(item)));
+const columnGap = Number.parseFloat(getComputedStyle(dom.funFact).columnGap) || 0;
+return longest / Math.max(1, (available - columnGap) / 2);
 }
 
 function requestedLevel(current, ratio) {
@@ -15525,8 +16370,17 @@ const fragment = document.createDocumentFragment();
 CONFIG.funItems.forEach((item) => {
 const node = document.createElement('span');
 node.className = 'fun-item';
-node.textContent = `${item.emoji} 0 ${item.name}`;
-funNodes.push({ node, item, count: 0 });
+const icon = document.createElement('span');
+icon.className = 'fun-icon';
+icon.textContent = item.emoji;
+const copy = document.createElement('span');
+copy.className = 'fun-copy';
+const countNode = document.createElement('span');
+countNode.className = 'fun-count';
+countNode.textContent = '0';
+copy.append(countNode, document.createTextNode(` ${item.name}`));
+node.append(icon, document.createTextNode(' '), copy);
+funNodes.push({ node, countNode, item, count: 0 });
 fragment.appendChild(node);
 });
 dom.funFact.replaceChildren(fragment);
@@ -15536,8 +16390,7 @@ for (const entry of funNodes) {
 const nextCount = Math.floor(income / entry.item.price);
 if (nextCount === entry.count) continue;
 entry.count = nextCount;
-entry.node.textContent =
-`${entry.item.emoji} ${nextCount} ${entry.item.name}`;
+entry.countNode.textContent = String(nextCount);
 }
 }
 function updateStaticScheduleLabels() {
@@ -15545,6 +16398,18 @@ dom.scheduleStart.textContent = formatClockLabel(CONFIG.schedule.morningStart);
 dom.scheduleLunchStart.textContent = formatClockLabel(CONFIG.schedule.morningEnd);
 dom.scheduleLunchEnd.textContent = formatClockLabel(CONFIG.schedule.afternoonStart);
 dom.scheduleEnd.textContent = formatClockLabel(CONFIG.schedule.afternoonEnd);
+
+/* R44: keep the visual ruler calibrated when custom work periods change. */
+const morningSeconds = Math.max(60, parseClock(CONFIG.schedule.morningEnd) - parseClock(CONFIG.schedule.morningStart));
+const afternoonSeconds = Math.max(60, parseClock(CONFIG.schedule.afternoonEnd) - parseClock(CONFIG.schedule.afternoonStart));
+const morningHours = morningSeconds / 3600;
+const afternoonHours = afternoonSeconds / 3600;
+setStylePropertyIfChanged(dom.scheduleSettingsCard, '--r44-morning-fr', `${morningHours.toFixed(6)}fr`);
+setStylePropertyIfChanged(dom.scheduleSettingsCard, '--r44-afternoon-fr', `${afternoonHours.toFixed(6)}fr`);
+setStylePropertyIfChanged(dom.scheduleSettingsCard, '--r44-morning-hour-step', `${(100 / morningHours).toFixed(6)}%`);
+setStylePropertyIfChanged(dom.scheduleSettingsCard, '--r44-morning-quarter-step', `${(25 / morningHours).toFixed(6)}%`);
+setStylePropertyIfChanged(dom.scheduleSettingsCard, '--r44-afternoon-hour-step', `${(100 / afternoonHours).toFixed(6)}%`);
+setStylePropertyIfChanged(dom.scheduleSettingsCard, '--r44-afternoon-quarter-step', `${(25 / afternoonHours).toFixed(6)}%`);
 }
 /* ======================== Settings / isolated configuration module ======================== */
 function refreshRuntimeSettings(reason) {
@@ -15965,6 +16830,7 @@ let selectedIncomeMode = CONFIG.incomeMode;
 let draftSchedule = { ...CONFIG.schedule };
 let lastFocused = null;
 let settingsCloseTimer = 0;
+let settingsOpenGeneration = 0;
 let calendarAccordionTimer = 0;
 let calendarAccordionToken = 0;
 let calendarDataExpanded = false;
@@ -16228,6 +17094,7 @@ dom.calendarImportInput.value = '';
 }
 }
 function open(panel) {
+const generation = ++settingsOpenGeneration;
 setHistoryQuickPanelOpen(false);
 freezeDialInteractionMotion();
 freezeTaskWatchInteractionMotion();
@@ -16255,9 +17122,16 @@ setIncomeMode(CONFIG.incomeMode);
 } else {
 buildScheduleWheels();
 }
+dom.settingsDialog.querySelector('.settings-sheet').focus({ preventScroll: true });
 AppLifecycle.requestFrame(() => {
-AppLifecycle.requestFrame(() => dom.settingsDialog.classList.add('is-visible'));
+if (generation !== settingsOpenGeneration || dom.settingsDialog.hidden) return;
+AppLifecycle.requestFrame(() => {
+if (generation === settingsOpenGeneration && !dom.settingsDialog.hidden) dom.settingsDialog.classList.add('is-visible');
+});
 AppLifecycle.setTimeout(() => {
+if (generation !== settingsOpenGeneration || dom.settingsDialog.hidden) return;
+// Keep a deliberate focus choice made while the opening animation runs.
+if (document.activeElement !== dom.settingsDialog.querySelector('.settings-sheet')) return;
 if (income) dom.incomeAmountInput.focus();
 else wheelInstances[0]?.focus();
 }, reduceMotionQuery.matches ? 0 : MOTION.fast);
@@ -16278,6 +17152,7 @@ if (
 dom.settingsDialog.hidden ||
 dom.settingsDialog.classList.contains('is-closing')
 ) return;
+settingsOpenGeneration += 1;
 dom.settingsDialog.classList.remove('is-visible');
 dom.settingsDialog.classList.add('is-closing');
 body.classList.remove('settings-open');
@@ -18324,7 +19199,7 @@ if (
 shortPresetDuration < HISTORY_PRESET_SEEK_MIN_DURATION_MS ||
 longPresetDuration > HISTORY_PRESET_SEEK_MAX_DURATION_MS ||
 Math.abs(presetMidpoint - 0.5) > 1e-9
-) failures.push('快速回溯按钮的柔和到位曲线不满足有界时长或终点约束');
+) failures.push('快速回溯按钮的同步快速到位曲线不满足有界时长或终点约束');
 const mainShortestDelta = shortestAngleDelta(725, 15);
 if (Math.abs(mainShortestDelta) > 180 || Math.abs(mainShortestDelta - 10) > 1e-9) failures.push('主针未按最短角路径计算');
 if (typeof settleHistoricalVisualToTarget !== 'function') failures.push('缺少播放立即接管落位函数');
@@ -19856,7 +20731,7 @@ historicalVisual.reversalBrakeDuration = 0;
 historicalVisual.reversalTargetDirection = 0;
 historicalVisual.motionActive = true;
 timeTravel.shadowSettlingUntil = timestamp + duration + 240;
-recordDiagnosticEvent('motion', '快速回溯采用柔和到位曲线', {
+recordDiagnosticEvent('motion', '快速回溯采用同步快速到位曲线', {
 duration,
 gapMs,
 startVelocity,
@@ -20879,6 +21754,11 @@ timestamp - deltaSeconds * 1000
 return nextAngle;
 }
 function createHistoricalVisualFrame(timestamp) {
+/*
+ * 记录采样前的模式。sampleHistoricalVisualTime() 在终点帧会把 preset
+ * 切回 idle；保留帧首模式可确保最后一帧仍把三根指针精确提交到目标角度。
+ */
+const motionModeAtFrameStart = historicalVisual.motionMode;
 const visualDate = historicalVisualDate(timestamp);
 const visualStatus = getStatus(visualDate);
 const visualWorkSeconds = getWorkSeconds(visualDate);
@@ -20888,9 +21768,18 @@ const timelineDeltaSeconds = (visualDate.getTime() - historicalVisual.anchorTime
 const deltaSeconds = historicalVisual.lastTimestamp > 0
 ? Math.min(MOTION_FRAME_MAX_SECONDS, Math.max(0.001, (timestamp - historicalVisual.lastTimestamp) / 1000))
 : 0.016;
-const rapidSeekMode = false;
-const rapidProgress = 1;
-const rapidLinearProgress = 1;
+/*
+ * 快速回溯预设点采用同步直达：时间轴负责 easing，指针不再叠加第二层
+ * servo 追赶。这样主针/分针/时针会在同一终点帧到位。
+ */
+const rapidSeekMode = motionModeAtFrameStart === 'preset';
+const rapidLinearProgress = rapidSeekMode
+? historicalSubhandProgressAt(visualDate.getTime())
+: 1;
+/* 主针直接跟随同一视觉时间进度，不再二次 smootherStep，避免到位末段拖尾。 */
+const rapidProgress = rapidSeekMode
+? rapidLinearProgress
+: 1;
 const historyPlayMode =
 timeTravel.state === TIMELINE_STATE.HISTORY_PLAY ||
 (
@@ -20912,7 +21801,13 @@ minuteAngle: historyPlayMode
 hourAngle: historyPlayMode
 ? historicalVisual.anchorHourAngle + timelineDeltaSeconds / 120
 : boundedSubhands.hourAngle,
-rapidMainAngle: null,
+rapidMainAngle: rapidSeekMode
+? lerp(
+    historicalVisual.rapidStartMainAngle,
+    historicalVisual.rapidTargetMainAngle,
+    rapidProgress
+)
+: null,
 rapidSeekMode,
 rapidProgress,
 rapidLinearProgress,
@@ -21025,7 +21920,17 @@ active: !settled
 }
 
 function updateHistoricalSubhandMotion(frame, primary) {
-if (!frame.historyPlayMode) {
+if (frame.rapidSeekMode) {
+/*
+ * 预设快速回溯已经由统一寻位时钟生成目标角度。这里直接提交，不再经过
+ * 分针/时针 servo，否则会在时间读数到位后继续追赶数百毫秒。
+ */
+historicalVisual.minuteMotionVelocity = 0;
+historicalVisual.hourMotionVelocity = 0;
+historicalVisual.minuteMotionAcceleration = 0;
+historicalVisual.hourMotionAcceleration = 0;
+historicalVisual.subhandMotionActive = false;
+} else if (!frame.historyPlayMode) {
 const minuteMotion = stepHistoricalSubhandAngle(
 historicalVisual.minuteAngle,
 frame.minuteAngle,
@@ -22843,6 +23748,11 @@ clearHistoryQuickPressedButton();
 }
 
 function handleGlobalTimelineKeyboard(event) {
+if (event.defaultPrevented) return;
+if (!dom.settingsDialog.hidden) {
+if (event.key === 'Escape') { event.preventDefault(); SettingsUI.close({ source: 'escape' }); }
+return;
+}
 const target = event.target;
 const editing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable;
 if (editing) return;
@@ -22863,6 +23773,7 @@ stepTimelineBySeconds(event.key === 'ArrowLeft' ? -unit : unit, 'keyboard');
 return;
 }
 if (event.key === ' ' && (timeTravel.state === TIMELINE_STATE.HISTORY_HOLD || timeTravel.state === TIMELINE_STATE.HISTORY_PLAY)) {
+if (event.repeat || target?.closest('button, a[href], [role="button"]')) return;
 event.preventDefault();
 toggleHistoryPlayback();
 }
@@ -23001,6 +23912,7 @@ if (
 event.key === 'Enter' ||
 event.key === ' '
 ) {
+if (event.repeat) { event.preventDefault(); return; }
 if (
 timeTravel.state !==
 TIMELINE_STATE.LIVE
@@ -25089,7 +26001,7 @@ displayedIncome, timestamp);
 lastRenderedLiveIncome = liveIncome;
 }
 lastVisualStatus = status;
-updateMotionDebug(timestamp, status);
+if (typeof updateMotionDebug === 'function') updateMotionDebug(timestamp, status);
 /* R30 DEVELOP MOTION QUALITY HOOK */ MotionQualityMonitor.sample(timestamp);
 }
 function scheduleStatsTick() {
@@ -25559,7 +26471,7 @@ AppLifecycle.setTimeout(
 ),
 reduceMotionQuery.matches
 ? 0
-: 600
+: 380
 );
 scheduleStatsTick();
 render(timestamp);

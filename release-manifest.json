@@ -1,9 +1,9 @@
 {
-  "productVersion": "2.5.2",
-  "releaseTag": "v2.5.2",
+  "productVersion": "2.5.4-rc.2",
+  "releaseTag": "v2.5.4-rc.2",
   "internalVersion": "v35",
-  "buildId": "pocket-watch-v35-r35-diagonal-theme-transition-2026-09-03",
-  "releaseDate": "2026-09-03",
+  "buildId": "pocket-watch-v35-r44-calibrated-rail-breathing-cards-preview-2026-09-06",
+  "releaseDate": "2026-09-06",
   "canonicalSource": "Income-per-sed-Develop.html",
   "derivedArtifacts": [
     "Income-per-sed-Push.html"
