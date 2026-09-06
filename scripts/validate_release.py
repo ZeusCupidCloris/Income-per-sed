@@ -241,6 +241,8 @@ def validate_docx() -> None:
         digest(ROOT / RELEASE_FILES[1]),
         digest(ROOT / RELEASE_FILES[0]),
     ]
+    if len(embedded_hashes) == 3:
+        expected_hashes.append(digest(ROOT / RELEASE_FILES[2]))
     if embedded_hashes != expected_hashes:
         fail(
             "Word manual HTML hashes are stale; run npm run release:prepare "

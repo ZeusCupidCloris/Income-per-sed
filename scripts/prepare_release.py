@@ -39,6 +39,7 @@ def sync_manual_hashes(
     manual_path: Path = ROOT / RELEASE_FILES[-1],
     develop_path: Path = ROOT / RELEASE_FILES[1],
     push_path: Path = ROOT / RELEASE_FILES[0],
+    widget_path: Path = ROOT / RELEASE_FILES[2],
 ) -> bool:
     expected = [
         digest(develop_path).upper().encode("ascii"),
@@ -53,9 +54,11 @@ def sync_manual_hashes(
     if document_xml is None:
         raise RuntimeError(f"{manual_path.name} is missing {DOCUMENT_XML}")
     matches = list(HASH_PATTERN.finditer(document_xml))
+    if len(matches) == 3:
+        expected.append(digest(widget_path).upper().encode("ascii"))
     if len(matches) != len(expected):
         raise RuntimeError(
-            f"Expected exactly two HTML SHA-256 values in {manual_path.name}; found {len(matches)}"
+            f"Expected two HTML hashes and optionally one widget hash in {manual_path.name}; found {len(matches)}"
         )
     current = [match.group(0).upper() for match in matches]
     if current == expected:

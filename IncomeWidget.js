@@ -3,7 +3,7 @@
 // Place this file and Income-per-sed-Push.html in iCloud Drive/Scriptable.
 
 const APP = {
-  version: "2.5.0",
+  version: "2.5.1",
   timeZone: "Asia/Shanghai",
   settingsFile: "IncomeWidget-settings.json",
   htmlCandidates: [
@@ -11,7 +11,7 @@ const APP = {
   ],
   settingsSchema: 3,
   transactionSchema: 2,
-  sourceBuild: "pocket-watch-v35-r41-widget-adaptive-hierarchy-2026-08-01",
+  sourceBuild: "widget-currency-format-only-2026-09-05",
   refreshMinutes: {
     working: 1,
     transition: 3,
@@ -896,22 +896,50 @@ function pointOnCircle(center, radius, angle) {
   return new Point(center.x + Math.cos(angle) * radius, center.y + Math.sin(angle) * radius)
 }
 
+const MONEY_FORMATTERS = new Map()
+
+function moneyDecimal(value, digits = 2) {
+  const precision = Number.isInteger(digits) ? Math.max(0, Math.min(20, digits)) : 2
+  if (!MONEY_FORMATTERS.has(precision)) {
+    // Use decimal half-expand rounding consistently, including negative values.
+    MONEY_FORMATTERS.set(precision, new Intl.NumberFormat("en-US", {
+      useGrouping: false,
+      minimumFractionDigits: precision,
+      maximumFractionDigits: precision
+    }))
+  }
+  const text = MONEY_FORMATTERS.get(precision).format(Number.isFinite(value) ? value : 0)
+  return /^-0(?:\.0+)?$/.test(text) ? text.slice(1) : text
+}
+
 function formatCurrency(value, digits = 2) {
-  const n = Number.isFinite(value) ? value : 0
-  return `¥${n.toFixed(digits).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+  const [integer, fraction] = moneyDecimal(value, digits).split(".")
+  const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  return `¥${grouped}${fraction === undefined ? "" : "." + fraction}`
 }
 
 function formatCompactCurrency(value) {
   const n = Number.isFinite(value) ? value : 0
   const absolute = Math.abs(n)
   if (absolute >= 100000000) return `¥${trimCompactDecimal(n / 100000000)}亿`
-  if (absolute >= 10000) return `¥${trimCompactDecimal(n / 10000)}万`
-  if (absolute >= 1000) return `¥${Math.round(n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
-  return `¥${n.toFixed(2)}`
+  if (absolute >= 10000) {
+    const wan = trimCompactDecimal(n / 10000)
+    // Promote only when rounding reaches the next unit.
+    return Math.abs(Number(wan.replace(/,/g, ""))) >= 10000
+      ? `¥${trimCompactDecimal(n / 100000000)}亿`
+      : `¥${wan}万`
+  }
+  if (absolute >= 1000 || Math.abs(Number(moneyDecimal(n, 2))) >= 1000) {
+    const integer = Number(moneyDecimal(n, 0))
+    return Math.abs(integer) >= 10000
+      ? `¥${trimCompactDecimal(n / 10000)}万`
+      : formatCurrency(n, 0)
+  }
+  return formatCurrency(n)
 }
 
 function trimCompactDecimal(value) {
-  return value.toFixed(1).replace(/\.0$/, "")
+  return formatCurrency(value, 1).slice(1).replace(/\.0$/, "")
 }
 
 function runURL(action) {

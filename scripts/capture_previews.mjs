@@ -9,7 +9,7 @@ const output = path.join(root, 'docs', 'images');
 const appUrl = pathToFileURL(path.join(root, 'Income-per-sed-Push.html')).href;
 const sourcePath = path.join(root, 'Income-per-sed-Push.html');
 const manifestPath = path.join(output, 'previews-manifest.json');
-const fixedTime = '2026-08-03T02:39:00.000Z';
+const fixedTime = '2026-09-04T02:30:00.000Z';
 const previews = JSON.parse(
   await readFile(path.join(root, 'config', 'readme-previews.json'), 'utf8'),
 );

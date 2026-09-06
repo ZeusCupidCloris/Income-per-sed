@@ -16,6 +16,17 @@ from prepare_release import DOCUMENT_XML, HASH_PATTERN, sync_manual_hashes
 
 
 class PrepareReleaseTests(unittest.TestCase):
+    def test_legacy_two_hash_manual_remains_supported(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp = Path(temp_dir)
+            manual, develop, push = (temp / name for name in ('manual.docx','Develop.html','Push.html'))
+            develop.write_bytes(b'develop')
+            push.write_bytes(b'push')
+            with zipfile.ZipFile(manual, 'w') as archive:
+                archive.writestr(DOCUMENT_XML, b'<doc>' + b'0'*64 + b' ' + b'1'*64 + b'</doc>')
+            self.assertTrue(sync_manual_hashes(manual, develop, push))
+            self.assertFalse(sync_manual_hashes(manual, develop, push))
+
     def test_manual_hash_update_is_correct_and_idempotent(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp = Path(temp_dir)
@@ -34,6 +45,7 @@ class PrepareReleaseTests(unittest.TestCase):
             expected = [
                 hashlib.sha256(develop.read_bytes()).hexdigest().upper().encode("ascii"),
                 hashlib.sha256(push.read_bytes()).hexdigest().upper().encode("ascii"),
+                hashlib.sha256((ROOT / "IncomeWidget.js").read_bytes()).hexdigest().upper().encode("ascii"),
             ]
             self.assertEqual([match.group(0) for match in HASH_PATTERN.finditer(document_xml)], expected)
 
