@@ -9,7 +9,7 @@
     "release:prepare": "node scripts/run_python.mjs scripts/prepare_release.py",
     "validate": "node scripts/run_python.mjs scripts/validate_release.py",
     "checksums": "node scripts/run_python.mjs scripts/validate_release.py --write-checksums",
-    "test:release": "node scripts/run_python.mjs -m unittest discover -s tests -p test_prepare_release.py",
+    "test:release": "node scripts/run_python.mjs -m unittest discover -s tests -p test_prepare_release.py && node --test tests/release_channel.test.mjs",
     "test:readme": "node --test tests/readme_assets.test.mjs && node scripts/validate_readme_assets.mjs",
     "test": "playwright test --config=config/playwright.config.js",
     "test:webkit": "playwright test --config=config/playwright.webkit.config.js",

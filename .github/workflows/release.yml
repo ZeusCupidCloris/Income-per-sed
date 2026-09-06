@@ -41,6 +41,8 @@ jobs:
         with:
           python-version: '3.13'
       - run: npm ci
+      - run: npm run test:release
+      - run: node scripts/release_channel.mjs $env:RELEASE_TAG
       - name: Verify tag belongs to main
         shell: pwsh
         run: |
@@ -50,6 +52,7 @@ jobs:
             throw "Release tag $env:RELEASE_TAG is not part of main"
           }
       - run: npm run release:prepare -- --release-tag $env:RELEASE_TAG
+      - run: npm run test:readme
       - run: git diff --exit-code
       - run: npm test
 
@@ -69,6 +72,9 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ env.RELEASE_TAG }}
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
       - name: Publish GitHub Release
         shell: pwsh
         env:
@@ -77,6 +83,12 @@ jobs:
           $notes = "docs/releases/$env:RELEASE_TAG.md"
           if (-not (Test-Path -LiteralPath $notes)) {
             throw "Missing release notes: $notes"
+          }
+          $channel = node scripts/release_channel.mjs $env:RELEASE_TAG
+          if ($LASTEXITCODE -ne 0) { throw 'Invalid release channel' }
+          $releaseFlags = @('--latest')
+          if ($channel -eq 'prerelease') {
+            $releaseFlags = @('--prerelease', '--latest=false')
           }
           gh release create $env:RELEASE_TAG `
             'Income-per-sed-Push.html#Push 日常使用版' `
@@ -88,4 +100,4 @@ jobs:
             --title "Income-per-sed $env:RELEASE_TAG" `
             --notes-file $notes `
             --verify-tag `
-            --latest
+            @releaseFlags
