@@ -164,7 +164,9 @@ test('return from before lunch advances the two rails as one ordered path', asyn
 test('rapid wheel reversals remain continuous and a new seek takes ownership', async ({ page }) => {
   await openRunningClock(page, 14);
   await page.waitForTimeout(800);
-  await quickSeek(page, -3600);
+  // Stay inside paid work: the lunch plateau intentionally does not claim
+  // the income channel when its value is unchanged.
+  await quickSeek(page, -900);
   await page.setViewportSize({ width: 1440, height: 1000 });
   const time = page.locator('#currentTime');
   await time.hover();
