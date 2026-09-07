@@ -156,6 +156,10 @@ test('rapid wheel reversals remain continuous and a new seek takes ownership', a
   }
   await page.locator('#liveAnchor').click();
   await time.dispatchEvent('wheel', { deltaY: 120, deltaMode: 0, bubbles: true, cancelable: true });
-  await expect.poll(() => page.evaluate(() => window.__incomeClockDiagnostics.getTimelineState())).not.toBe('RETURNING_LIVE');
-  expect(await page.evaluate(() => window.__incomeClockDiagnostics.getRollerOwner())).toBe('HISTORY');
+  // Input state changes before the coalesced visual frame claims the roller.
+  // Sample both together and require the completed handoff, not a lucky frame.
+  await expect.poll(() => page.evaluate(() => {
+    const d = window.__incomeClockDiagnostics;
+    return ['SCRUBBING', 'HISTORY_HOLD'].includes(d.getTimelineState()) && d.getRollerOwner() === 'HISTORY';
+  }), { timeout: 1500, intervals: [16, 32, 50] }).toBe(true);
 });
