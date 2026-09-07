@@ -6130,6 +6130,7 @@ body[data-work-status="break"] .timeline-handoff-marker{
     background:linear-gradient(90deg,#82513d 0%,#c88b69 50%,#774633 100%);
 }
 
+body.startup-sync-active .timeline-handoff-marker,
 body.timeline-scrubbing .timeline-handoff-marker,
 body.timeline-history-hold .timeline-handoff-marker,
 body.timeline-history-play .timeline-handoff-marker,
@@ -17907,8 +17908,14 @@ const completionRates =
 getRates(completionDate);
 const targetWorkSeconds =
 getWorkSeconds(completionDate);
-const targetIncome =
-targetWorkSeconds * completionRates.secondly;
+// Match the live renderer's display lag, so ownership handoff never waits
+// for the real-time target to catch up with an already displayed amount.
+const targetIncome = Math.max(0,
+targetWorkSeconds * completionRates.secondly -
+(completionStatus === 'working'
+? completionRates.secondly * ROLLER_WORKING_LAG_MS / 1000
+: 0)
+);
 const fromWorkSeconds = Math.max(
 0,
 animateReadout
@@ -17937,6 +17944,8 @@ fromIncome,
 fromWorkSeconds,
 toIncome: targetIncome,
 toWorkSeconds: targetWorkSeconds,
+toDialAngle: Math.floor(targetWorkSeconds) * 6,
+terminalIncomeVelocity: completionStatus === 'working' ? completionRates.secondly : 0,
 fromMinuteAngle: fromClock.minute,
 fromHourAngle: fromClock.hour,
 toMinuteAngle: targetClock.minute,
@@ -17989,11 +17998,12 @@ startupSync.fromWorkSeconds,
 startupSync.toWorkSeconds,
 eased
 );
-const animatedIncome = lerp(
+const animatedIncome = Math.max(0, quinticHermiteValue(
 startupSync.fromIncome,
 startupSync.toIncome,
-eased
-);
+0, startupSync.terminalIncomeVelocity, 0, 0,
+progress, startupSync.duration
+));
 const minuteAngle =
 startupSync.fromMinuteAngle +
 shortestAngleDelta(
@@ -18006,21 +18016,18 @@ shortestAngleDelta(
 startupSync.fromHourAngle,
 startupSync.toHourAngle
 ) * eased;
-commitRollerContinuousValue(
+// Keep the same carry/position model during startup and ordinary live work.
+commitRollerValue(
 getRollerKey(ROLLER_OWNER.STARTUP),
 animatedIncome,
-Math.sign(
-startupSync.toIncome -
-startupSync.fromIncome
-),
 timestamp,
 {
-hierarchy: progress < 1
+hierarchy: true
 }
 );
 rollerMotion.displayValue = animatedIncome;
 rollerMotion.lastStatus = status;
-setDialAngleDirect(animatedWorkSeconds * 6);
+setDialAngleDirect(lerp(startupSync.fromWorkSeconds * 6, startupSync.toDialAngle, eased));
 setClockHandAngles(minuteAngle, hourAngle);
 applyProgressVisual(
 progressVisualForWorkSeconds(animatedWorkSeconds),
@@ -18041,6 +18048,10 @@ completedStartup.toIncome,
 completedStartup.targetStatus,
 timestamp
 );
+rollerMotion.velocity = completedStartup.terminalIncomeVelocity;
+// Claiming LIVE invalidates the queued STARTUP write; commit the endpoint
+// under its new owner in this same frame instead of dropping that frame.
+commitRollerValue(getRollerKey(ROLLER_OWNER.LIVE), completedStartup.toIncome, timestamp);
 lastDialWholeSecond = Math.floor(
 completedStartup.toWorkSeconds
 );
