@@ -1,5 +1,31 @@
 const { test, expect } = require('@playwright/test');
 
+for (const boundary of ['08:59:59.750', '13:29:59.750']) {
+  test(`non-working startup stays stationary before ${boundary}`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.clock.install();
+    await page.clock.setFixedTime(new Date(`2026-09-07T${boundary}+08:00`));
+    await page.addInitScript(() => {
+      window.boundarySamples = [];
+      const sample = () => {
+        const state = window.__incomeClockDiagnostics?.getUnifiedMotionState();
+        if (state?.startup) window.boundarySamples.push(state);
+        requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
+    });
+    await page.goto('/Income-per-sed-Develop.html');
+    await page.waitForTimeout(650);
+    const samples = await page.evaluate(() => window.boundarySamples);
+    expect(samples.length).toBeGreaterThan(5);
+    expect(samples.every(s => s.startup.animateReadout === false)).toBe(true);
+    for (const key of ['income', 'mainAngle']) {
+      const values = samples.map(s => s.displayed[key]);
+      expect(Math.max(...values) - Math.min(...values), key).toBeLessThan(1e-7);
+    }
+  });
+}
+
 async function openRunningClock(page, hour = 10) {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
