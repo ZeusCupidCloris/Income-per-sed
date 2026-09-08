@@ -1,13 +1,7 @@
 name: Pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - Income-per-sed-Push.html
-      - scripts/verify_pages.py
-      - .github/workflows/pages.yml
-  workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -18,6 +12,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     permissions:
       contents: read
       pages: write
@@ -28,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24

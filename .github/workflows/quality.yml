@@ -14,6 +14,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  pages:
+    name: Publish verified main
+    needs: [release-validation, visual-regression, webkit-smoke]
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
+
   release-validation:
     name: Release validation
     runs-on: ubuntu-latest
