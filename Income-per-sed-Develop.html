@@ -24008,9 +24008,11 @@ dom.dialHand.classList.remove('midnight-resetting');
 if (!reduceMotionQuery.matches) {
 const work = getWorkSeconds(now);
 const clock = clockAnglesForDate(now);
-const duration = getStatus(now) === 'working'
-? (Math.ceil(work + 1.2) - work) * 1000
-: 1200;
+const nominalEnd = new Date(now.getTime() + 1200);
+const endWork = getWorkSeconds(nominalEnd);
+const duration = 1200 + (getStatus(nominalEnd) === 'working'
+? (Math.ceil(endWork) - endWork) * 1000
+: 0);
 foregroundCatchup = {
 resume: true, startedAt: timestamp, lastFrameAt: timestamp, duration, snapshot,
 second: { liveTarget: clockwiseDialTarget(snapshot.mainAngle, normalizeDegrees(work * 6)), lastTargetNormalized: normalizeDegrees(work * 6) },
