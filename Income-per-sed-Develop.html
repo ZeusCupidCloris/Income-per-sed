@@ -23999,6 +23999,29 @@ body.classList.remove(
 'startup-sync-active',
 'day-end-braking'
 );
+if (options.directRoller && snapshot && timeTravel.state === TIMELINE_STATE.LIVE) {
+// A hidden day boundary is already past; never replay its midnight ceremony.
+activeDateKey = localDateKey(now);
+midnightReset = null;
+body.classList.remove('midnight-reset-active');
+dom.dialHand.classList.remove('midnight-resetting');
+if (!reduceMotionQuery.matches) {
+const work = getWorkSeconds(now);
+const clock = clockAnglesForDate(now);
+const duration = getStatus(now) === 'working'
+? (Math.ceil(work + 1.2) - work) * 1000
+: 1200;
+foregroundCatchup = {
+resume: true, startedAt: timestamp, lastFrameAt: timestamp, duration, snapshot,
+second: { liveTarget: clockwiseDialTarget(snapshot.mainAngle, normalizeDegrees(work * 6)), lastTargetNormalized: normalizeDegrees(work * 6) },
+minute: { liveTarget: clockwiseDialTarget(snapshot.minuteAngle, clock.minute), lastTargetNormalized: normalizeDegrees(clock.minute) },
+hour: { liveTarget: clockwiseDialTarget(snapshot.hourAngle, clock.hour), lastTargetNormalized: normalizeDegrees(clock.hour) }
+};
+claimRollerOwner(ROLLER_OWNER.FOREGROUND_CATCHUP, 'foreground-continuous-resume', timestamp);
+body.classList.add('foreground-catchup-active');
+return true;
+}
+}
 if (
 reduceMotionQuery.matches ||
 !snapshot ||
@@ -25161,6 +25184,41 @@ return true;
 
 function updateForegroundCatchup(timestamp, now, status, workSeconds, rates, liveIncome) {
 if (!foregroundCatchup) return false;
+if (foregroundCatchup.resume) {
+const motion = foregroundCatchup;
+const p = clamp01((timestamp - motion.startedAt) / motion.duration);
+const eased = smootherStep(p);
+const clock = clockAnglesForDate(now);
+const main = advanceLiveClockwiseTarget(motion.second, normalizeDegrees(workSeconds * 6));
+const minute = advanceLiveClockwiseTarget(motion.minute, clock.minute);
+const hour = advanceLiveClockwiseTarget(motion.hour, clock.hour);
+setDialAngleDirect(lerp(motion.snapshot.mainAngle, main, eased));
+setClockHandAngles(lerp(motion.snapshot.minuteAngle, minute, eased), lerp(motion.snapshot.hourAngle, hour, eased));
+const targetIncome = Math.max(0, liveIncome - (status === 'working' ? rates.secondly * ROLLER_WORKING_LAG_MS / 1000 : 0));
+const value = lerp(motion.snapshot.income, targetIncome, eased);
+const dt = Math.max(0.001, (timestamp - motion.lastFrameAt) / 1000);
+rollerMotion.velocity = (value - rollerMotion.displayValue) / dt;
+rollerMotion.displayValue = value;
+rollerMotion.lastStatus = status;
+rollerMotion.stop = null;
+motion.lastFrameAt = timestamp;
+applyProgressVisual(interpolateProgressVisual(motion.snapshot.progress, progressVisualForWorkSeconds(workSeconds), eased), status);
+if (p >= 1) {
+foregroundCatchup = null;
+claimRollerOwner(ROLLER_OWNER.LIVE, 'foreground-continuous-complete', timestamp);
+rollerMotion.velocity = status === 'working' ? rates.secondly : 0;
+rollerMotion.lastSampleAt = timestamp;
+rollerMotion.lastSampleValue = value;
+lastRenderedLiveIncome = liveIncome;
+lastVisualStatus = status;
+lastDialWholeSecond = Math.floor(workSeconds);
+setDialAngleDirect(lastDialWholeSecond * 6);
+body.classList.remove('foreground-catchup-active');
+}
+// Claiming LIVE cancels queued writes, so commit after the ownership change.
+commitRollerValue(getRollerKey(rollerControl.owner), value, timestamp, { hierarchy: true });
+return true;
+}
 if (timeTravel.state === TIMELINE_STATE.RETURNING_LIVE) return updateHistoryReturnCatchup(timestamp, now, status, workSeconds, rates, liveIncome);
 const frame = createForegroundCatchupFrame(timestamp, now, status, workSeconds, rates, liveIncome);
 if (renderCatchupPreparation(frame)) return true;
