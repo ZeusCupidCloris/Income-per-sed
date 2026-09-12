@@ -14,6 +14,7 @@
 
 ## 验收记录
 
+- [前台恢复与上班边界](acceptance/foreground-resume-20260909.md)：跨日恢复、开工收尾及 PR #29 发布结果。
 - [R44 刷新交接与开工边界](acceptance/v2.5.4-rc.2-startup.md)：启动、模拟后台播放、跨午休返回与反向输入测试。
 - [候选版仓库维护验收](acceptance/v2.5.4-rc.2-maintenance.md)：构建与维护检查。
 - [全部验收记录](acceptance/)：特定版本当时的检查结果，不代表后续提交自动通过。
