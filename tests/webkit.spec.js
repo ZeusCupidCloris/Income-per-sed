@@ -1,4 +1,7 @@
 const { test, expect } = require('@playwright/test');
+const { setWorkingTime } = require('./helpers/clock');
+
+test.beforeEach(async ({ page }) => setWorkingTime(page));
 
 const APP_PATH = '/Income-per-sed-Push.html';
 

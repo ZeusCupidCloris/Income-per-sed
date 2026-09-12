@@ -1,11 +1,12 @@
 const { test, expect } = require('@playwright/test');
+const { setWorkingTime } = require('./helpers/clock');
 
 const DEVELOP_PATH = '/Income-per-sed-Develop.html';
 
 async function openDevelop(page, viewport) {
   await page.setViewportSize(viewport);
   // Input classification is tested during work, independent of CI wall time.
-  await page.clock.setFixedTime(new Date('2026-09-07T06:30:00Z'));
+  await setWorkingTime(page);
   await page.addInitScript(() => {
     localStorage.setItem('income-per-sed-theme-v1', 'light');
   });
