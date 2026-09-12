@@ -3,6 +3,7 @@
 | 范围 | 文件 | 边界 |
 | --- | --- | --- |
 | 启动与历史运动 | startup-history.spec.js | 后台是模拟，不代表实机锁屏 |
+| 前台恢复 | foreground-resume.spec.js | 同日、跨日、上午开工及午休结束；模拟后台，不代表系统休眠 |
 | 输入设备与刷新率 | input-acceptance.spec.js | 固定工作日业务时间，动画时钟继续 |
 | 背景 | ambient-backdrop.spec.js | 空闲绘制、鼠标画布变化、降级；已知稳定性问题见维护记录 |
 | 异常存储 | resilience.spec.js | 浏览器存储不可用与损坏 |
