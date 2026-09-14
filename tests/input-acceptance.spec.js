@@ -15,14 +15,22 @@ async function openDevelop(page, viewport) {
   await expect(page.locator('#currentTime')).toBeVisible();
 }
 
-test('traditional wheel input locks the discrete wheel profile', async ({ page }) => {
+test('traditional wheel input locks the discrete wheel profile', async ({ page }, testInfo) => {
   await openDevelop(page, { width: 1440, height: 1000 });
   const time = page.locator('#currentTime');
   await time.hover();
+  // Keep event spacing independent of browser transport and CI scheduling.
+  const clockTime = new Date('2026-09-07T06:30:00Z');
+  await page.clock.install({ time: clockTime });
+  await page.clock.pauseAt(new Date(clockTime.getTime() + 1000));
+  const samples = [];
   for (let index = 0; index < 3; index += 1) {
     await time.dispatchEvent('wheel', { deltaY: 120, deltaMode: 0, bubbles: true, cancelable: true });
-    await page.waitForTimeout(32);
+    samples.push(await page.evaluate(() => window.__incomeClockDiagnostics.getHistoryInputProfile()));
+    await page.clock.runFor(32);
   }
+  await testInfo.attach('wheel-sequence.json', { body: JSON.stringify(samples), contentType: 'application/json' });
+  expect(new Set(samples.map(sample => sample.sequenceId)).size).toBe(1);
   const profile = await page.evaluate(() => window.__incomeClockDiagnostics.getHistoryInputProfile());
   expect(profile.profile).toBe('wheel');
   expect(profile.sequenceLocked).toBe(true);
