@@ -13356,6 +13356,7 @@ return 0;
 let introFinished = true;
 let startupSync = null;
 let foregroundCatchup = null;
+let displayedMonthIncome = null;
 let hiddenVisualSnapshot = null;
 let dayEndMotion = null;
 let currentStatus = '';
@@ -24132,6 +24133,7 @@ typeof isHistoricalTimelineState === 'function' &&
 isHistoricalTimelineState();
 return {
 dateKey: localDateKey(now),
+monthIncome: displayedMonthIncome,
 status: lastVisualStatus || getStatus(now),
 income: rollerMotion.displayValue,
 mainAngle: dialDisplayedAngle,
@@ -25364,6 +25366,7 @@ if (foregroundCatchup.resume) {
 const motion = foregroundCatchup;
 const p = clamp01((timestamp - motion.startedAt) / motion.duration);
 const eased = smootherStep(p);
+motion.readoutProgress = eased;
 const clock = clockAnglesForDate(now);
 const main = advanceLiveClockwiseTarget(motion.second, normalizeDegrees(workSeconds * 6));
 const minute = advanceLiveClockwiseTarget(motion.minute, clock.minute);
@@ -25548,7 +25551,17 @@ else if (wholeWork >= totalWorkSeconds) text = '已完成全天工作';
 else if (status === 'break' && wholeWork === morningSeconds) text = `午休后剩余 ${formatDuration(remain)}`;
 else if (status === 'not-started' && wholeWork === 0) text = `全天待完成 ${formatDuration(remain)}`;
 setTextIfChanged(dom.workedSub, text);
-setTextIfChanged(dom.monthIncome, formatCurrency(getMonthProgress(now, income, rates).accumulated));
+let monthIncome = getMonthProgress(now, income, rates).accumulated;
+if (foregroundCatchup?.resume && foregroundCatchup.snapshot.dateKey !== localDateKey(now)) {
+const snapshot = foregroundCatchup.snapshot;
+const sameMonth = snapshot.dateKey.slice(0, 7) === localDateKey(now).slice(0, 7);
+// Cross-date recovery must not add yesterday's animated income to today's base.
+const from = sameMonth && Number.isFinite(snapshot.monthIncome) ? snapshot.monthIncome : 0;
+const target = getMonthProgress(now, workSeconds * rates.secondly, rates).accumulated;
+monthIncome = lerp(from, target, foregroundCatchup.readoutProgress || 0);
+}
+displayedMonthIncome = monthIncome;
+setTextIfChanged(dom.monthIncome, formatCurrency(monthIncome));
 }
 function updateStats(
 frame = createFrameSnapshot()
