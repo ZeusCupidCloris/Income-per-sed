@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const APP_PATH = '/Income-per-sed-Push.html';
+const APP_PATH = process.env.DEVELOP_PREVIEW === '1' ? '/Income-per-sed-Develop.html' : '/Income-per-sed-Push.html';
 const FIXED_TIME = new Date('2026-08-03T02:39:00.000Z');
 const CLOCK_START = new Date(FIXED_TIME.getTime() - 60_000);
 

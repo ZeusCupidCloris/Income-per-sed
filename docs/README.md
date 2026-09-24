@@ -8,12 +8,16 @@
 
 ## 开发与发布
 
+- [年度日历替换清单](calendar-maintenance.md)：手动更新两端内置日期并运行一致性校验。
 - [仓库维护与发布策略](REPOSITORY_POLICY.md)：分支、构建、候选版与正式发布流程。
 - [完整变更记录](../CHANGELOG.md)：按版本记录变化。
 - [R44 候选版说明](releases/v2.5.4-rc.2.md)：当前候选版内容和验收限制。
 
 ## 验收记录
 
+- [2026-09-16 四文件加固](acceptance/fourfile-20260916.md)：双版本行为、小组件异常配置及手册整理；最终复核于 9 月 17 日完成。
+
+- [2026-09-15 本地维护](acceptance/maintenance-20260915.md)：资源观察、说明书和四文件维护编号。
 - [前台恢复与上班边界](acceptance/foreground-resume-20260909.md)：跨日恢复、开工收尾及 PR #29 发布结果。
 - [R44 刷新交接与开工边界](acceptance/v2.5.4-rc.2-startup.md)：启动、模拟后台播放、跨午休返回与反向输入测试。
 - [候选版仓库维护验收](acceptance/v2.5.4-rc.2-maintenance.md)：构建与维护检查。

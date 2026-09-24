@@ -3,7 +3,7 @@ const { setWorkingTime } = require('./helpers/clock');
 
 test.beforeEach(async ({ page }) => setWorkingTime(page));
 
-const APP_PATH = '/Income-per-sed-Push.html';
+const APP_PATH = process.env.DEVELOP_PREVIEW === '1' ? '/Income-per-sed-Develop.html' : '/Income-per-sed-Push.html';
 
 test('WebKit opens the dashboard without runtime errors', async ({ page }) => {
   const pageErrors = [];

@@ -626,7 +626,7 @@ user-select: none;
 font-size: 0.62rem;
 letter-spacing: 0.04em;
 }
-.editable-card:hover{
+.editable-card.is-hovered{
 background: var(--card-hover);
 box-shadow:
 inset 0 1px 0 color-mix(in srgb, var(--glass-edge-light) 82%, transparent),
@@ -2867,7 +2867,7 @@ text-rendering:geometricPrecision;
         box-shadow 180ms var(--ease-interface);
 }
 @media (hover:hover) and (pointer:fine){
-    .editable-card:hover{
+    .editable-card.is-hovered{
         border-color:color-mix(in srgb,var(--accent-blue) 22%,var(--border-light));
         background:color-mix(in srgb,var(--card-hover) 96%,transparent);
         box-shadow:
@@ -8199,7 +8199,7 @@ html[data-theme="dark"] .income-dial{filter:saturate(.86) brightness(.91) contra
     transition:transform var(--motion-fast) var(--ease-mechanical),background-color var(--motion-fast) var(--ease-settle),border-color var(--motion-fast) var(--ease-settle),box-shadow var(--motion-fast) var(--ease-settle);
 }
 @media (hover:hover){
-    .editable-card:hover{transform:translateY(-1px);}
+    .editable-card.is-hovered{transform:translateY(-2px);}
 }
 .editable-card:active{transform:translateY(1px) scale(.997);}
 .settings-action:active,
@@ -8614,6 +8614,25 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 
 @media (forced-colors:active){
     .work-segment::after{display:none;}
+}
+/* Reversible local feedback; no changes to the dashboard's motion clock. */
+.settings-sheet,.settings-backdrop{transition:opacity var(--panel-motion-ms,240ms) ease-out,transform var(--panel-motion-ms,240ms) ease-out !important;animation:none !important;}
+.settings-dialog:not(.is-visible) .settings-sheet{opacity:0;transform:translateY(6px) !important;}
+.settings-dialog.is-visible .settings-sheet{opacity:1;transform:translateY(0) !important;}
+.settings-dialog.is-closing .settings-sheet,.settings-dialog.is-closing .settings-backdrop{transition-duration:var(--panel-motion-ms,190ms) !important;}
+.history-quick-panel,.history-quick-backdrop{transition-duration:var(--quick-motion-ms,240ms) !important;}
+.settings-dialog .settings-sheet-header,.settings-dialog .settings-panel:not([hidden]),.settings-dialog .settings-actions{opacity:1 !important;transform:none !important;animation:none !important;}
+#settingsSaveButton{min-width:84px;position:relative;}
+#settingsSaveButton[data-save-state]{opacity:1;}
+.settings-field-error,.time-wheel-field-error{min-height:2.8em;}
+.settings-field-error,.time-wheel-field-error,.settings-error-summary{transition:opacity 150ms ease-out,visibility 0s;}
+.settings-field-error[hidden],.time-wheel-field-error[hidden],.settings-error-summary[hidden]{display:flex !important;visibility:hidden;opacity:0;transition:opacity 150ms ease-out,visibility 0s 150ms;}
+.editable-card{transition-duration:200ms;}
+.editable-card.is-hovered{transition-duration:160ms;}
+.editable-card:focus-visible{outline:2px solid color-mix(in srgb,var(--accent-blue) 40%,var(--border-light));outline-offset:3px;}
+@media (prefers-reduced-motion:reduce){
+    .settings-sheet,.settings-backdrop,.editable-card,.settings-field-error,.time-wheel-field-error{transition-duration:1ms !important;transition-delay:0ms !important;}
+    .settings-dialog:not(.is-visible) .settings-sheet,.editable-card.is-hovered{transform:none !important;}
 }
 </style>
 </head>
@@ -9839,6 +9858,24 @@ lastCheckedAt
 return Object.freeze({ check, snapshot });
 })();
 /* DEVELOP DEBUG PANEL START */
+let historySnapPreview = false;
+function tryHistorySnapPreview(direction = 0) {
+if (!historySnapPreview || timeTravel.state !== TIMELINE_STATE.HISTORY_HOLD) return false;
+const date = timeTravel.historyTime;
+if (!date || !isWorkday(date)) return false;
+const base = startOfDay(date).getTime();
+const now = getLiveNow().getTime();
+const candidates = Object.values(CONFIG.schedule).map(value => base + parseClock(value) * 1000)
+.filter(value => value <= now && Math.abs(value - date.getTime()) <= 60000);
+candidates.sort((a, b) => Math.abs(a - date.getTime()) - Math.abs(b - date.getTime()) || (direction < 0 ? a - b : b - a));
+if (!candidates.length || candidates[0] === date.getTime()) return false;
+cancelHistoricalTargetCommit();
+timeTravel.historyTime = new Date(candidates[0]);
+beginHistoryPresetSeek(candidates[0], performance.now(), 220);
+clearVisualScheduler();
+render(performance.now());
+return true;
+}
 const motionDebug = {
 enabled: false,
 node: null,
@@ -9893,6 +9930,7 @@ node.innerHTML = `
 <div class="motion-debug-event-list"></div>
 </section>
 <div class="motion-debug-toolbar">
+<label><input type="checkbox" data-debug-action="snap"> 回溯节点吸附实验</label>
 <button class="motion-debug-action" type="button" data-debug-action="quality" aria-pressed="false">记录轨迹</button>
 <button class="motion-debug-action" type="button" data-debug-action="tier">自动档</button>
 <button class="motion-debug-action" type="button" data-debug-action="clear">清除</button>
@@ -9900,6 +9938,9 @@ node.innerHTML = `
 <div class="motion-debug-footer">Ctrl + Alt + D 显示或隐藏 · Ctrl + Alt + M 开关记录</div>`;
 document.body.appendChild(node);
 motionDebug.node = node;
+node.querySelector('[data-debug-action="snap"]').addEventListener('change', event => {
+historySnapPreview = event.target.checked;
+});
 motionDebug.fields = Object.create(null);
 for (const field of node.querySelectorAll('[data-debug-field]')) motionDebug.fields[field.dataset.debugField] = field;
 motionDebug.eventList = node.querySelector('.motion-debug-event-list');
@@ -14587,6 +14628,8 @@ secondAngle: taskResetMechanicalAngle(state.resetMotion.secondAngle, progress, 0
 minuteAngle: taskResetMechanicalAngle(state.resetMotion.minuteAngle, progress, 0.14)
 });
 }
+let pauseMotion = null;
+let taskVisualSample = null;
 function toggle(options = {}) {
 if (!options.fromCoordinator && InstanceCoordinator.isFollower()) {
 const forwarded = InstanceCoordinator.sendCommand('stopwatch-toggle');
@@ -14597,12 +14640,20 @@ const clock = AppClock.sample();
 const realNowMs = clock.wallNowMs;
 const monotonicNowMs = clock.monotonicNowMs;
 const interruptedReset = sampleResetVisual(monotonicNowMs);
+const wasPaused = Boolean(pauseMotion);
+pauseMotion = null;
 state.resetMotion = null;
 if (state.mode === TASK_STOPWATCH_STATE.RUNNING) {
 state.accumulatedMs = elapsedMs(realNowMs, monotonicNowMs);
 state.startedAtWallClockMs = 0;
 state.startedAtMonotonicMs = 0;
 state.mode = TASK_STOPWATCH_STATE.PAUSED;
+if (taskVisualSample && !reduceMotionQuery.matches) {
+const elapsedTarget = state.accumulatedMs;
+pauseMotion = { startedAt: monotonicNowMs, duration: 190,
+from: Math.min(taskVisualSample.elapsed, elapsedTarget), target: elapsedTarget,
+incomeFrom: Math.min(taskVisualSample.income, displayedIncome(incomeAt(realNowMs, monotonicNowMs))) };
+}
 recordDiagnosticEvent('task-stopwatch', '任务秒表暂停', { elapsedMs: state.accumulatedMs, income: incomeAt(realNowMs, monotonicNowMs) });
 } else {
 if (state.mode === TASK_STOPWATCH_STATE.IDLE) {
@@ -14614,11 +14665,15 @@ state.startedAtMonotonicMs = monotonicNowMs;
 state.mode = TASK_STOPWATCH_STATE.RUNNING;
 recordDiagnosticEvent('task-stopwatch', '任务秒表开始', { secondly: state.lockedSecondly });
 }
-state.interruptMotion = interruptedReset ? {
+const interruptFrom = interruptedReset || (wasPaused && taskVisualSample ? {
+secondAngle: (taskVisualSample.elapsed / 1000 % 60) * 6,
+minuteAngle: (taskVisualSample.elapsed / 60000 % 60) * 6
+} : null);
+state.interruptMotion = interruptFrom ? {
 startedAt: monotonicNowMs,
 duration: reduceMotionQuery.matches ? 1 : MOTION.fast,
-secondFrom: interruptedReset.secondAngle,
-minuteFrom: interruptedReset.minuteAngle
+secondFrom: interruptFrom.secondAngle,
+minuteFrom: interruptFrom.minuteAngle
 } : null;
 state.lastAriaSecond = -1;
 updateAccessibility(realNowMs);
@@ -14639,12 +14694,14 @@ const monotonicNowMs = clock.monotonicNowMs;
 const elapsed = elapsedMs(realNowMs, monotonicNowMs);
 const currentIncome = displayedIncome(incomeAt(realNowMs, monotonicNowMs));
 const duration = reduceMotionQuery.matches ? 1 : MOTION.slow;
+const pausedVisual = pauseMotion && taskVisualSample ? taskVisualSample : null;
+pauseMotion = null;
 state.interruptMotion = null;
 state.resetMotion = {
 startedAt: monotonicNowMs,
 duration,
-secondAngle: (elapsed / 1000 % 60) * 6,
-minuteAngle: (elapsed / 60000 % 60) * 6,
+secondAngle: ((pausedVisual?.elapsed ?? elapsed) / 1000 % 60) * 6,
+minuteAngle: ((pausedVisual?.elapsed ?? elapsed) / 60000 % 60) * 6,
 tracks: taskIncomeRoller.createForwardReset(currentIncome)
 };
 state.mode = TASK_STOPWATCH_STATE.IDLE;
@@ -14682,6 +14739,8 @@ state.startedAtMonotonicMs = normalized.mode === TASK_STOPWATCH_STATE.RUNNING ? 
 state.lockedSecondly = normalized.lockedSecondly;
 stopwatchRevision = Math.max(stopwatchRevision, normalized.storageRevision || 0);
 state.resetMotion = null;
+pauseMotion = null;
+state.interruptMotion = null;
 state.lastRenderedIncome = -1;
 state.lastAriaSecond = -1;
 state.restored = true;
@@ -14748,15 +14807,24 @@ commitTaskIncomeValue(0, timestamp, { immediate: true, hierarchy: false });
 updateAccessibility(realNowMs);
 return;
 }
-const elapsed = elapsedMs(realNowMs, timestamp);
-const income = displayedIncome(incomeAt(realNowMs, timestamp));
+let elapsed = elapsedMs(realNowMs, timestamp);
+let income = displayedIncome(incomeAt(realNowMs, timestamp));
+if (pauseMotion) {
+const progress = clamp01((timestamp - pauseMotion.startedAt) / pauseMotion.duration);
+const gap = pauseMotion.target - pauseMotion.from;
+elapsed = cubicHermiteValue(pauseMotion.from, pauseMotion.target,
+Math.min(1000, Math.max(0, 3 * gap / (pauseMotion.duration / 1000))), 0, progress, pauseMotion.duration);
+income = lerp(pauseMotion.incomeFrom, income, gap > 0 ? clamp01((elapsed - pauseMotion.from) / gap) : progress);
+if (progress >= 1) pauseMotion = null;
+}
+taskVisualSample = { elapsed, income };
 let secondAngle = (elapsed / 1000 % 60) * 6;
 let minuteAngle = (elapsed / 60000 % 60) * 6;
 if (state.interruptMotion) {
 const interruptProgress = clamp01((timestamp - state.interruptMotion.startedAt) / Math.max(1, state.interruptMotion.duration));
 const interruptedEase = easeOutCubic(interruptProgress);
-secondAngle = lerp(state.interruptMotion.secondFrom, secondAngle, interruptedEase);
-minuteAngle = lerp(state.interruptMotion.minuteFrom, minuteAngle, interruptedEase);
+secondAngle = lerp(state.interruptMotion.secondFrom, state.interruptMotion.secondFrom + shortestAngleDelta(state.interruptMotion.secondFrom, secondAngle), interruptedEase);
+minuteAngle = lerp(state.interruptMotion.minuteFrom, state.interruptMotion.minuteFrom + shortestAngleDelta(state.interruptMotion.minuteFrom, minuteAngle), interruptedEase);
 if (interruptProgress >= 1) state.interruptMotion = null;
 }
 setTransformIfChanged(dom.taskStopwatchSecondHand, `rotate(${secondAngle}deg)`);
@@ -14783,7 +14851,7 @@ state.lastRenderedIncome = -1;
 state.lastAriaSecond = -1;
 }
 function needsHighRate() {
-return state.mode === TASK_STOPWATCH_STATE.RUNNING || Boolean(state.resetMotion) || Boolean(state.interruptMotion) || taskIncomeRoller.hasActiveCarry();
+return state.mode === TASK_STOPWATCH_STATE.RUNNING || Boolean(pauseMotion) || Boolean(state.resetMotion) || Boolean(state.interruptMotion) || taskIncomeRoller.hasActiveCarry();
 }
 function getState() {
 const clock = AppClock.sample();
@@ -14796,6 +14864,7 @@ income: incomeAt(realNowMs, clock.monotonicNowMs),
 displayedIncome: state.lastRenderedIncome,
 resetting: Boolean(state.resetMotion),
 interrupting: Boolean(state.interruptMotion),
+pausing: Boolean(pauseMotion),
 restored: state.restored,
 persistence: Object.freeze({ ...persistence, revision: stopwatchRevision, transaction: stopwatchTransaction.getStatus() })
 });
@@ -16832,6 +16901,27 @@ let draftSchedule = { ...CONFIG.schedule };
 let lastFocused = null;
 let settingsCloseTimer = 0;
 let settingsOpenGeneration = 0;
+let saveFeedbackTimer = 0;
+let saveBusy = false;
+let incomeValidationActive = false;
+let scheduleValidationActive = false;
+function resetSaveFeedback() {
+AppLifecycle.clearTimeout(saveFeedbackTimer);
+saveBusy = false;
+dom.settingsSaveButton.textContent = '保存';
+dom.settingsSaveButton.removeAttribute('data-save-state');
+dom.settingsSaveButton.disabled = false;
+}
+function revalidateIncome() {
+if (!incomeValidationActive) return;
+const amount = validateIncomeAmountValue(dom.incomeAmountInput.value, selectedIncomeMode);
+const days = Number(dom.annualWorkDaysInput.value);
+const validDays = selectedIncomeMode === 'fixed-monthly' || (Number.isInteger(days) && days >= 1 && days <= 366);
+setFieldError(dom.incomeAmountInput, dom.incomeAmountError, amount.valid ? '' : amount.message);
+setFieldError(dom.annualWorkDaysInput, dom.annualWorkDaysError, validDays ? '' : '请输入 1～366 之间的全年工作日。');
+dom.settingsSaveButton.disabled = saveBusy || !amount.valid || !validDays;
+if (amount.valid && validDays) setError(dom.incomeSettingsError);
+}
 let calendarAccordionTimer = 0;
 let calendarAccordionToken = 0;
 let calendarDataExpanded = false;
@@ -16845,10 +16935,18 @@ return { hour, minute };
 function formatTime(hour, minute) {
 return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 }
+const errorClearTimers = new WeakMap();
 function setError(node, message = '') {
 if (!node) return;
-node.textContent = message;
+if (!message && node.hidden) return;
+AppLifecycle.clearTimeout(errorClearTimers.get(node));
 node.hidden = !message;
+node.setAttribute('aria-hidden', String(!message));
+if (message) setTextIfChanged(node, message);
+else errorClearTimers.set(node, AppLifecycle.setTimeout(() => {
+if (node.hidden) setTextIfChanged(node, '');
+errorClearTimers.delete(node);
+}, reduceMotionQuery.matches ? 0 : 150));
 }
 function setFieldError(input, node, message = '') {
 if (input) {
@@ -16998,6 +17096,7 @@ dom.incomeAmountInput.step = (1 / (10 ** limits.decimals)).toFixed(limits.decima
 dom.annualWorkDaysField.hidden = selectedIncomeMode === 'fixed-monthly';
 dom.incomeModeHelp.textContent = IncomeEngine.help(selectedIncomeMode);
 clearIncomeErrors();
+revalidateIncome();
 }
 function destroyScheduleWheels() {
 for (const wheel of wheelInstances) wheel.destroy();
@@ -17009,7 +17108,19 @@ const current = splitTime(draftSchedule[key]);
 const next = unit === 'hour' ? { hour: value, minute: current.minute } : { hour: current.hour, minute: value };
 draftSchedule[key] = formatTime(next.hour, next.minute);
 scheduleDirty = true;
-clearScheduleErrors();
+if (scheduleValidationActive) {
+const violation = getScheduleViolation();
+for (const card of dom.scheduleWheelGrid.querySelectorAll('.time-wheel-card')) {
+const invalid = violation?.key === card.dataset.timeKey;
+if (invalid) card.setAttribute('aria-invalid', 'true');
+else card.removeAttribute('aria-invalid');
+setError(card.querySelector('.time-wheel-field-error'), invalid ? violation.message : '');
+}
+if (violation) dom.scheduleWheelGrid.setAttribute('aria-invalid', 'true');
+else dom.scheduleWheelGrid.removeAttribute('aria-invalid');
+setError(dom.scheduleSettingsError, violation ? '请修正标出的时间节点后再保存。' : '');
+dom.settingsSaveButton.disabled = saveBusy || Boolean(violation);
+} else clearScheduleErrors();
 updateScheduleCalibrationSummary();
 }
 function buildScheduleWheels() {
@@ -17095,15 +17206,21 @@ dom.calendarImportInput.value = '';
 }
 }
 function open(panel) {
+const reopening = !dom.settingsDialog.hidden;
+const openingOpacity = reopening ? Number(getComputedStyle(getDialogSheet()).opacity) : 0;
+dom.settingsDialog.style.setProperty('--panel-motion-ms', `${reduceMotionQuery.matches ? 1 : Math.max(1,240 * (1 - openingOpacity))}ms`);
+resetSaveFeedback();
+incomeValidationActive = false;
+scheduleValidationActive = false;
 const generation = ++settingsOpenGeneration;
 setHistoryQuickPanelOpen(false);
 freezeDialInteractionMotion();
 freezeTaskWatchInteractionMotion();
 activePanel = panel;
-lastFocused = document.activeElement;
+if (!reopening) lastFocused = document.activeElement;
 AppLifecycle.clearTimeout(settingsCloseTimer);
 dom.settingsDialog.hidden = false;
-dom.settingsDialog.classList.remove('is-closing', 'is-visible');
+dom.settingsDialog.classList.remove('is-closing');
 body.classList.add('settings-open');
 isolateBackground(true);
 const income = panel === 'income';
@@ -17153,13 +17270,20 @@ if (
 dom.settingsDialog.hidden ||
 dom.settingsDialog.classList.contains('is-closing')
 ) return;
+const closeDuration = reduceMotionQuery.matches ? 0 : Math.max(1,190 * Number(getComputedStyle(getDialogSheet()).opacity));
+dom.settingsDialog.style.setProperty('--panel-motion-ms', `${closeDuration}ms`);
+resetSaveFeedback();
 settingsOpenGeneration += 1;
 dom.settingsDialog.classList.remove('is-visible');
 dom.settingsDialog.classList.add('is-closing');
 body.classList.remove('settings-open');
-settingsCloseTimer = AppLifecycle.setTimeout(finalizeClose, reduceMotionQuery.matches ? 0 : MOTION.fast + 24);
+const generation = settingsOpenGeneration;
+settingsCloseTimer = AppLifecycle.setTimeout(() => {
+if (generation === settingsOpenGeneration) finalizeClose();
+}, closeDuration);
 }
 function saveIncome() {
+incomeValidationActive = true;
 const amountResult = validateIncomeAmountValue(dom.incomeAmountInput.value, selectedIncomeMode);
 const rawAnnualWorkDays = Number(dom.annualWorkDaysInput.value);
 const annualWorkDays = Math.round(rawAnnualWorkDays);
@@ -17168,12 +17292,14 @@ if (!amountResult.valid) {
 setFieldError(dom.incomeAmountInput, dom.incomeAmountError, amountResult.message);
 setError(dom.incomeSettingsError, '收入金额尚未填写正确。');
 dom.incomeAmountInput.focus();
+revalidateIncome();
 return false;
 }
 if (selectedIncomeMode !== 'fixed-monthly' && (!Number.isInteger(rawAnnualWorkDays) || annualWorkDays < 1 || annualWorkDays > 366)) {
 setFieldError(dom.annualWorkDaysInput, dom.annualWorkDaysError, '请输入 1～366 之间的全年工作日。');
 setError(dom.incomeSettingsError, '全年工作日尚未填写正确。');
 dom.annualWorkDaysInput.focus();
+revalidateIncome();
 return false;
 }
 const patch = { incomeMode: selectedIncomeMode, annualWorkDays: Number.isFinite(annualWorkDays) ? annualWorkDays : CONFIG.annualWorkDays };
@@ -17181,13 +17307,15 @@ if (selectedIncomeMode === 'fixed-daily') patch.dailyIncome = amountResult.amoun
 else patch.monthlyIncome = amountResult.amount;
 const result = applyRuntimeSettings(patch, `收入设置 · ${IncomeEngine.label(selectedIncomeMode)}`);
 showSettingsSaveResult('收入设置', result);
-return true;
+return result;
 }
 function saveSchedule() {
+scheduleValidationActive = true;
 const violation = getScheduleViolation();
 if (violation) {
 showScheduleViolation(violation);
 updateScheduleCalibrationSummary();
+dom.settingsSaveButton.disabled = true;
 return false;
 }
 try {
@@ -17200,11 +17328,20 @@ return false;
 clearScheduleErrors();
 const result = applyRuntimeSettings({ schedule: draftSchedule }, '工作时间设置');
 showSettingsSaveResult('工作时间设置', result);
-return true;
+return result;
 }
 function save() {
-const succeeded = activePanel === 'income' ? saveIncome() : saveSchedule();
-if (succeeded) close({ source: 'save' });
+if (saveBusy || dom.settingsSaveButton.disabled) return;
+const result = activePanel === 'income' ? saveIncome() : saveSchedule();
+if (!result || (!result.persisted && !result.pendingRemote)) return;
+saveBusy = true;
+dom.settingsSaveButton.disabled = true;
+dom.settingsSaveButton.textContent = result.persisted ? '✓' : '已提交';
+dom.settingsSaveButton.setAttribute('data-save-state', result.persisted ? 'saved' : 'submitted');
+const generation = settingsOpenGeneration;
+saveFeedbackTimer = AppLifecycle.setTimeout(() => {
+if (generation === settingsOpenGeneration) close({ source: 'save' });
+}, reduceMotionQuery.matches ? 0 : 180);
 }
 function trapFocus(event) {
 if (event.key !== 'Tab' || dom.settingsDialog.hidden) return;
@@ -17225,6 +17362,15 @@ if (dom.settingsDialog.hidden || dom.settingsDialog.contains(event.target)) retu
 getFocusableElements()[0]?.focus();
 }
 function bindCard(card, panel) {
+let hoverTimer = 0;
+ComponentScopes.settings.listen(card, 'pointerenter', event => {
+if (event.pointerType !== 'mouse' || !matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+hoverTimer = AppLifecycle.setTimeout(() => card.classList.add('is-hovered'), 70);
+});
+ComponentScopes.settings.listen(card, 'pointerleave', () => {
+AppLifecycle.clearTimeout(hoverTimer);
+card.classList.remove('is-hovered');
+});
 ComponentScopes.settings.listen(card, 'click', () => open(panel));
 ComponentScopes.settings.listen(card, 'keydown', (event) => {
 if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -17243,12 +17389,10 @@ dom.calendarDataToggle,
 );
 for (const button of dom.settingsDialog.querySelectorAll('[data-income-mode]')) ComponentScopes.settings.listen(button, 'click', () => setIncomeMode(button.dataset.incomeMode));
 ComponentScopes.settings.listen(dom.incomeAmountInput, 'input', () => {
-setFieldError(dom.incomeAmountInput, dom.incomeAmountError);
-setError(dom.incomeSettingsError);
+revalidateIncome();
 });
 ComponentScopes.settings.listen(dom.annualWorkDaysInput, 'input', () => {
-setFieldError(dom.annualWorkDaysInput, dom.annualWorkDaysError);
-setError(dom.incomeSettingsError);
+revalidateIncome();
 });
 for (const button of dom.settingsDialog.querySelectorAll('[data-settings-close]')) ComponentScopes.settings.listen(button, 'click', () => close({ source: button.dataset.settingsCloseKind || 'generic', trigger: button }));
 ComponentScopes.settings.listen(dom.settingsSaveButton, 'click', save);
@@ -17836,6 +17980,19 @@ afternoonRatio;
 return progressGeometry.morningStartX +
 progressGeometry.morningWidth *
 morningRatio;
+}
+function foregroundProgressVisual(snapshot, target, progress, status) {
+// One route position owns both fills and the cursor, including the lunch gap.
+const routeX = lerp(
+progressRouteXForVisual(snapshot.progress, snapshot.status),
+progressRouteXForVisual(target, status),
+progress
+);
+const morning = clamp01((routeX - progressGeometry.morningStartX) / Math.max(1, progressGeometry.morningWidth));
+const afternoon = clamp01((routeX - progressGeometry.afternoonStartX) / Math.max(1, progressGeometry.afternoonWidth));
+const visual = progressVisualForWorkSeconds(morning * morningSeconds + afternoon * afternoonSeconds);
+visual.routeX = routeX;
+return visual;
 }
 function applyProgressVisual(visual, status) {
 writeProgressPosition(
@@ -20385,13 +20542,14 @@ syncHistoryQuickPanel(displayedDate, liveNow);
 }
 function resetHistoricalVisualState(
 date = getNow(),
-timestamp = performance.now()
+timestamp = performance.now(),
+preservedIncome = null
 ) {
 const status = getStatus(date);
 const workSeconds = getWorkSeconds(date);
 const rates = getRates(date);
 const income =
-workSeconds * rates.secondly;
+Number.isFinite(preservedIncome) ? preservedIncome : workSeconds * rates.secondly;
 const clock = clockAnglesForDate(date);
 const mainAngle =
 Number.isFinite(dialDisplayedAngle)
@@ -20676,7 +20834,7 @@ historicalVisual.rapidTargetHourAngle = subhandTargets.hourAngle;
 historicalVisual.motionLastSampleAt = timestamp;
 historicalVisual.motionActive = true;
 }
-function beginHistoryPresetSeek(targetTimeMs, timestamp = performance.now()) {
+function beginHistoryPresetSeek(targetTimeMs, timestamp = performance.now(), durationOverride = 0) {
 sampleHistoricalVisualTime(timestamp);
 const startTimeMs = historicalVisual.displayedTimeMs;
 const targetMs = clampHistoryDate(new Date(targetTimeMs)).getTime();
@@ -20691,7 +20849,7 @@ historicalVisual.motionAccelerationMsPerSecond2 = 0;
 return 0;
 }
 const direction = Math.sign(gapMs);
-const duration = historyPresetSeekDuration(gapMs);
+const duration = reduceMotionQuery.matches ? 1 : (durationOverride || historyPresetSeekDuration(gapMs));
 const durationSeconds = Math.max(0.001, duration / 1000);
 const currentVelocity = historicalVisual.motionVelocityMsPerSecond;
 const currentAcceleration = historicalVisual.motionAccelerationMsPerSecond2;
@@ -22197,6 +22355,8 @@ timeTravel.scrubSettleTimer
 );
 const previousTimelineState =
 timeTravel.state;
+const interruptedIncome = foregroundCatchup || previousTimelineState === TIMELINE_STATE.RETURNING_LIVE
+? rollerMotion.displayValue : null;
 const timestamp =
 performance.now();
 const enteringFromLive =
@@ -22239,7 +22399,8 @@ TIMELINE_EVENT.SCRUB_STARTED,
 if (enteringFromLive) {
 resetHistoricalVisualState(
 timeTravel.historyTime,
-timestamp
+timestamp,
+interruptedIncome
 );
 beginHistoricalRollerEntryBrake(
 timeTravel.historyTime,
@@ -23082,6 +23243,7 @@ const finalTargetMs = timeTravel.historyTime?.getTime() || startTargetMs;
 cancelTimelineScrubCoast(false);
 releaseHistoryBoundaryFeedback();
 settleTimelineScrubbing();
+if (typeof tryHistorySnapPreview === 'function') tryHistorySnapPreview(Math.sign(finalTargetMs - startTargetMs));
 recordDiagnosticEvent('input', '触屏回弦线性减速结束', {
 reason,
 distanceMs: finalTargetMs - startTargetMs,
@@ -23237,7 +23399,9 @@ timeTravel.historyTime = target;
 let settleDelay = 190;
 if (immediateRetarget) {
 cancelHistoricalTargetCommit();
-const presetDuration = beginHistoryPresetSeek(
+const presetDuration = historicalVisual.motionActive ? (
+setHistoricalVisualTarget(target, timestamp, { continuousRetarget: true }), 260
+) : beginHistoryPresetSeek(
 target.getTime(),
 timestamp
 );
@@ -23279,7 +23443,7 @@ timelinePointerScrub.lastMoveAt = 0;
 timelinePointerScrub.timeVelocityMsPerSecond = 0;
 }
 function handleTimelinePointerDown(event) {
-if (event.pointerType === 'mouse' || event.button !== 0) return;
+if (event.button !== 0) return;
 cancelTimelineScrubCoast(false);
 setHistoryQuickPanelOpen(false);
 timelinePointerScrub.active = true;
@@ -23372,6 +23536,7 @@ const suppressClick = timelinePointerScrub.suppressClick;
 if (moved) {
 releaseHistoryBoundaryFeedback();
 settleTimelineScrubbing();
+if (event.type !== 'pointercancel' && typeof tryHistorySnapPreview === 'function') tryHistorySnapPreview(Math.sign(timelinePointerScrub.timeVelocityMsPerSecond));
 recordDiagnosticEvent(
 'input',
 '触屏回弦结束'
@@ -23548,6 +23713,8 @@ body.style.setProperty(
 }
 
 function finalizeHistoryQuickPanelClose() {
+if (historyQuickPanelState.open) return;
+const returnFocus = dom.historyQuickPanel.contains(document.activeElement);
 AppLifecycle.clearTimeout(historyQuickPanelState.closeTimer);
 historyQuickPanelState.closeTimer = 0;
 historyQuickPanelState.closing = false;
@@ -23561,6 +23728,7 @@ body.classList.remove(
 'history-quick-panel-closing'
 );
 resetHistoryQuickSheetDrag();
+if (returnFocus && dom.settingsDialog.hidden) dom.historyQuickOpen.focus({ preventScroll: true });
 }
 
 function setHistoryQuickPanelOpen(open) {
@@ -23569,6 +23737,11 @@ if (
 !dom.historyQuickPanel ||
 !dom.historyQuickOpen
 ) return;
+const opacity = dom.historyQuickPanel.hidden ? 0 : Number(getComputedStyle(dom.historyQuickPanel).opacity);
+const panelDuration = reduceMotionQuery.matches ? 0 : Math.max(1,(nextOpen ? 240 : 190) * (nextOpen ? 1 - opacity : opacity));
+if (!nextOpen && historyQuickPanelState.closing) return;
+dom.historyQuickPanel.style.setProperty('--quick-motion-ms', `${panelDuration}ms`);
+dom.historyQuickBackdrop?.style.setProperty('--quick-motion-ms', `${panelDuration}ms`);
 
 AppLifecycle.clearTimeout(
 historyQuickPanelState.closeTimer
@@ -23596,6 +23769,7 @@ body.classList.add(
 'history-quick-panel-open'
 );
 AppLifecycle.requestFrame(() => {
+if (!historyQuickPanelState.open || historyQuickPanelState.closing) return;
 body.classList.add(
 'history-quick-panel-visible'
 );
@@ -23631,7 +23805,7 @@ body.classList.add(
 historyQuickPanelState.closeTimer =
 AppLifecycle.setTimeout(
 finalizeHistoryQuickPanelClose,
-reduceMotionQuery.matches ? 0 : 210
+panelDuration
 );
 }
 
@@ -25204,7 +25378,7 @@ rollerMotion.displayValue = value;
 rollerMotion.lastStatus = status;
 rollerMotion.stop = null;
 motion.lastFrameAt = timestamp;
-applyProgressVisual(interpolateProgressVisual(motion.snapshot.progress, progressVisualForWorkSeconds(workSeconds), eased), status);
+applyProgressVisual(foregroundProgressVisual(motion.snapshot, progressVisualForWorkSeconds(workSeconds), eased, status), status);
 if (p >= 1) {
 foregroundCatchup = null;
 claimRollerOwner(ROLLER_OWNER.LIVE, 'foreground-continuous-complete', timestamp);
@@ -25359,6 +25533,23 @@ totalWorkSeconds;
 }
 return true;
 }
+function updateSynchronizedReadouts(now, status, workSeconds, rates) {
+const animated = Boolean(startupSync || foregroundCatchup || midnightReset || dayEndMotion || isHistoricalTimelineState());
+const income = animated ? rollerMotion.displayValue : Math.floor(workSeconds) * rates.secondly;
+const displayedWork = animated && rates.secondly > 0
+? clamp(income / rates.secondly, 0, totalWorkSeconds)
+: workSeconds;
+const wholeWork = Math.max(0, Math.floor(displayedWork));
+const remain = Math.max(0, totalWorkSeconds - wholeWork);
+setTextIfChanged(dom.workedTime, formatDuration(wholeWork));
+let text = `剩余 ${formatDuration(remain)}`;
+if (status === 'day-off') text = '今日不计工作收入';
+else if (wholeWork >= totalWorkSeconds) text = '已完成全天工作';
+else if (status === 'break' && wholeWork === morningSeconds) text = `午休后剩余 ${formatDuration(remain)}`;
+else if (status === 'not-started' && wholeWork === 0) text = `全天待完成 ${formatDuration(remain)}`;
+setTextIfChanged(dom.workedSub, text);
+setTextIfChanged(dom.monthIncome, formatCurrency(getMonthProgress(now, income, rates).accumulated));
+}
 function updateStats(
 frame = createFrameSnapshot()
 ) {
@@ -25395,20 +25586,7 @@ displayedClockDate,
 frame.liveDate
 );
 applyStatus(status, now);
-setTextIfChanged(dom.workedTime, formatDuration(workSeconds));
-let workedSubText;
-if (status === 'day-off') {
-workedSubText = '今日不计工作收入';
-} else if (status === 'ended') {
-workedSubText = '已完成全天工作';
-} else if (status === 'break') {
-workedSubText = `午休后剩余 ${formatDuration(remain)}`;
-} else if (status === 'not-started') {
-workedSubText = `全天待完成 ${formatDuration(remain)}`;
-} else {
-workedSubText = `剩余 ${formatDuration(remain)}`;
-}
-setTextIfChanged(dom.workedSub, workedSubText);
+updateSynchronizedReadouts(now, status, workSeconds, rates);
 let progressPhaseText = '等待开始';
 let progressRemainingText = `全天 ${formatCompactDuration(remain)}`;
 if (status === 'day-off') {
@@ -25451,7 +25629,6 @@ setTextIfChanged(dom.dailyRateDisplay, `日均 ${formatCurrency(rates.daily)} ·
 setTextIfChanged(dom.rateText, `¥${rates.secondly.toFixed(4)}`);
 setTextIfChanged(dom.estMonth, formatCurrency(rates.monthProjection));
 setTextIfChanged(dom.estYear, formatCurrency(rates.annualProjection));
-setTextIfChanged(dom.monthIncome, formatCurrency(monthProgress.accumulated));
 setTextIfChanged(
 dom.monthWorkDays,
 String(rates.monthCalendar.totalWorkdays)
@@ -26073,6 +26250,7 @@ displayedIncome, timestamp);
 lastRenderedLiveIncome = liveIncome;
 }
 lastVisualStatus = status;
+updateSynchronizedReadouts(now, status, workSeconds, rates);
 if (typeof updateMotionDebug === 'function') updateMotionDebug(timestamp, status);
 /* R30 DEVELOP MOTION QUALITY HOOK */ MotionQualityMonitor.sample(timestamp);
 }

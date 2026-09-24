@@ -4,6 +4,9 @@
   "internalVersion": "v35",
   "buildId": "pocket-watch-v35-r44-calibrated-rail-breathing-cards-preview-2026-09-06",
   "releaseDate": "2026-09-06",
+  "deliveryRevision": "2026-09-24-r1",
+  "manualRevision": "2026-09-24-r1",
+  "widgetVersion": "2.5.2",
   "canonicalSource": "Income-per-sed-Develop.html",
   "derivedArtifacts": [
     "Income-per-sed-Push.html"
