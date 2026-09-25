@@ -3,7 +3,7 @@
 // Place this file and Income-per-sed-Push.html in iCloud Drive/Scriptable.
 
 const APP = {
-  version: "2.5.1",
+  version: "2.5.2",
   timeZone: "Asia/Shanghai",
   settingsFile: "IncomeWidget-settings.json",
   htmlCandidates: [
@@ -11,7 +11,7 @@ const APP = {
   ],
   settingsSchema: 3,
   transactionSchema: 2,
-  sourceBuild: "widget-currency-format-only-2026-09-05",
+  sourceBuild: "widget-config-feedback-2026-09-16",
   refreshMinutes: {
     working: 1,
     transition: 3,
@@ -88,7 +88,13 @@ async function main() {
     return await showMenu()
   }
 
-  const settings = loadSettings()
+  const result = readSettingsResult()
+  if (result.status !== "ok") {
+    Script.setWidget(configurationWidget(result))
+    Script.complete()
+    return
+  }
+  const settings = result.settings
   const now = new Date()
   const data = calculateDashboard(settings, now)
   const widget = createWidget(data, settings, config.widgetFamily || "medium")
@@ -110,18 +116,66 @@ function settingsPath() {
   return settingsFM().joinPath(settingsFM().documentsDirectory(), APP.settingsFile)
 }
 
-function loadSettings() {
-  const manager = settingsFM()
-  const path = settingsPath()
+function readSettingsResult() {
   try {
-    if (!manager.fileExists(path)) return deepCopy(DEFAULTS)
-    if (!manager.isFileDownloaded(path)) manager.downloadFileFromiCloud(path)
+    const manager = settingsFM()
+    const path = settingsPath()
+    if (!manager.fileExists(path)) return { status: "missing", message: "请先设置工资与工作时段" }
     const parsed = JSON.parse(manager.readString(path))
-    return normalizeSettings(parsed)
+    const settings = validateStoredSettings(parsed)
+    return { status: "ok", settings }
   } catch (error) {
-    console.log(`设置读取失败，使用默认值：${error}`)
-    return deepCopy(DEFAULTS)
+    console.log(`设置读取失败，保留原文件：${error}`)
+    return { status: "error", message: "无法读取有效配置，原文件未被覆盖。请检查工资与工作时段。" }
   }
+}
+
+function validateStoredSettings(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("配置格式错误")
+  const mode = value.incomeMode === undefined ? DEFAULTS.incomeMode : value.incomeMode
+  if (!["fixed-monthly", "annual-average", "fixed-daily"].includes(mode)) throw new Error("收入模式错误")
+  const required = mode === "fixed-daily" ? "dailyIncome" : "monthlyIncome"
+  if (value[required] === undefined) throw new Error("缺少收入金额")
+  for (const [key, min, max] of [["monthlyIncome", 0.01, 1e9], ["dailyIncome", 0.01, 1e8], ["annualWorkDays", 1, 366]]) {
+    if (value[key] !== undefined && (typeof value[key] !== "number" || !Number.isFinite(value[key]) || value[key] < min || value[key] > max)) throw new Error("收入字段错误")
+  }
+  if (value.schedule !== undefined) {
+    if (!value.schedule || typeof value.schedule !== "object" || Array.isArray(value.schedule)) throw new Error("工作时段格式错误")
+    for (const key of Object.keys(DEFAULTS.schedule)) {
+      if (value.schedule[key] !== undefined && !validClock(value.schedule[key])) throw new Error("时间格式错误")
+    }
+  }
+  const schedule = { ...DEFAULTS.schedule, ...value.schedule }
+  const seconds = Object.keys(DEFAULTS.schedule).map(key => clockToSeconds(schedule[key]))
+  if (!(seconds[0] < seconds[1] && seconds[1] <= seconds[2] && seconds[2] < seconds[3])) throw new Error("时间顺序错误")
+  return normalizeSettings(value)
+}
+
+function configurationWidget(result) {
+  const widget = new ListWidget()
+  widget.setPadding(16, 16, 16, 16)
+  widget.backgroundColor = Color.dynamic(new Color("f7f6f2"), new Color("20211f"))
+  widget.addSpacer()
+  const title = widget.addText(result.status === "missing" ? "请先完成设置" : "配置需检查")
+  title.font = Font.mediumSystemFont(16)
+  title.textColor = Color.dynamic(new Color("303530"), new Color("eeeeea"))
+  widget.addSpacer(8)
+  const detail = widget.addText("轻点设置工资与工作时段")
+  detail.font = Font.systemFont(12)
+  detail.textColor = Color.dynamic(new Color("626861"), new Color("b8bcb4"))
+  widget.addSpacer()
+  widget.url = runURL("settings")
+  widget.refreshAfterDate = new Date(Date.now() + 12 * 60 * 1000)
+  return widget
+}
+
+async function configurationNotice(result) {
+  const alert = new Alert()
+  alert.title = result.status === "missing" ? "请先完成设置" : "配置需检查"
+  alert.message = result.message
+  alert.addAction("重新填写")
+  alert.addCancelAction("取消")
+  return await alert.presentAlert() === 0
 }
 
 function saveSettings(value) {
@@ -364,7 +418,7 @@ function nextRefreshDate(data, now = new Date()) {
     }
   }
 
-  return new Date(now.getTime() + Math.max(60 * 1000, delayMs))
+  return new Date(now.getTime() + Math.max(1500, delayMs))
 }
 
 function modeLabel(mode) {
@@ -956,8 +1010,9 @@ async function showMenu() {
   menu.addCancelAction("取消")
   const index = await menu.presentSheet()
   if (index === 0) {
-    const data = calculateDashboard(loadSettings(), new Date())
-    await mediumWidget(data).presentMedium()
+    const result = readSettingsResult()
+    const widget = result.status === "ok" ? mediumWidget(calculateDashboard(result.settings, new Date())) : configurationWidget(result)
+    await widget.presentMedium()
   } else if (index === 1) {
     await editSettings()
   } else if (index === 2) {
@@ -966,7 +1021,9 @@ async function showMenu() {
 }
 
 async function editSettings() {
-  const current = loadSettings()
+  const result = readSettingsResult()
+  if (result.status !== "ok" && !await configurationNotice(result)) return
+  const current = result.status === "ok" ? result.settings : deepCopy(DEFAULTS)
   const modeSheet = new Alert()
   modeSheet.title = "收入计算方式"
   modeSheet.addAction("固定月薪")
@@ -1030,7 +1087,16 @@ async function editSettings() {
     dailyIncome: Number(draft.dailyIncome),
     annualWorkDays: Number(draft.annualWorkDays)
   })
-  saveSettings(normalized)
+  try {
+    saveSettings(normalized)
+  } catch (error) {
+    const failed = new Alert()
+    failed.title = "保存失败"
+    failed.message = "配置未确认保存成功，请检查 Scriptable 存储后重试。"
+    failed.addAction("知道了")
+    await failed.presentAlert()
+    return
+  }
 
   const done = new Alert()
   done.title = "已保存"
@@ -1050,21 +1116,7 @@ function findLatestHtmlPath(manager, base) {
     if (manager.fileExists(candidate)) return candidate
   }
 
-  let names = []
-  try {
-    names = manager.listContents(base)
-      .filter(name => /^Income-per-sed-Push(?:\(\d+\))?\.html$/i.test(name))
-      .sort((left, right) => {
-        const leftPath = manager.joinPath(base, left)
-        const rightPath = manager.joinPath(base, right)
-        const leftDate = manager.modificationDate(leftPath)
-        const rightDate = manager.modificationDate(rightPath)
-        return Number(rightDate || 0) - Number(leftDate || 0)
-      })
-  } catch (error) {
-    console.log(`扫描 HTML 文件失败：${error}`)
-  }
-  return names.length ? manager.joinPath(base, names[0]) : null
+  return null
 }
 
 function htmlSettingsBootstrapScript(settings) {
@@ -1168,6 +1220,11 @@ function htmlSettingsReadbackScript() {
 }
 
 async function openFullPage() {
+  const result = readSettingsResult()
+  if (result.status !== "ok") {
+    await editSettings()
+    return
+  }
   const manager = htmlFM()
   const base = manager.documentsDirectory()
   const path = findLatestHtmlPath(manager, base)
@@ -1181,12 +1238,21 @@ async function openFullPage() {
     return
   }
 
-  if (!manager.isFileDownloaded(path)) await manager.downloadFileFromiCloud(path)
   const web = new WebView()
-  await web.loadFile(path)
+  try {
+    if (!manager.isFileDownloaded(path)) await manager.downloadFileFromiCloud(path)
+    await web.loadFile(path)
+  } catch (error) {
+    const alert = new Alert()
+    alert.title = "HTML 打开失败"
+    alert.message = "无法下载或读取 Income-per-sed-Push.html。请在文件 App 中确认 iCloud 下载完成后重试。"
+    alert.addAction("知道了")
+    await alert.presentAlert()
+    return
+  }
 
   // Sync through the same revisioned transaction envelope used by the HTML page.
-  const current = loadSettings()
+  const current = result.settings
   try {
     await web.evaluateJavaScript(htmlSettingsBootstrapScript(current))
     await web.evaluateJavaScript(`location.reload(); true;`)
@@ -1201,7 +1267,7 @@ async function openFullPage() {
     const raw = await web.evaluateJavaScript(htmlSettingsReadbackScript())
     if (raw) {
       const candidate = JSON.parse(raw)
-      if (candidate && typeof candidate === 'object') saveSettings(candidate)
+      saveSettings(validateStoredSettings(candidate))
     }
   } catch (error) {
     console.log(`HTML 设置回读失败：${error}`)

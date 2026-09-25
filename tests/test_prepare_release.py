@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import hashlib
+import json
+import re
 from pathlib import Path
 import shutil
 import sys
@@ -16,6 +18,21 @@ from prepare_release import DOCUMENT_XML, HASH_PATTERN, sync_manual_hashes
 
 
 class PrepareReleaseTests(unittest.TestCase):
+    def test_delivery_revision_matches_manual_and_widget(self) -> None:
+        manifest = json.loads((ROOT / 'release-manifest.json').read_text(encoding='utf-8'))
+        revision = manifest['deliveryRevision']
+        self.assertRegex(revision, r'^\d{4}-\d{2}-\d{2}-r[1-9]\d*$')
+        self.assertEqual(manifest['manualRevision'], revision)
+        widget = (ROOT / 'IncomeWidget.js').read_text(encoding='utf-8')
+        version = re.search(r'const APP = \{\s*version: "([^"]+)"', widget)
+        self.assertIsNotNone(version)
+        self.assertEqual(manifest['widgetVersion'], version.group(1))
+        with zipfile.ZipFile(ROOT / 'docs/Income-per-sed（说明文档）.docx') as archive:
+            manual = archive.read(DOCUMENT_XML).decode('utf-8')
+        self.assertIn(revision, manual)
+        self.assertIn(manifest['productVersion'], manual)
+        self.assertIn(manifest['widgetVersion'], manual)
+
     def test_legacy_two_hash_manual_remains_supported(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp = Path(temp_dir)

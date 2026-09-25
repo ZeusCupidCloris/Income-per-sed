@@ -3,7 +3,7 @@ const base = require('./playwright.config');
 
 module.exports = defineConfig({
   ...base,
-  testMatch: 'webkit.spec.js',
+  testMatch: process.env.DEVELOP_PREVIEW === '1' ? ['webkit.spec.js', 'motion-feedback.spec.js', 'foreground-progress.spec.js', 'readout-sync.spec.js'] : 'webkit.spec.js',
   testIgnore: [],
   projects: [
     {

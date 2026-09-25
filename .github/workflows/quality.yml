@@ -38,6 +38,7 @@ jobs:
           python-version: '3.13'
       - run: npm ci
       - run: npm run test:release
+      - run: npm run test:widget
       - run: npm run release:prepare
       - run: npm run test:readme
       - run: git diff --exit-code
