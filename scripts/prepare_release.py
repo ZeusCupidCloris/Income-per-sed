@@ -6,18 +6,17 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
-import re
 import subprocess
 import sys
 import tempfile
 import zipfile
 
 from validate_release import CHECKSUM_FILE, MANIFEST_FILE, RELEASE_FILES, ROOT, digest
+from manual_checksums import replace_manual_hashes
 
 
 TEXT_ARTIFACTS = (RELEASE_FILES[1], RELEASE_FILES[2], MANIFEST_FILE.relative_to(ROOT))
 DOCUMENT_XML = "word/document.xml"
-HASH_PATTERN = re.compile(rb"(?<![0-9A-Fa-f])[0-9A-Fa-f]{64}(?![0-9A-Fa-f])")
 
 
 def normalize_lf(relative: Path) -> bool:
@@ -41,10 +40,11 @@ def sync_manual_hashes(
     push_path: Path = ROOT / RELEASE_FILES[0],
     widget_path: Path = ROOT / RELEASE_FILES[2],
 ) -> bool:
-    expected = [
-        digest(develop_path).upper().encode("ascii"),
-        digest(push_path).upper().encode("ascii"),
-    ]
+    expected = {
+        "Income-per-sed-Develop.html": digest(develop_path),
+        "Income-per-sed-Push.html": digest(push_path),
+        "IncomeWidget.js": digest(widget_path),
+    }
 
     with zipfile.ZipFile(manual_path) as archive:
         infos = archive.infolist()
@@ -53,24 +53,10 @@ def sync_manual_hashes(
     document_xml = payload.get(DOCUMENT_XML)
     if document_xml is None:
         raise RuntimeError(f"{manual_path.name} is missing {DOCUMENT_XML}")
-    matches = list(HASH_PATTERN.finditer(document_xml))
-    if len(matches) == 3:
-        expected.append(digest(widget_path).upper().encode("ascii"))
-    if len(matches) != len(expected):
-        raise RuntimeError(
-            f"Expected two HTML hashes and optionally one widget hash in {manual_path.name}; found {len(matches)}"
-        )
-    current = [match.group(0).upper() for match in matches]
-    if current == expected:
+    updated = replace_manual_hashes(document_xml, expected)
+    if updated == document_xml:
         return False
-
-    chunks: list[bytes] = []
-    cursor = 0
-    for match, replacement in zip(matches, expected, strict=True):
-        chunks.extend((document_xml[cursor : match.start()], replacement))
-        cursor = match.end()
-    chunks.append(document_xml[cursor:])
-    payload[DOCUMENT_XML] = b"".join(chunks)
+    payload[DOCUMENT_XML] = updated
 
     temp_path: Path | None = None
     try:

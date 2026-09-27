@@ -12,6 +12,7 @@ import re
 import subprocess
 import sys
 import zipfile
+from manual_checksums import read_manual_hashes
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -230,23 +231,11 @@ def validate_docx() -> None:
     except zipfile.BadZipFile as exc:
         raise RuntimeError(f"DOCX is not a valid OOXML ZIP package: {exc}") from exc
 
-    embedded_hashes = [
-        match.group(0).decode("ascii").lower()
-        for match in re.finditer(
-            rb"(?<![0-9A-Fa-f])[0-9A-Fa-f]{64}(?![0-9A-Fa-f])",
-            document_xml,
-        )
-    ]
-    expected_hashes = [
-        digest(ROOT / RELEASE_FILES[1]),
-        digest(ROOT / RELEASE_FILES[0]),
-    ]
-    if len(embedded_hashes) == 3:
-        expected_hashes.append(digest(ROOT / RELEASE_FILES[2]))
+    embedded_hashes = read_manual_hashes(document_xml)
+    expected_hashes = {relative.name: digest(ROOT / relative) for relative in RELEASE_FILES[:3]}
     if embedded_hashes != expected_hashes:
         fail(
-            "Word manual HTML hashes are stale; run npm run release:prepare "
-            f"(expected Develop {expected_hashes[0]} and Push {expected_hashes[1]})"
+            "Word manual file hashes are stale; run npm run release:prepare"
         )
 
 
