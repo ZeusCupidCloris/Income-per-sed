@@ -25552,10 +25552,10 @@ else if (status === 'break' && wholeWork === morningSeconds) text = `午休后�
 else if (status === 'not-started' && wholeWork === 0) text = `全天待完成 ${formatDuration(remain)}`;
 setTextIfChanged(dom.workedSub, text);
 let monthIncome = getMonthProgress(now, income, rates).accumulated;
-if (foregroundCatchup?.resume && foregroundCatchup.snapshot.dateKey !== localDateKey(now)) {
+if (foregroundCatchup?.resume) {
 const snapshot = foregroundCatchup.snapshot;
 const sameMonth = snapshot.dateKey.slice(0, 7) === localDateKey(now).slice(0, 7);
-// Cross-date recovery must not add yesterday's animated income to today's base.
+// Every resume keeps the visible month snapshot, including interrupted cross-date recovery.
 const from = sameMonth && Number.isFinite(snapshot.monthIncome) ? snapshot.monthIncome : 0;
 const target = getMonthProgress(now, workSeconds * rates.secondly, rates).accumulated;
 monthIncome = lerp(from, target, foregroundCatchup.readoutProgress || 0);

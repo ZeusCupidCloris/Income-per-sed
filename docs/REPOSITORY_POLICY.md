@@ -17,7 +17,7 @@ npm ci
 npm run quality:local
 ```
 
-`quality:local` 会依次运行 `test:release`、`release:prepare`、`test:readme`、Windows Edge 视觉回归和 WebKit 移动端检查，任一阶段失败即停止。`test:readme` 会确认 README 中的三张预览图均为真实 Markdown 或 HTML 图片引用，并验证完整 PNG 分块、CRC、解码数据、尺寸和 `config/readme-previews.json` 中的共享截图清单。截图命令还会生成 `docs/images/previews-manifest.json`，记录当前 Push 和每张预览图的 SHA-256；自动检查据此拒绝未随页面或图片同步、截断或损坏的 README 预览，同时避免不同 Windows/Edge 版本造成像素级误报。`release:prepare` 会统一发布文本文件换行、从 Develop 生成 Push、同步 Word 说明书中的两个 HTML SHA-256、重建 `SHA256SUMS.txt`，并执行最终发布校验。该命令可重复运行；在文件已同步时不会继续改写 Word。构建脚本会移除 Develop 专用诊断面板、动效质量记录和回归导出接口，再压缩 HTML、CSS 与 JavaScript。自动检查会拒绝过期或无法重现的 Push、说明书哈希或校验清单。
+`quality:local` 会依次运行 `test:release`、`release:prepare`、`test:readme`、`test:widget`、Windows Edge 视觉回归和 WebKit 检查，任一阶段失败即停止。WebKit 检查包含移动端冒烟和 Develop/Push 跨日恢复组合。`test:readme` 会确认 README 中的三张预览图均为真实 Markdown 或 HTML 图片引用，并验证完整 PNG 分块、CRC、解码数据、尺寸和 `config/readme-previews.json` 中的共享截图清单。截图命令还会生成 `docs/images/previews-manifest.json`，记录当前 Push 和每张预览图的 SHA-256；自动检查据此拒绝未随页面或图片同步、截断或损坏的 README 预览，同时避免不同 Windows/Edge 版本造成像素级误报。`release:prepare` 会统一发布文本文件换行、从 Develop 生成 Push、按文件名书签同步 Word 说明书中的 Develop、Push 和 Widget SHA-256、重建 `SHA256SUMS.txt`，并执行最终发布校验。该命令可重复运行；在文件已同步时不会继续改写 Word。构建脚本会移除 Develop 专用诊断面板、动效质量记录和回归导出接口，再压缩 HTML、CSS 与 JavaScript。自动检查会拒绝过期或无法重现的 Push、说明书哈希或校验清单。
 
 ## 版本更新
 
@@ -59,7 +59,7 @@ npm run quality:local
 
 1. 仅修改 Develop 源文件或 Widget，使用 `npm run release:prepare` 生成 Push 并同步手册校验值。
 2. 若 Push 改变，执行 `npm run preview:capture`，检查三张截图后再执行 `npm run test:readme`；截图清单必须对应当前 Push。
-3. 手册内容或校验页有变化时，检查 Word 渲染结果。手册支持两个 HTML 校验值及可选的第三个 Widget 校验值。
+3. 手册内容或校验页有变化时，检查 Word 渲染结果。三个源文件各使用唯一的命名书签定位校验值；缺失、重复或无效标记必须先修复，不能退回按段落顺序猜测。规则见 [说明书校验维护](manual-maintenance.md)。
 4. 执行 `npm run quality:local`。视觉基线只在设计确实改变且人工确认后更新，不通过覆盖截图来掩盖回归。
 5. 将源码、生成产物、手册、校验清单和必要截图一起提交；在验收记录中分别写明已验证和未验证的部分。
 
