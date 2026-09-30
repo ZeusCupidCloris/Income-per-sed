@@ -10,7 +10,7 @@
     "release:repeatability": "node scripts/run_python.mjs scripts/check_release_repeatability.py",
     "validate": "node scripts/run_python.mjs scripts/validate_release.py",
     "checksums": "node scripts/run_python.mjs scripts/validate_release.py --write-checksums",
-    "test:release": "node scripts/run_python.mjs -m unittest discover -s tests -p test_prepare_release.py && node --test tests/release_channel.test.mjs tests/workflow-contract.test.mjs",
+    "test:release": "node scripts/run_python.mjs -m unittest discover -s tests -p test_prepare_release.py && node --test tests/release_channel.test.mjs tests/workflow-contract.test.mjs tests/naming.test.mjs",
     "test:readme": "node --test tests/readme_assets.test.mjs && node scripts/validate_readme_assets.mjs",
     "test:widget": "node --test tests/widget-settings.cjs",
     "test": "playwright test --config=config/playwright.config.js",

@@ -2,11 +2,11 @@
   "productVersion": "2.5.4-rc.2",
   "releaseTag": "v2.5.4-rc.2",
   "internalVersion": "v35",
-  "buildId": "pocket-watch-v35-r44-calibrated-rail-breathing-cards-preview-2026-09-06",
+  "buildId": "v35-20260930.1",
   "releaseDate": "2026-09-06",
-  "deliveryRevision": "2026-09-24-r1",
-  "manualRevision": "2026-09-24-r1",
-  "widgetVersion": "2.5.2",
+  "deliveryRevision": "20260930.1",
+  "manualRevision": "20260930.1",
+  "widgetVersion": "2.5.3",
   "canonicalSource": "Income-per-sed-Develop.html",
   "derivedArtifacts": [
     "Income-per-sed-Push.html"
@@ -18,5 +18,11 @@
     "docs/Income-per-sed（说明文档）.docx",
     "SHA256SUMS.txt",
     "release-manifest.json"
-  ]
+  ],
+  "publicNames": {
+    "pushTitle": "Income-per-sed",
+    "developTitle": "Income-per-sed · Develop",
+    "widgetMenu": "Income-per-sed",
+    "manualTitle": "Income-per-sed 使用手册"
+  }
 }

@@ -33,7 +33,7 @@ class PrepareReleaseTests(unittest.TestCase):
     def test_delivery_revision_matches_manual_and_widget(self) -> None:
         manifest = json.loads((ROOT / 'release-manifest.json').read_text(encoding='utf-8'))
         revision = manifest['deliveryRevision']
-        self.assertRegex(revision, r'^\d{4}-\d{2}-\d{2}-r[1-9]\d*$')
+        self.assertRegex(revision, r'^\d{8}\.[1-9]\d*$')
         self.assertEqual(manifest['manualRevision'], revision)
         widget = (ROOT / 'IncomeWidget.js').read_text(encoding='utf-8')
         version = re.search(r'const APP = \{\s*version: "([^"]+)"', widget)

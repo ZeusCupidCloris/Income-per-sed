@@ -42,7 +42,7 @@ async function buildPush() {
     .replace('<meta name="income-per-sed-channel" content="develop">', '')
     .replace(
       /<title>([^<]+)<\/title>/,
-      '<title>$1 · Push</title><meta name="income-per-sed-channel" content="push">',
+      '<title>Income-per-sed</title><meta name="income-per-sed-channel" content="push">',
     );
 
   const output = await minify(source, {

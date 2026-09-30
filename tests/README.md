@@ -1,5 +1,18 @@
 # 测试索引
 
+这里是维护工具，不是运行网页必需的文件。结果只适用于被测提交；模拟后台、模拟时钟及 Scriptable 替身均不等于实体设备通过。
+
+| 命令 | 用途 |
+| --- | --- |
+| npm run test:release | 构建、说明书、命名与工作流约束 |
+| npm run test:widget | 小组件配置异常逻辑，测试替身 |
+| npm test | Edge 业务、交互与截图对比 |
+| npm run test:webkit | WebKit 手机尺寸与恢复行为，不代表 iPhone 实机 |
+| npm run test:readme | 首页图片及来源完整性 |
+| npm run release:repeatability | 连续构建一致性，会写入交付 |
+
+`naming.test.mjs` 检查标题、组件版本与交付编号。`readout-sync.spec.js` 检查读数与统一运动时间；`foreground-progress.spec.js` 检查恢复进度和拨钮。截图基线位于 `visual.spec.js-snapshots/`，辅助工具位于 `helpers/`。
+
 | 范围 | 文件 | 边界 |
 | --- | --- | --- |
 | 启动与历史运动 | startup-history.spec.js | 后台是模拟，不代表实机锁屏 |

@@ -204,6 +204,11 @@ def validate_html(path: Path) -> None:
 
 
 def validate_widget() -> None:
+    manifest = read_json(MANIFEST_FILE)
+    text = (ROOT / RELEASE_FILES[2]).read_text(encoding="utf-8")
+    version = re.search(r'\bversion:\s*"([^"]+)"', text)
+    if not version or version.group(1) != manifest.get("widgetVersion"):
+        fail("Widget component version does not match release-manifest.json")
     result = subprocess.run(
         ["node", "--check", str(ROOT / "IncomeWidget.js")],
         capture_output=True,
