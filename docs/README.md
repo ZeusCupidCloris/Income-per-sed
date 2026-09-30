@@ -2,6 +2,8 @@
 
 [仓库地图与文件用途](repository-map.md) · [使用手册](Income-per-sed（说明文档）.docx) · [维护规则](REPOSITORY_POLICY.md)
 
+按角色进入：[日常用户](user/README.md) · [开发者](developer/README.md) · [验收人员](verification/README.md) · [项目维护者](maintainer/README.md)。入口只链接现有资料，验收结果仍在下方唯一索引维护。
+
 ## 当前交付
 
 产品 `2.5.4-rc.2`，交付 `20260930.1`，小组件 `2.5.3`。编号不代表已创建正式发布标签。

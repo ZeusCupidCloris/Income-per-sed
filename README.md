@@ -56,6 +56,8 @@
 
 ## 维护入口
 
+按角色选择：[日常用户](docs/user/README.md) · [开发者](docs/developer/README.md) · [验收人员](docs/verification/README.md) · [项目维护者](docs/maintainer/README.md)。角色目录只提供导航，原文件位置与下载地址不变。
+
 首页目录用途如下。日常打开网页只需要 Push，使用小组件再下载 Widget，其余主要供开发维护。
 
 | 文件或目录 | 用途 | 阅读对象 |
