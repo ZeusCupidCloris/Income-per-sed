@@ -1,8 +1,8 @@
 # 仓库地图与全文件用途
 
-中文用途名帮助理解，不替换实际文件名。既有文件地址不变；新文件命名按 [维护规则](REPOSITORY_POLICY.md#文件命名规则)。这里覆盖 Git 管理的文件及本轮待提交文件，不列依赖目录、临时报告和缓存。
+中文用途名帮助理解，不替换实际文件名。既有文件地址不变；新文件命名按 [维护规则](../docs/REPOSITORY_POLICY.md#文件命名规则)。这里覆盖 Git 管理的文件及本轮待提交文件，不列依赖目录、临时报告和缓存。
 
-状态以 [验收索引](README.md) 为准；看到文件名或历史证据不代表当前已验收。脚本与测试的执行方式分别见 [脚本索引](../scripts/README.md)、[测试索引](../tests/README.md)。
+状态以 [验收索引](../docs/README.md) 为准；看到文件名或历史证据不代表当前已验收。脚本与测试的执行方式分别见 [脚本索引](scripts-index.md)、[测试索引](tests-index.md)。
 
 ## 交付与首页
 
@@ -40,53 +40,55 @@
 
 | 实际路径 | 中文用途名 | 阅读对象 |
 | --- | --- | --- |
-| [docs/user/README.md](user/README.md) | 日常用户阅读入口 | 用户 |
-| [docs/developer/README.md](developer/README.md) | 源码与工具阅读入口 | 开发 |
-| [docs/verification/README.md](verification/README.md) | 当前、待验收与历史证据入口 | 验收 |
-| [docs/maintainer/README.md](maintainer/README.md) | 仓库、日历与发布维护入口 | 维护 |
-| [docs/Income-per-sed（说明文档）.docx](Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
-| [docs/README.md](README.md) | 当前交付与验收状态索引 | 维护 |
-| [docs/REPOSITORY_POLICY.md](REPOSITORY_POLICY.md) | 命名及维护发布规则 | 维护 |
-| [docs/repository-map.md](repository-map.md) | 按阅读对象分类的仓库地图与全文件用途表 | 用户与维护 |
-| [docs/calendar-maintenance.md](calendar-maintenance.md) | 年度内置日历手动替换清单 | 维护 |
-| [docs/manual-maintenance.md](manual-maintenance.md) | 使用手册校验书签维护规则 | 维护 |
-| [docs/images/preview-dark.png](images/preview-dark.png) | 首页深色模式展示图 | 用户与维护 |
-| [docs/images/preview-desktop.png](images/preview-desktop.png) | 首页桌面展示图 | 用户与维护 |
-| [docs/images/preview-mobile.png](images/preview-mobile.png) | 首页手机展示图 | 用户与维护 |
-| [docs/images/previews-manifest.json](images/previews-manifest.json) | 首页截图来源与校验值清单 | 用户与维护 |
+| [Attachment/README.md](README.md) | 集中索引入口与目录边界 | 用户与维护 |
+| [docs/maintainer/workflow-review.md](../docs/maintainer/workflow-review.md) | 工作流重复检查评估与待决策方案 | 维护 |
+| [docs/user/README.md](../docs/user/README.md) | 日常用户阅读入口 | 用户 |
+| [docs/developer/README.md](../docs/developer/README.md) | 源码与工具阅读入口 | 开发 |
+| [docs/verification/README.md](../docs/verification/README.md) | 当前、待验收与历史证据入口 | 验收 |
+| [docs/maintainer/README.md](../docs/maintainer/README.md) | 仓库、日历与发布维护入口 | 维护 |
+| [docs/Income-per-sed（说明文档）.docx](../docs/Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
+| [docs/README.md](../docs/README.md) | 当前交付与验收状态索引 | 维护 |
+| [docs/REPOSITORY_POLICY.md](../docs/REPOSITORY_POLICY.md) | 命名及维护发布规则 | 维护 |
+| [Attachment/repository-map.md](repository-map.md) | 按阅读对象分类的仓库地图与全文件用途表 | 用户与维护 |
+| [docs/calendar-maintenance.md](../docs/calendar-maintenance.md) | 年度内置日历手动替换清单 | 维护 |
+| [docs/manual-maintenance.md](../docs/manual-maintenance.md) | 使用手册校验书签维护规则 | 维护 |
+| [docs/images/preview-dark.png](../docs/images/preview-dark.png) | 首页深色模式展示图 | 用户与维护 |
+| [docs/images/preview-desktop.png](../docs/images/preview-desktop.png) | 首页桌面展示图 | 用户与维护 |
+| [docs/images/preview-mobile.png](../docs/images/preview-mobile.png) | 首页手机展示图 | 用户与维护 |
+| [docs/images/previews-manifest.json](../docs/images/previews-manifest.json) | 首页截图来源与校验值清单 | 用户与维护 |
 
 ## 验收证据与版本说明
 
 | 实际路径 | 中文用途名 | 阅读对象 |
 | --- | --- | --- |
-| [docs/acceptance/cross-date-month-20260924.md](acceptance/cross-date-month-20260924.md) | 09-24 跨日期月收入验收证据 | 维护与历史 |
-| [docs/acceptance/foreground-progress-20260923.md](acceptance/foreground-progress-20260923.md) | 09-23 恢复进度与拨钮验收证据 | 维护与历史 |
-| [docs/acceptance/foreground-resume-20260909.md](acceptance/foreground-resume-20260909.md) | 09-09 前台恢复验收证据 | 维护与历史 |
-| [docs/acceptance/fourfile-20260916.md](acceptance/fourfile-20260916.md) | 09-16 四文件交付验收证据 | 维护与历史 |
-| [docs/acceptance/fourfile-20260922.md](acceptance/fourfile-20260922.md) | 09-22 四文件交付验收证据 | 维护与历史 |
-| [docs/acceptance/fourfile-20260924.md](acceptance/fourfile-20260924.md) | 09-24 四文件交付验收证据 | 维护与历史 |
-| [docs/acceptance/grid-idle-20260930.md](acceptance/grid-idle-20260930.md) | 09-30 背景空闲重绘修复证据 | 维护与历史 |
-| [docs/acceptance/grid-recovery-20260930.md](acceptance/grid-recovery-20260930.md) | 09-30 模拟后台绘制循环检查证据 | 维护与历史 |
-| [docs/acceptance/maintenance-20260915.md](acceptance/maintenance-20260915.md) | 09-15 仓库维护验收证据 | 维护与历史 |
-| [docs/acceptance/maintenance-round2-20260908.md](acceptance/maintenance-round2-20260908.md) | 09-08 第二轮维护验收证据 | 维护与历史 |
-| [docs/acceptance/motion-preview-20260922.md](acceptance/motion-preview-20260922.md) | 09-22 局部动效预览验收证据 | 维护与历史 |
-| [docs/acceptance/naming-20260930.md](acceptance/naming-20260930.md) | 09-30 命名与交付整理验收证据 | 维护与历史 |
-| [docs/acceptance/overnight-20260915.md](acceptance/overnight-20260915.md) | 09-15 真实跨夜验收安排与边界 | 维护与历史 |
-| [docs/acceptance/readout-sync-20260924.md](acceptance/readout-sync-20260924.md) | 09-24 读数同步验收证据 | 维护与历史 |
-| [docs/acceptance/recovery-maintenance-20260927.md](acceptance/recovery-maintenance-20260927.md) | 09-27 恢复组合维护验收证据 | 维护与历史 |
-| [docs/acceptance/v2.5.2.md](acceptance/v2.5.2.md) | 2.5.2 版本验收证据 | 维护与历史 |
-| [docs/acceptance/v2.5.4-rc.2-maintenance.md](acceptance/v2.5.4-rc.2-maintenance.md) | 2.5.4-rc.2 内部加固验收证据 | 维护与历史 |
-| [docs/acceptance/v2.5.4-rc.2-startup.md](acceptance/v2.5.4-rc.2-startup.md) | 2.5.4-rc.2 启动恢复验收证据 | 维护与历史 |
-| [docs/releases/v2.5.0.md](releases/v2.5.0.md) | 2.5.0 发布说明 | 维护与历史 |
-| [docs/releases/v2.5.1.md](releases/v2.5.1.md) | 2.5.1 发布说明 | 维护与历史 |
-| [docs/releases/v2.5.2.md](releases/v2.5.2.md) | 2.5.2 发布说明 | 维护与历史 |
-| [docs/releases/v2.5.4-rc.2.md](releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
+| [docs/acceptance/cross-date-month-20260924.md](../docs/acceptance/cross-date-month-20260924.md) | 09-24 跨日期月收入验收证据 | 维护与历史 |
+| [docs/acceptance/foreground-progress-20260923.md](../docs/acceptance/foreground-progress-20260923.md) | 09-23 恢复进度与拨钮验收证据 | 维护与历史 |
+| [docs/acceptance/foreground-resume-20260909.md](../docs/acceptance/foreground-resume-20260909.md) | 09-09 前台恢复验收证据 | 维护与历史 |
+| [docs/acceptance/fourfile-20260916.md](../docs/acceptance/fourfile-20260916.md) | 09-16 四文件交付验收证据 | 维护与历史 |
+| [docs/acceptance/fourfile-20260922.md](../docs/acceptance/fourfile-20260922.md) | 09-22 四文件交付验收证据 | 维护与历史 |
+| [docs/acceptance/fourfile-20260924.md](../docs/acceptance/fourfile-20260924.md) | 09-24 四文件交付验收证据 | 维护与历史 |
+| [docs/acceptance/grid-idle-20260930.md](../docs/acceptance/grid-idle-20260930.md) | 09-30 背景空闲重绘修复证据 | 维护与历史 |
+| [docs/acceptance/grid-recovery-20260930.md](../docs/acceptance/grid-recovery-20260930.md) | 09-30 模拟后台绘制循环检查证据 | 维护与历史 |
+| [docs/acceptance/maintenance-20260915.md](../docs/acceptance/maintenance-20260915.md) | 09-15 仓库维护验收证据 | 维护与历史 |
+| [docs/acceptance/maintenance-round2-20260908.md](../docs/acceptance/maintenance-round2-20260908.md) | 09-08 第二轮维护验收证据 | 维护与历史 |
+| [docs/acceptance/motion-preview-20260922.md](../docs/acceptance/motion-preview-20260922.md) | 09-22 局部动效预览验收证据 | 维护与历史 |
+| [docs/acceptance/naming-20260930.md](../docs/acceptance/naming-20260930.md) | 09-30 命名与交付整理验收证据 | 维护与历史 |
+| [docs/acceptance/overnight-20260915.md](../docs/acceptance/overnight-20260915.md) | 09-15 真实跨夜验收安排与边界 | 维护与历史 |
+| [docs/acceptance/readout-sync-20260924.md](../docs/acceptance/readout-sync-20260924.md) | 09-24 读数同步验收证据 | 维护与历史 |
+| [docs/acceptance/recovery-maintenance-20260927.md](../docs/acceptance/recovery-maintenance-20260927.md) | 09-27 恢复组合维护验收证据 | 维护与历史 |
+| [docs/acceptance/v2.5.2.md](../docs/acceptance/v2.5.2.md) | 2.5.2 版本验收证据 | 维护与历史 |
+| [docs/acceptance/v2.5.4-rc.2-maintenance.md](../docs/acceptance/v2.5.4-rc.2-maintenance.md) | 2.5.4-rc.2 内部加固验收证据 | 维护与历史 |
+| [docs/acceptance/v2.5.4-rc.2-startup.md](../docs/acceptance/v2.5.4-rc.2-startup.md) | 2.5.4-rc.2 启动恢复验收证据 | 维护与历史 |
+| [docs/releases/v2.5.0.md](../docs/releases/v2.5.0.md) | 2.5.0 发布说明 | 维护与历史 |
+| [docs/releases/v2.5.1.md](../docs/releases/v2.5.1.md) | 2.5.1 发布说明 | 维护与历史 |
+| [docs/releases/v2.5.2.md](../docs/releases/v2.5.2.md) | 2.5.2 发布说明 | 维护与历史 |
+| [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本
 
 | 实际路径 | 中文用途名 | 阅读对象 |
 | --- | --- | --- |
-| [scripts/README.md](../scripts/README.md) | 维护脚本用途与写入行为索引 | 维护 |
+| [Attachment/scripts-index.md](scripts-index.md) | 维护脚本用途与写入行为索引 | 维护 |
 | [scripts/build-release-html.mjs](../scripts/build-release-html.mjs) | 从开发网页生成发布网页 | 维护 |
 | [scripts/capture-readme-previews.mjs](../scripts/capture-readme-previews.mjs) | 采集首页浏览器展示图 | 维护 |
 | [scripts/check_delivery_repeatability.py](../scripts/check_delivery_repeatability.py) | 连续构建一致性检查 | 维护 |
@@ -106,7 +108,7 @@
 
 | 实际路径 | 中文用途名 | 阅读对象 |
 | --- | --- | --- |
-| [tests/README.md](../tests/README.md) | 自动测试用途与验收边界索引 | 维护 |
+| [Attachment/tests-index.md](tests-index.md) | 自动测试用途与验收边界索引 | 维护 |
 | [tests/background-grid.spec.js](../tests/background-grid.spec.js) | 背景交互与恢复绘制循环测试 | 维护 |
 | [tests/recovery-cross-actions.spec.js](../tests/recovery-cross-actions.spec.js) | 设置主题与恢复交叉操作测试 | 维护 |
 | [tests/cross-date-month.spec.js](../tests/cross-date-month.spec.js) | 跨日期月收入计算与过渡测试 | 维护 |

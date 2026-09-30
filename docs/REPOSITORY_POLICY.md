@@ -17,7 +17,7 @@ npm ci
 npm run quality:local
 ```
 
-`quality:local` 按既有顺序执行发布测试、交付生成、文档与图片检查、小组件测试、Edge 和 WebKit 检查，任一阶段失败即停止。命令与文件用途分别见 [脚本索引](../scripts/README.md) 和 [测试索引](../tests/README.md)，不在多篇文档重复维护详细参数。
+`quality:local` 按既有顺序执行发布测试、交付生成、文档与图片检查、小组件测试、Edge 和 WebKit 检查，任一阶段失败即停止。命令与文件用途分别见 [脚本索引](../Attachment/scripts-index.md) 和 [测试索引](../Attachment/tests-index.md)，不在多篇文档重复维护详细参数。
 
 交付生成负责从 Develop 构建 Push、统一发布文本换行、按文件名书签同步手册校验值、重建校验清单并核验一致性；已同步时不继续改写手册。手册定位规则只在 [说明书维护](manual-maintenance.md) 中定义。
 
@@ -46,7 +46,7 @@ npm run quality:local
 
 ## 目录职责
 
-完整名称与中文用途由 [全文件索引](repository-map.md) 维护，阅读对象由 [仓库地图](repository-map.md) 分类。
+完整名称与中文用途由 [全文件索引](../Attachment/repository-map.md) 维护，阅读对象由 [仓库地图](../Attachment/repository-map.md) 分类。
 
 ### 文件命名规则
 
@@ -61,6 +61,7 @@ npm run quality:local
 - `scripts/`：构建、发布校验、截图采集和在线文件核验。
 - `tests/`：业务、输入、动效、视觉及发布测试；本轮不移动测试或截图基线。
 - `docs/`：用户手册、维护规则、版本说明与验收记录。
+- `Attachment/`：跨角色使用的仓库地图、脚本与测试索引；原索引文件移入后同步引用，不保留重复副本。当前交付和历史验收索引仍位于 `docs/README.md`。
 - `.github/`：自动检查、Pages、Release、安全策略与依赖更新。
 
 ## 候选版与正式发布

@@ -66,7 +66,8 @@
 | `Income-per-sed-Develop.html` | 网页唯一修改源，包含诊断 | 开发者 |
 | `IncomeWidget.js` | Scriptable 手机与平板小组件 | 用户 |
 | `README.md` | 产品介绍、下载与快速使用 | 用户 |
-| `docs/` | Word 手册、仓库地图、维护与历史验收资料 | 用户与开发者 |
+| `docs/` | Word 手册、角色入口、维护与历史验收资料 | 用户与开发者 |
+| `Attachment/` | 仓库地图、脚本用途和测试用途的集中索引 | 用户与开发者 |
 | `CHANGELOG.md` | 版本与维护变更记录 | 用户与开发者 |
 | `LICENSE` | 保留全部权利及使用范围 | 用户与开发者 |
 | `release-manifest.json` | 产品、组件、交付版本及文件对应关系 | 开发者 |
@@ -81,9 +82,9 @@
 | `.gitattributes` | Git 换行和二进制文件规则 | 开发者 |
 | `.gitignore` | 排除缓存、依赖和测试输出 | 开发者 |
 
-- [仓库地图](docs/repository-map.md)：日常文件、维护工具与历史资料。
+- [仓库地图](Attachment/repository-map.md)：日常文件、维护工具与历史资料。
 - [文档与验收索引](docs/README.md)：当前交付、待验收和历史记录。
-- [脚本用途](scripts/README.md) · [测试用途](tests/README.md)。
+- [脚本用途](Attachment/scripts-index.md) · [测试用途](Attachment/tests-index.md)。
 - [维护与发布规则](docs/REPOSITORY_POLICY.md) · [更新记录](CHANGELOG.md)。
 - [自动检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions) · [安全报告](.github/SECURITY.md)。
 
