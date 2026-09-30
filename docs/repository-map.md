@@ -40,6 +40,10 @@
 
 | 实际路径 | 中文用途名 | 阅读对象 |
 | --- | --- | --- |
+| [docs/user/README.md](user/README.md) | 日常用户阅读入口 | 用户 |
+| [docs/developer/README.md](developer/README.md) | 源码与工具阅读入口 | 开发 |
+| [docs/verification/README.md](verification/README.md) | 当前、待验收与历史证据入口 | 验收 |
+| [docs/maintainer/README.md](maintainer/README.md) | 仓库、日历与发布维护入口 | 维护 |
 | [docs/Income-per-sed（说明文档）.docx](Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
 | [docs/README.md](README.md) | 当前交付与验收状态索引 | 维护 |
 | [docs/REPOSITORY_POLICY.md](REPOSITORY_POLICY.md) | 命名及维护发布规则 | 维护 |
