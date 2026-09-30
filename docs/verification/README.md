@@ -12,10 +12,10 @@
 
 ## 证据边界
 
-- 自动测试：构建、校验、浏览器模拟与视觉回归；对应 [测试索引](../../tests/README.md) 和 [GitHub 检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions)。
+- 自动测试：构建、校验、浏览器模拟与视觉回归；对应 [测试索引](../../Attachment/tests-index.md) 和 [GitHub 检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions)。
 - 桌面浏览器实际观察：记录操作方式、版本、时间和现象，与自动测试分别报告。
 - 实体 iPhone/iPad 或真实跨夜：只有实际完成并记录，才标记通过；浏览器模拟和 Scriptable 测试替身不能替代。
 
 年度日历、设备验收及跨夜的当前状态只在原索引维护，避免多个入口各写一套结论。发现异常先保留证据，再补复现测试。
 
-[文件校验值](../../SHA256SUMS.txt) · [版本清单](../../release-manifest.json) · [全部文件用途](../repository-map.md)
+[文件校验值](../../SHA256SUMS.txt) · [版本清单](../../release-manifest.json) · [全部文件用途](../../Attachment/repository-map.md)

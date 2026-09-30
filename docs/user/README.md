@@ -19,4 +19,4 @@
 
 Develop 是开发维护源，不是日常使用必需文件。使用范围见 [版权说明](../../LICENSE)。
 
-[全部文件用途](../repository-map.md) · [文档与验收索引](../README.md)
+[全部文件用途](../../Attachment/repository-map.md) · [文档与验收索引](../README.md)

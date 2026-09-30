@@ -42,7 +42,7 @@
 
 执行入口保持 package.json 现有命令。失败不得通过减少断言、改截图或单纯增加重试掩盖。
 
-文件中文用途名统一查 [全文件索引](../docs/repository-map.md)，命名与发布约定以 [维护规则](../docs/REPOSITORY_POLICY.md) 为准。此页只维护测试用途、运行入口和证据边界，不另定义版本规则。
+文件中文用途名统一查 [全文件索引](repository-map.md)，命名与发布约定以 [维护规则](../docs/REPOSITORY_POLICY.md) 为准。此页只维护测试用途、运行入口和证据边界，不另定义版本规则。
 
 仅验收 Develop 预览时，设置环境变量 `DEVELOP_PREVIEW=1` 再运行 `npm test` 和 `npm run test:webkit`。既有视觉及 WebKit 冒烟检查会指向 Develop，WebKit 同时运行局部动效测试。默认发布检查对恢复组合同时验证 Develop 和 Push，既有视觉及手机冒烟使用 Push，不更新截图。仅预览期间不要执行 `quality:local`，它会重新生成 Push。
 

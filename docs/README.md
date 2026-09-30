@@ -1,6 +1,6 @@
 # 文档与验收索引
 
-[仓库地图与文件用途](repository-map.md) · [使用手册](Income-per-sed（说明文档）.docx) · [维护规则](REPOSITORY_POLICY.md)
+[仓库地图与文件用途](../Attachment/repository-map.md) · [使用手册](Income-per-sed（说明文档）.docx) · [维护规则](REPOSITORY_POLICY.md)
 
 按角色进入：[日常用户](user/README.md) · [开发者](developer/README.md) · [验收人员](verification/README.md) · [项目维护者](maintainer/README.md)。入口只链接现有资料，验收结果仍在下方唯一索引维护。
 

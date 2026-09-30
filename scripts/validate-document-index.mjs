@@ -99,8 +99,8 @@ export function checkLink(root, file, href) {
 
 export function validateDocs(root, files) {
   const errors = [];
-  const catalogPath = 'docs/repository-map.md';
-  if (!existsSync(path.join(root, catalogPath))) return ['Missing docs/repository-map.md'];
+  const catalogPath = 'Attachment/repository-map.md';
+  if (!existsSync(path.join(root, catalogPath))) return ['Missing Attachment/repository-map.md'];
   const catalog = readFileSync(path.join(root, catalogPath), 'utf8');
   const listed = new Set();
   for (const line of catalog.split(/\r?\n/)) {
@@ -114,7 +114,7 @@ export function validateDocs(root, files) {
     const name = match[1];
     if (listed.has(name)) errors.push(`Duplicate catalog entry: ${name}`);
     listed.add(name);
-    const resolved = path.resolve(root, 'docs', match[2]);
+    const resolved = path.resolve(root, path.dirname(catalogPath), match[2]);
     if (path.relative(root, resolved).split(path.sep).join('/') !== name) errors.push(`Catalog path mismatch: ${name}`);
     if (!files.includes(name)) errors.push(`Catalog entry not in repository inventory: ${name}`);
   }
@@ -133,7 +133,7 @@ export function validateDocs(root, files) {
     }
     if (/^(scripts|tests)\//.test(file) && /\.(?:js|mjs|cjs|py)$/.test(file)) {
       const folder = file.split('/')[0];
-      const indexPath = path.join(root, folder, 'README.md');
+      const indexPath = path.join(root, 'Attachment', `${folder}-index.md`);
       const index = existsSync(indexPath) ? readFileSync(indexPath, 'utf8') : '';
       const escaped = path.basename(file).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       if (!new RegExp(`(?<![\\w.-])${escaped}(?![\\w.-])`).test(index)) errors.push(`Missing ${folder} purpose entry: ${file}`);
