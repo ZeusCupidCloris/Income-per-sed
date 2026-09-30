@@ -1,9 +1,14 @@
 // Income-per-sed · Scriptable Widget
-// Adapted from Pocket Watch v35 / R35 mobile-history-sheet build for iPhone widgets.
+// Paired with Pocket Watch v35 / R44 for iPhone widgets.
 // Place this file and Income-per-sed-Push.html in iCloud Drive/Scriptable.
+//
+// v2.5.3 (2026-09-29)
+// - Align Scriptable settings validation with the HTML income modes.
+// - Harden HTML settings readback with transaction checksum/schema checks.
+// - Improve accessory widgets, zero-progress rendering, preview flow and calendar-expiry warning.
 
 const APP = {
-  version: "2.5.2",
+  version: "2.5.3",
   timeZone: "Asia/Shanghai",
   settingsFile: "IncomeWidget-settings.json",
   htmlCandidates: [
@@ -11,13 +16,18 @@ const APP = {
   ],
   settingsSchema: 3,
   transactionSchema: 2,
-  sourceBuild: "widget-config-feedback-2026-09-16",
+  sourceBuild: "widget-hardening-2026-09-29",
   refreshMinutes: {
     working: 1,
     transition: 3,
     idle: 12
   },
-  design: "size-specific-income-hierarchy-r7"
+  calendarCoverage: {
+    start: "2026-01-01",
+    end: "2026-12-31",
+    version: "cn-mainland-2026-v1"
+  },
+  design: "size-specific-income-hierarchy-r8"
 }
 
 const DEFAULTS = {
@@ -94,13 +104,18 @@ async function main() {
     Script.complete()
     return
   }
-  const settings = result.settings
-  const now = new Date()
-  const data = calculateDashboard(settings, now)
-  const widget = createWidget(data, settings, config.widgetFamily || "medium")
-  widget.url = runURL("open")
-  widget.refreshAfterDate = nextRefreshDate(data, now)
-  Script.setWidget(widget)
+  try {
+    const settings = result.settings
+    const now = new Date()
+    const data = calculateDashboard(settings, now)
+    const widget = createWidget(data, config.widgetFamily || "medium")
+    widget.url = runURL("open")
+    widget.refreshAfterDate = nextRefreshDate(data, now)
+    Script.setWidget(widget)
+  } catch (error) {
+    console.log(`小组件计算失败：${error}`)
+    Script.setWidget(runtimeErrorWidget())
+  }
   Script.complete()
 }
 
@@ -154,18 +169,36 @@ function validateStoredSettings(value) {
 function configurationWidget(result) {
   const widget = new ListWidget()
   widget.setPadding(16, 16, 16, 16)
-  widget.backgroundColor = Color.dynamic(new Color("f7f6f2"), new Color("20211f"))
+  widget.backgroundColor = Color.dynamic(new Color("#F7F6F2"), new Color("#20211F"))
   widget.addSpacer()
   const title = widget.addText(result.status === "missing" ? "请先完成设置" : "配置需检查")
   title.font = Font.mediumSystemFont(16)
-  title.textColor = Color.dynamic(new Color("303530"), new Color("eeeeea"))
+  title.textColor = Color.dynamic(new Color("#303530"), new Color("#EEEEEA"))
   widget.addSpacer(8)
   const detail = widget.addText("轻点设置工资与工作时段")
   detail.font = Font.systemFont(12)
-  detail.textColor = Color.dynamic(new Color("626861"), new Color("b8bcb4"))
+  detail.textColor = Color.dynamic(new Color("#626861"), new Color("#B8BCB4"))
   widget.addSpacer()
   widget.url = runURL("settings")
-  widget.refreshAfterDate = new Date(Date.now() + 12 * 60 * 1000)
+  widget.refreshAfterDate = new Date(Date.now() + APP.refreshMinutes.idle * 60 * 1000)
+  return widget
+}
+
+function runtimeErrorWidget() {
+  const widget = new ListWidget()
+  widget.setPadding(16, 16, 16, 16)
+  widget.backgroundColor = Color.dynamic(new Color("#F7F6F2"), new Color("#20211F"))
+  widget.addSpacer()
+  const title = widget.addText("暂时无法计算")
+  title.font = Font.mediumSystemFont(16)
+  title.textColor = Color.dynamic(new Color("#303530"), new Color("#EEEEEA"))
+  widget.addSpacer(8)
+  const detail = widget.addText("轻点打开脚本检查设置")
+  detail.font = Font.systemFont(12)
+  detail.textColor = Color.dynamic(new Color("#626861"), new Color("#B8BCB4"))
+  widget.addSpacer()
+  widget.url = runURL("settings")
+  widget.refreshAfterDate = new Date(Date.now() + APP.refreshMinutes.transition * 60 * 1000)
   return widget
 }
 
@@ -179,7 +212,21 @@ async function configurationNotice(result) {
 }
 
 function saveSettings(value) {
-  settingsFM().writeString(settingsPath(), JSON.stringify(normalizeSettings(value), null, 2))
+  const manager = settingsFM()
+  const path = settingsPath()
+  const tempPath = `${path}.tmp`
+  const serialized = JSON.stringify(normalizeSettings(value), null, 2)
+
+  try {
+    manager.writeString(tempPath, serialized)
+    validateStoredSettings(JSON.parse(manager.readString(tempPath)))
+    manager.writeString(path, serialized)
+    return validateStoredSettings(JSON.parse(manager.readString(path)))
+  } finally {
+    try {
+      if (manager.fileExists(tempPath)) manager.remove(tempPath)
+    } catch (_) {}
+  }
 }
 
 function normalizeSettings(value = {}) {
@@ -208,8 +255,11 @@ function validateSettingsDraft(value = {}) {
   const dailyIncome = Number(value.dailyIncome)
   const annualWorkDays = Number(value.annualWorkDays)
   const schedule = value.schedule || {}
+  const modes = ["fixed-monthly", "annual-average", "fixed-daily"]
 
-  if (value.incomeMode === "fixed-daily") {
+  if (!modes.includes(value.incomeMode)) {
+    errors.push("收入计算方式无效。")
+  } else if (value.incomeMode === "fixed-daily") {
     if (!Number.isFinite(dailyIncome) || dailyIncome < 0.01 || dailyIncome > 1e8 || !hasCentPrecision(value.dailyIncome)) {
       errors.push("固定日薪应为 ¥0.01～¥100,000,000.00。")
     }
@@ -217,7 +267,8 @@ function validateSettingsDraft(value = {}) {
     errors.push("每月收入应为 ¥0.01～¥1,000,000,000.00。")
   }
 
-  if (!Number.isInteger(annualWorkDays) || annualWorkDays < 1 || annualWorkDays > 366) {
+  if (value.incomeMode !== "fixed-monthly" &&
+      (!Number.isInteger(annualWorkDays) || annualWorkDays < 1 || annualWorkDays > 366)) {
     errors.push("全年工作日应为 1～366 的整数。")
   }
 
@@ -291,6 +342,10 @@ function isWorkdayKey(key) {
   return w !== 0 && w !== 6
 }
 
+function isCalendarCoveredKey(key) {
+  return key >= APP.calendarCoverage.start && key <= APP.calendarCoverage.end
+}
+
 function monthWorkdays(year, month) {
   const days = new Date(Date.UTC(year, month, 0)).getUTCDate()
   let count = 0
@@ -343,6 +398,7 @@ function calculateDashboard(settings, now) {
   const hourly = daily / workHours
   const secondly = hourly / 3600
   const workday = isWorkdayKey(p.dateKey)
+  const calendarCovered = isCalendarCoveredKey(p.dateKey)
   let elapsed = 0
   let status = "今日休息"
   let statusKey = "day-off"
@@ -380,6 +436,7 @@ function calculateDashboard(settings, now) {
   return {
     ...p,
     workday,
+    calendarCovered,
     status,
     statusKey,
     progress,
@@ -488,7 +545,7 @@ function statusColor(key) {
   return C.muted
 }
 
-function createWidget(data, settings, family) {
+function createWidget(data, family) {
   if (family === "accessoryInline") return accessoryInline(data)
   if (family === "accessoryCircular") return accessoryCircular(data)
   if (family === "accessoryRectangular") return accessoryRectangular(data)
@@ -497,7 +554,7 @@ function createWidget(data, settings, family) {
   return mediumWidget(data)
 }
 
-function baseWidget(data) {
+function baseWidget() {
   const widget = new ListWidget()
   const gradient = new LinearGradient()
   gradient.startPoint = new Point(0.08, 0)
@@ -526,11 +583,17 @@ function addStatusHeader(widget, data, options = {}) {
   status.lineLimit = 1
 
   row.addSpacer()
-  const meta = row.addText(showUpdated ? data.updatedLabel : `${Math.round(effectiveWidgetProgress(data) * 100)}%`)
-  meta.font = showUpdated
-    ? Font.mediumMonospacedSystemFont(compact ? 9 : 9)
-    : Font.semiboldRoundedSystemFont(compact ? 11 : 11)
-  meta.textColor = C.muted
+  const calendarWarning = !data.calendarCovered
+  const metaText = calendarWarning
+    ? "日历待更新"
+    : (showUpdated ? data.updatedLabel : `${Math.round(effectiveWidgetProgress(data) * 100)}%`)
+  const meta = row.addText(metaText)
+  meta.font = calendarWarning
+    ? Font.semiboldSystemFont(compact ? 9 : 9)
+    : (showUpdated
+      ? Font.mediumMonospacedSystemFont(compact ? 9 : 9)
+      : Font.semiboldRoundedSystemFont(compact ? 11 : 11))
+  meta.textColor = calendarWarning ? C.rose : C.muted
   meta.minimumScaleFactor = 0.86
   meta.lineLimit = 1
   return row
@@ -702,7 +765,7 @@ function addLargeMetrics(parent, data) {
 }
 
 function smallWidget(data) {
-  const widget = baseWidget(data)
+  const widget = baseWidget()
   widget.setPadding(15, 15, 14, 15)
   addStatusHeader(widget, data, { compact: true, showUpdated: false })
   widget.addSpacer(11)
@@ -731,7 +794,7 @@ function smallWidget(data) {
 }
 
 function mediumWidget(data) {
-  const widget = baseWidget(data)
+  const widget = baseWidget()
   widget.setPadding(15, 16, 14, 16)
   addStatusHeader(widget, data)
   widget.addSpacer(8)
@@ -753,7 +816,7 @@ function mediumWidget(data) {
 }
 
 function largeWidget(data) {
-  const widget = baseWidget(data)
+  const widget = baseWidget()
   widget.setPadding(17, 17, 16, 17)
   addStatusHeader(widget, data)
   widget.addSpacer(12)
@@ -799,9 +862,17 @@ function largeWidget(data) {
   return widget
 }
 
+function accessoryShortLabel(data) {
+  if (data.statusKey === "day-off") return "本月"
+  if (data.statusKey === "not-started") return "目标"
+  if (data.statusKey === "break") return "上午"
+  return "今日"
+}
+
 function accessoryInline(data) {
   const widget = new ListWidget()
-  const text = widget.addText(`今日 ${formatCompactCurrency(data.todayIncome)} · ${Math.round(data.progress * 100)}%`)
+  const presentation = primaryPresentation(data)
+  const text = widget.addText(`${accessoryShortLabel(data)} ${formatCompactCurrency(presentation.value)} · ${Math.round(effectiveWidgetProgress(data) * 100)}%`)
   text.font = Font.semiboldRoundedSystemFont(12)
   return widget
 }
@@ -809,13 +880,14 @@ function accessoryInline(data) {
 function accessoryCircular(data) {
   const widget = new ListWidget()
   widget.addAccessoryWidgetBackground = true
+  const presentation = primaryPresentation(data)
   const stack = widget.addStack()
   stack.layoutVertically()
   stack.centerAlignContent()
-  const amount = stack.addText(formatCompactCurrency(data.todayIncome))
+  const amount = stack.addText(formatCompactCurrency(presentation.value))
   amount.font = Font.boldRoundedSystemFont(14)
   amount.centerAlignText()
-  const pct = stack.addText(`${Math.round(data.progress * 100)}%`)
+  const pct = stack.addText(`${Math.round(effectiveWidgetProgress(data) * 100)}%`)
   pct.font = Font.mediumRoundedSystemFont(10)
   pct.centerAlignText()
   return widget
@@ -824,11 +896,12 @@ function accessoryCircular(data) {
 function accessoryRectangular(data) {
   const widget = new ListWidget()
   widget.addAccessoryWidgetBackground = true
-  const amount = widget.addText(`今日 ${formatCurrency(data.todayIncome)}`)
+  const presentation = primaryPresentation(data)
+  const amount = widget.addText(`${presentation.label} ${formatCurrency(presentation.value)}`)
   amount.font = Font.semiboldRoundedSystemFont(13)
   amount.minimumScaleFactor = 0.72
   amount.lineLimit = 1
-  const context = widget.addText(`${Math.round(data.progress * 100)}% · ${data.nextAction.value} ${data.nextAction.label}`)
+  const context = widget.addText(`${Math.round(effectiveWidgetProgress(data) * 100)}% · ${presentation.detail}`)
   context.font = Font.mediumSystemFont(10)
   context.minimumScaleFactor = 0.68
   context.lineLimit = 1
@@ -847,10 +920,13 @@ function addProgress(parent, progress, width, height, color = C.green) {
   track.backgroundColor = C.track
   track.cornerRadius = height / 2
 
-  const fill = track.addStack()
-  fill.size = new Size(Math.max(height, width * clamp(progress, 0, 1)), height)
-  fill.backgroundColor = color
-  fill.cornerRadius = height / 2
+  const normalized = clamp(progress, 0, 1)
+  if (normalized > 0) {
+    const fill = track.addStack()
+    fill.size = new Size(Math.max(height, width * normalized), height)
+    fill.backgroundColor = color
+    fill.cornerRadius = height / 2
+  }
   track.addSpacer()
 }
 
@@ -1002,17 +1078,15 @@ function runURL(action) {
 
 async function showMenu() {
   const menu = new Alert()
-  menu.title = "Income-per-sed 小组件"
-  menu.message = "iPhone 17 Pro 建议使用中号组件：只保留今日收入、工作进度与下一时间节点；大号额外显示本月进度。"
-  menu.addAction("预览中号组件")
+  menu.title = "Income-per-sed"
+  menu.message = "建议优先使用中号组件；大号会额外显示本月累计，小号适合快速查看。"
+  menu.addAction("预览小组件")
   menu.addAction("修改收入与工作时间")
   menu.addAction("打开完整 HTML 页面")
   menu.addCancelAction("取消")
   const index = await menu.presentSheet()
   if (index === 0) {
-    const result = readSettingsResult()
-    const widget = result.status === "ok" ? mediumWidget(calculateDashboard(result.settings, new Date())) : configurationWidget(result)
-    await widget.presentMedium()
+    await previewWidget()
   } else if (index === 1) {
     await editSettings()
   } else if (index === 2) {
@@ -1020,10 +1094,33 @@ async function showMenu() {
   }
 }
 
+async function previewWidget() {
+  const result = readSettingsResult()
+  if (result.status !== "ok") {
+    if (await configurationNotice(result)) await editSettings()
+    return
+  }
+
+  const picker = new Alert()
+  picker.title = "选择预览尺寸"
+  picker.addAction("小号")
+  picker.addAction("中号")
+  picker.addAction("大号")
+  picker.addCancelAction("取消")
+  const index = await picker.presentSheet()
+  if (index < 0) return
+
+  const data = calculateDashboard(result.settings, new Date())
+  if (index === 0) return await smallWidget(data).presentSmall()
+  if (index === 2) return await largeWidget(data).presentLarge()
+  return await mediumWidget(data).presentMedium()
+}
+
 async function editSettings() {
   const result = readSettingsResult()
   if (result.status !== "ok" && !await configurationNotice(result)) return
   const current = result.status === "ok" ? result.settings : deepCopy(DEFAULTS)
+
   const modeSheet = new Alert()
   modeSheet.title = "收入计算方式"
   modeSheet.addAction("固定月薪")
@@ -1034,51 +1131,79 @@ async function editSettings() {
   if (modeIndex < 0) return
   current.incomeMode = ["fixed-monthly", "annual-average", "fixed-daily"][modeIndex]
 
-  const income = new Alert()
-  income.title = "收入设置"
-  income.message = current.incomeMode === "fixed-daily"
-    ? "填写固定日薪与全年工作日。"
-    : "填写每月到手收入与全年工作日。"
-  income.addTextField("每月到手收入", String(current.monthlyIncome))
-  income.addTextField("固定日薪", String(current.dailyIncome))
-  income.addTextField("全年工作日", String(current.annualWorkDays))
-  income.addAction("下一步")
-  income.addCancelAction("取消")
-  const incomeResult = await income.presentAlert()
-  if (incomeResult < 0) return
   const draft = {
     ...current,
-    monthlyIncome: income.textFieldValue(0).trim(),
-    dailyIncome: income.textFieldValue(1).trim(),
-    annualWorkDays: income.textFieldValue(2).trim()
+    schedule: { ...current.schedule }
   }
 
-  const schedule = new Alert()
-  schedule.title = "工作时间"
-  schedule.message = "格式为 HH:mm，例如 09:00。"
-  schedule.addTextField("上午开始", current.schedule.morningStart)
-  schedule.addTextField("上午结束", current.schedule.morningEnd)
-  schedule.addTextField("下午开始", current.schedule.afternoonStart)
-  schedule.addTextField("下午结束", current.schedule.afternoonEnd)
-  schedule.addAction("保存")
-  schedule.addCancelAction("取消")
-  const scheduleResult = await schedule.presentAlert()
-  if (scheduleResult < 0) return
-  draft.schedule = {
-    morningStart: schedule.textFieldValue(0),
-    morningEnd: schedule.textFieldValue(1),
-    afternoonStart: schedule.textFieldValue(2),
-    afternoonEnd: schedule.textFieldValue(3)
-  }
+  while (true) {
+    const income = new Alert()
+    income.title = "收入设置"
+    const fixedDaily = draft.incomeMode === "fixed-daily"
+    const needsAnnualDays = draft.incomeMode !== "fixed-monthly"
+    income.message = fixedDaily
+      ? "填写固定日薪与全年工作日。"
+      : (needsAnnualDays ? "填写每月到手收入与全年工作日。" : "填写每月到手收入。")
 
-  const errors = validateSettingsDraft(draft)
-  if (errors.length) {
+    income.addTextField(
+      fixedDaily ? "固定日薪" : "每月到手收入",
+      String(fixedDaily ? draft.dailyIncome : draft.monthlyIncome)
+    )
+    if (needsAnnualDays) income.addTextField("全年工作日", String(draft.annualWorkDays))
+    income.addAction("下一步")
+    income.addCancelAction("取消")
+
+    const incomeResult = await income.presentAlert()
+    if (incomeResult < 0) return
+
+    if (fixedDaily) draft.dailyIncome = income.textFieldValue(0).trim()
+    else draft.monthlyIncome = income.textFieldValue(0).trim()
+    if (needsAnnualDays) draft.annualWorkDays = income.textFieldValue(1).trim()
+
+    const incomeErrors = validateSettingsDraft({
+      ...draft,
+      schedule: current.schedule
+    }).filter(message => !message.startsWith("工作时间") && !message.startsWith("时间顺序"))
+
+    if (!incomeErrors.length) break
+
     const invalid = new Alert()
-    invalid.title = "设置未保存"
+    invalid.title = "收入设置未保存"
+    invalid.message = incomeErrors.join("\n")
+    invalid.addAction("返回修改")
+    invalid.addCancelAction("取消")
+    if (await invalid.presentAlert() < 0) return
+  }
+
+  while (true) {
+    const schedule = new Alert()
+    schedule.title = "工作时间"
+    schedule.message = "格式为 HH:mm，例如 09:00。"
+    schedule.addTextField("上午开始", draft.schedule.morningStart)
+    schedule.addTextField("上午结束", draft.schedule.morningEnd)
+    schedule.addTextField("下午开始", draft.schedule.afternoonStart)
+    schedule.addTextField("下午结束", draft.schedule.afternoonEnd)
+    schedule.addAction("保存")
+    schedule.addCancelAction("取消")
+    const scheduleResult = await schedule.presentAlert()
+    if (scheduleResult < 0) return
+
+    draft.schedule = {
+      morningStart: schedule.textFieldValue(0).trim(),
+      morningEnd: schedule.textFieldValue(1).trim(),
+      afternoonStart: schedule.textFieldValue(2).trim(),
+      afternoonEnd: schedule.textFieldValue(3).trim()
+    }
+
+    const errors = validateSettingsDraft(draft)
+    if (!errors.length) break
+
+    const invalid = new Alert()
+    invalid.title = "工作时间未保存"
     invalid.message = errors.join("\n")
     invalid.addAction("返回修改")
-    await invalid.presentAlert()
-    return await editSettings()
+    invalid.addCancelAction("取消")
+    if (await invalid.presentAlert() < 0) return
   }
 
   const normalized = normalizeSettings({
@@ -1087,9 +1212,12 @@ async function editSettings() {
     dailyIncome: Number(draft.dailyIncome),
     annualWorkDays: Number(draft.annualWorkDays)
   })
+
+  let saved
   try {
-    saveSettings(normalized)
+    saved = saveSettings(normalized)
   } catch (error) {
+    console.log(`设置保存失败：${error}`)
     const failed = new Alert()
     failed.title = "保存失败"
     failed.message = "配置未确认保存成功，请检查 Scriptable 存储后重试。"
@@ -1100,12 +1228,14 @@ async function editSettings() {
 
   const done = new Alert()
   done.title = "已保存"
-  done.message = "小组件会在 iOS 下次刷新时读取新设置。中号组件是当前主设计。"
+  done.message = !isCalendarCoveredKey(businessParts(new Date()).dateKey)
+    ? `工资与工时已保存。当前日期超出 ${APP.calendarCoverage.version} 的日历覆盖范围，请更新脚本内置日历。`
+    : "小组件会在 iOS 下次刷新时读取新设置。"
   done.addAction("预览")
   done.addCancelAction("完成")
   const index = await done.presentAlert()
   if (index === 0) {
-    const data = calculateDashboard(normalized, new Date())
+    const data = calculateDashboard(saved, new Date())
     await mediumWidget(data).presentMedium()
   }
 }
@@ -1153,7 +1283,7 @@ function htmlSettingsBootstrapScript(settings) {
       meta: {
         savedAt: new Date().toISOString(),
         reason: 'scriptable-widget-sync',
-        release: '${APP.sourceBuild}'
+        release: 'scriptable-widget-${APP.version}'
       }
     };
     const envelope = {
@@ -1161,9 +1291,11 @@ function htmlSettingsBootstrapScript(settings) {
       envelopeVersion: ${APP.transactionSchema},
       store: 'settings',
       schemaVersion: ${APP.settingsSchema},
+      release: 'scriptable-widget-${APP.version}',
       revision,
       writerTerm,
       updatedAt: Date.now(),
+      reason: 'scriptable-widget-sync',
       deleted: false,
       payload
     };
@@ -1179,6 +1311,9 @@ function htmlSettingsBootstrapScript(settings) {
       deleted: false
     }));
     const raw = JSON.stringify(envelope);
+    localStorage.setItem(keys[1], raw);
+    const staged = JSON.parse(localStorage.getItem(keys[1]) || 'null');
+    if (!staged || staged.checksum !== envelope.checksum) throw new Error('Scriptable 设置暂存校验失败');
     localStorage.setItem(keys[0], raw);
     localStorage.setItem(keys[2], raw);
     localStorage.removeItem(keys[1]);
@@ -1193,6 +1328,38 @@ function htmlSettingsReadbackScript() {
       'income-per-sed-settings-transaction-temp',
       'income-per-sed-settings-last-good'
     ];
+    const stable = value => {
+      if (value === null || typeof value !== 'object') return JSON.stringify(value);
+      if (Array.isArray(value)) return '[' + value.map(stable).join(',') + ']';
+      return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + stable(value[key])).join(',') + '}';
+    };
+    const checksumText = text => {
+      let hash = 0x811c9dc5;
+      for (let index = 0; index < text.length; index += 1) {
+        hash ^= text.charCodeAt(index);
+        hash = Math.imul(hash, 0x01000193) >>> 0;
+      }
+      return hash.toString(16).padStart(8, '0');
+    };
+    const validEnvelope = value => {
+      if (!value || value.kind !== 'income-per-sed-transaction') return false;
+      const envelopeVersion = Number(value.envelopeVersion) || 0;
+      if (envelopeVersion < 1 || envelopeVersion > ${APP.transactionSchema}) return false;
+      if (value.store !== 'settings') return false;
+      if ((Number(value.schemaVersion) || 0) > ${APP.settingsSchema}) return false;
+      const material = {
+        kind: value.kind,
+        envelopeVersion: value.envelopeVersion,
+        store: value.store,
+        schemaVersion: value.schemaVersion,
+        revision: value.revision,
+        writerTerm: value.writerTerm,
+        updatedAt: value.updatedAt,
+        payload: value.payload
+      };
+      if (envelopeVersion >= 2) material.deleted = value.deleted === true;
+      return checksumText(stable(material)) === value.checksum;
+    };
     const values = keys.map((key, order) => {
       try {
         const value = JSON.parse(localStorage.getItem(key) || 'null');
@@ -1207,9 +1374,11 @@ function htmlSettingsReadbackScript() {
     for (const item of values) {
       const value = item.value;
       if (value.kind === 'income-per-sed-transaction') {
-        if (value.deleted === true) continue;
-        if (value.payload && value.payload.settings) return JSON.stringify(value.payload.settings);
-      } else if (value.settings) {
+        if (!validEnvelope(value) || value.deleted === true) continue;
+        if (value.payload && value.payload.settings && typeof value.payload.settings === 'object') {
+          return JSON.stringify(value.payload.settings);
+        }
+      } else if (value.settings && typeof value.settings === 'object') {
         return JSON.stringify(value.settings);
       } else if (typeof value === 'object') {
         return JSON.stringify(value);

@@ -70,6 +70,7 @@ test.describe('Harness-inspired elastic square grid', () => {
 
     const heroBefore = await hero.boundingBox();
     const gridBefore = await gridCanvas.screenshot();
+    const canvasBefore = await gridCanvas.evaluate(canvas => canvas.toDataURL());
     await page.mouse.move(910, 820);
     await page.mouse.move(1110, 820, { steps: 12 });
     await page.waitForTimeout(100);
@@ -77,6 +78,7 @@ test.describe('Harness-inspired elastic square grid', () => {
     const heroAfter = await hero.boundingBox();
 
     expect(gridAfter.equals(gridBefore)).toBe(false);
+    expect(await gridCanvas.evaluate(canvas => canvas.toDataURL())).not.toBe(canvasBefore);
     expect(heroAfter).toEqual(heroBefore);
     expect(pageErrors).toEqual([]);
   });
@@ -87,5 +89,33 @@ test.describe('Harness-inspired elastic square grid', () => {
     await expect(gridCanvas).toBeVisible();
     await page.evaluate(() => document.body.classList.add('performance-critical'));
     await expect(gridCanvas).toBeHidden();
+    await page.evaluate(() => document.body.classList.remove('performance-critical'));
+    await expect(gridCanvas).toBeVisible();
+  });
+
+  test('unchanged and unrelated body classes do not wake a settled grid', async ({ page }) => {
+    await page.addInitScript(() => {
+      const clear = CanvasRenderingContext2D.prototype.clearRect;
+      window.__idleDraws = 0;
+      CanvasRenderingContext2D.prototype.clearRect = function (...args) {
+        if (this.canvas.id === 'ambientGridBackdrop') window.__idleDraws++;
+        return clear.apply(this, args);
+      };
+    });
+    await page.goto(APP_PATH);
+    await page.waitForTimeout(1400);
+    const before = await page.evaluate(() => window.__idleDraws);
+    // Canvas screenshots include the changing dashboard underneath its transparency.
+    const pixelsBefore = await page.locator('#ambientGridBackdrop').evaluate(canvas => canvas.toDataURL());
+    await page.evaluate(() => {
+      for (let i = 0; i < 100; i++) {
+        document.body.className = document.body.className;
+        document.body.classList.toggle('unrelated-grid-test', i % 2 === 0);
+      }
+      document.body.classList.remove('unrelated-grid-test');
+    });
+    await page.waitForTimeout(800);
+    expect(await page.evaluate(() => window.__idleDraws)).toBe(before);
+    expect(await page.locator('#ambientGridBackdrop').evaluate(canvas => canvas.toDataURL())).toBe(pixelsBefore);
   });
 });

@@ -21,6 +21,15 @@ npm run quality:local
 
 ## 版本更新
 
+### 对外名称与交付编号
+
+- Push 标题固定为 `Income-per-sed`；Develop 为 `Income-per-sed · Develop`。
+- 小组件设置菜单固定为 `Income-per-sed`，封面为 `Income-per-sed 使用手册`。
+- 手册适用版本使用 `产品版本 <版本> · 交付 <YYYYMMDD.N>`。
+- 产品版本、组件版本、交付编号分别记录：小组件可独立维护组件版本，不在菜单标题拼接版本。
+- 同日后续交付递增末尾编号；未来交付不继续使用旧日期。内部架构号、设计代号和历史构建名仅供维护，不进入对外标题。
+- 版本与名称以 release-manifest.json 为对应清单，构建和自动测试拒绝混版；不覆盖旧正式标签。
+
 一次正式版本必须同步更新：
 
 1. `release-manifest.json` 中的产品版本、标签和发布日期。

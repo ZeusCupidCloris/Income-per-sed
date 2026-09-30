@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="income-per-sed-theme" content="warm-mechanical-workshop-r31-visual-closure">
     <meta name="theme-color" id="themeColorMeta" content="#e8dfd3">
-    <title>Income-per-sed · Pocket Watch v35 · R44 Calibrated Rail & Breathing Cards Preview</title>
+    <title>Income-per-sed · Develop</title>
     <meta name="income-per-sed-channel" content="develop">
     <script>
     (function () {
@@ -9016,7 +9016,7 @@ const APP_RELEASE = Object.freeze({
 version: 'v35',
 productVersion: '2.5.4-rc.2',
 sourceTag: 'v2.5.4-rc.2',
-buildId: 'pocket-watch-v35-r44-calibrated-rail-breathing-cards-preview-2026-09-06',
+buildId: 'v35-20260930.1',
 releaseDate: '2026-09-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
@@ -9368,7 +9368,12 @@ state.paletteKey = '';
 schedule();
 }
 
+let bodyRenderKey = isCritical() + ':' + document.body.classList.contains('performance-degraded');
 function handleBodyClassMutation() {
+const nextKey = isCritical() + ':' + document.body.classList.contains('performance-degraded');
+// Compositor classes can be written every frame without changing grid rendering.
+if (nextKey === bodyRenderKey) return;
+bodyRenderKey = nextKey;
 if (isCritical()) {
 if (state.frameId) cancelAnimationFrame(state.frameId);
 state.frameId = 0;

@@ -1,33 +1,34 @@
-# 文档索引
+# 文档与验收索引
 
-## 使用与下载
+[仓库地图](repository-map.md) · [使用手册](Income-per-sed（说明文档）.docx) · [维护规则](REPOSITORY_POLICY.md)
 
-- [页面与小组件使用手册](Income-per-sed（说明文档）.docx)：功能、设置、操作和故障排查。
-- [项目首页](../README.md)：当前版本、四个文件下载及在线预览。
-- [当前预览图](images/)：README 使用的浅色、深色、手机截图及来源校验清单。
+## 当前交付
 
-## 开发与发布
+产品 `2.5.4-rc.2`，交付 `20260930.1`，小组件 `2.5.3`。编号不代表已创建正式发布标签。
 
-- [说明书校验维护](manual-maintenance.md)：文件名与 Word 校验书签的固定映射和失败处理。
-- [年度日历替换清单](calendar-maintenance.md)：手动更新两端内置日期并运行一致性校验。
-- [仓库维护与发布策略](REPOSITORY_POLICY.md)：分支、构建、候选版与正式发布流程。
-- [完整变更记录](../CHANGELOG.md)：按版本记录变化。
-- [R44 候选版说明](releases/v2.5.4-rc.2.md)：当前候选版内容和验收限制。
+- [本次整理与验收记录](acceptance/naming-20260930.md)：最新四文件、命名及本轮结果。
+- [背景绘制核实与修复](acceptance/grid-idle-20260930.md)：重复属性通知的原因和专项结果。
+- [发布清单](../release-manifest.json) · [文件校验值](../SHA256SUMS.txt)。
+- [说明书校验维护](manual-maintenance.md) · [年度日历替换](calendar-maintenance.md)。
 
-## 验收记录
+## 待验收
 
-- [2026-09-27 恢复组合与说明书维护](acceptance/recovery-maintenance-20260927.md)：重复后台恢复、回溯接管与文件名校验标记；仅本地验证，发布状态见记录。
-- [2026-09-16 四文件加固](acceptance/fourfile-20260916.md)：双版本行为、小组件异常配置及手册整理；最终复核于 9 月 17 日完成。
+- 真实跨夜验收仍暂停；浏览器时间模拟不能替代原页面真实跨夜恢复。
+- 小组件 `2.5.3` 需实体 iPhone/iPad 核对设置读写和显示；测试替身只能验证逻辑。
+- 本轮远程 Quality、合并及 Pages 内容分别核验，不提前宣称通过。
 
-- [2026-09-15 本地维护](acceptance/maintenance-20260915.md)：资源观察、说明书和四文件维护编号。
-- [前台恢复与上班边界](acceptance/foreground-resume-20260909.md)：跨日恢复、开工收尾及 PR #29 发布结果。
-- [R44 刷新交接与开工边界](acceptance/v2.5.4-rc.2-startup.md)：启动、模拟后台播放、跨午休返回与反向输入测试。
-- [候选版仓库维护验收](acceptance/v2.5.4-rc.2-maintenance.md)：构建与维护检查。
-- [全部验收记录](acceptance/)：特定版本当时的检查结果，不代表后续提交自动通过。
+证据分为**自动测试**、**桌面浏览器实际观察**、**实体设备或真实跨夜**。一类通过不能代替另一类。
 
 ## 历史记录
 
-- [版本说明目录](releases/)：每个标签的独立说明；旧说明不表示当前状态。
-- [验收记录目录](acceptance/)：对应版本的已执行检查和未覆盖环境。
+以下保留原地址与当时结果，不改写为本轮验收：
 
-不迁移四个交付文件、预览图或旧版本文档，保持已有下载链接有效。新验收记录写入 `acceptance/<版本>.md`，区分本地检查、GitHub 检查和真实设备检查，不将模拟浏览器测试视为 iPhone 实机验收。
+- [全部验收记录](acceptance/)。
+- [恢复维护 20260927](acceptance/recovery-maintenance-20260927.md)。
+- [四文件 20260924](acceptance/fourfile-20260924.md)。
+- [跨日期月收入](acceptance/cross-date-month-20260924.md)。
+- [前台进度](acceptance/foreground-progress-20260923.md)。
+- [各版本说明](releases/) · [总变更记录](../CHANGELOG.md)。
+- [展示图片](images/)：日期及文件校验值见来源清单；手册旧图不表示本次实机截图。
+
+历史 `v35`、`R44` 为内部基线或设计记录，不作对外标题。旧版本号保留其历史含义。
