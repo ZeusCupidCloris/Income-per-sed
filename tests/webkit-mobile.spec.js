@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { setWorkingTime } = require('./helpers/clock');
+const { setWorkingTime } = require('./helpers/business-clock');
 
 test.beforeEach(async ({ page }) => setWorkingTime(page));
 

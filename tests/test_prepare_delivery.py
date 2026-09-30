@@ -14,8 +14,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from prepare_release import DOCUMENT_XML, sync_manual_hashes
-from manual_checksums import MARKERS, WORD_NS, read_manual_hashes, replace_manual_hashes
+from prepare_delivery import DOCUMENT_XML, sync_manual_hashes
+from manual_checksum_bookmarks import MARKERS, WORD_NS, read_manual_hashes, replace_manual_hashes
 
 
 def marked_document(order=None, split=False):

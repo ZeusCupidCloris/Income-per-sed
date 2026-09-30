@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { extractImageReferences, inspectPng } from './readme_assets_lib.mjs';
+import { extractImageReferences, inspectPng } from './readme-preview-validation.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const configPath = path.join(root, 'config', 'readme-previews.json');

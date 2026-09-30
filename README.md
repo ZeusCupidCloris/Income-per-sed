@@ -52,7 +52,32 @@
 
 版本对应关系以 [发布清单](release-manifest.json) 为准；发布是否完成以 GitHub 检查、合并与部署结果为准。旧图片与旧验收不自动代表本次通过。
 
+本批文件从上方“四文件入口”获取，未创建 `2.5.4-rc.2` Release。普通更新只同步仓库和 Pages；经所有者确认的大版本才创建 Release，名称依次为 `V3`、`V4`、`V5`，产品版本仍使用 `3.0.0` 等格式。历史正式 Release 保留。
+
 ## 维护入口
+
+首页目录用途如下。日常打开网页只需要 Push，使用小组件再下载 Widget，其余主要供开发维护。
+
+| 文件或目录 | 用途 | 阅读对象 |
+| --- | --- | --- |
+| `Income-per-sed-Push.html` | 日常使用的独立网页 | 用户 |
+| `Income-per-sed-Develop.html` | 网页唯一修改源，包含诊断 | 开发者 |
+| `IncomeWidget.js` | Scriptable 手机与平板小组件 | 用户 |
+| `README.md` | 产品介绍、下载与快速使用 | 用户 |
+| `docs/` | Word 手册、仓库地图、维护与历史验收资料 | 用户与开发者 |
+| `CHANGELOG.md` | 版本与维护变更记录 | 用户与开发者 |
+| `LICENSE` | 保留全部权利及使用范围 | 用户与开发者 |
+| `release-manifest.json` | 产品、组件、交付版本及文件对应关系 | 开发者 |
+| `SHA256SUMS.txt` | 文件完整性校验值 | 用户与开发者 |
+| `.github/` | 自动检查、Pages、发布与安全配置 | 开发者 |
+| `scripts/` | 构建、截图、校验及资源观察工具 | 开发者 |
+| `tests/` | 业务、动效、恢复和视觉回归测试 | 开发者 |
+| `config/` | 浏览器测试和截图配置 | 开发者 |
+| `package.json` | 维护命令和工具依赖，不是网页运行依赖 | 开发者 |
+| `package-lock.json` | 锁定维护工具的依赖版本 | 开发者 |
+| `.editorconfig` | 编辑器缩进与格式约定 | 开发者 |
+| `.gitattributes` | Git 换行和二进制文件规则 | 开发者 |
+| `.gitignore` | 排除缓存、依赖和测试输出 | 开发者 |
 
 - [仓库地图](docs/repository-map.md)：日常文件、维护工具与历史资料。
 - [文档与验收索引](docs/README.md)：当前交付、待验收和历史记录。

@@ -17,7 +17,11 @@ npm ci
 npm run quality:local
 ```
 
-`quality:local` 会依次运行 `test:release`、`release:prepare`、`test:readme`、`test:widget`、Windows Edge 视觉回归和 WebKit 检查，任一阶段失败即停止。WebKit 检查包含移动端冒烟和 Develop/Push 跨日恢复组合。`test:readme` 会确认 README 中的三张预览图均为真实 Markdown 或 HTML 图片引用，并验证完整 PNG 分块、CRC、解码数据、尺寸和 `config/readme-previews.json` 中的共享截图清单。截图命令还会生成 `docs/images/previews-manifest.json`，记录当前 Push 和每张预览图的 SHA-256；自动检查据此拒绝未随页面或图片同步、截断或损坏的 README 预览，同时避免不同 Windows/Edge 版本造成像素级误报。`release:prepare` 会统一发布文本文件换行、从 Develop 生成 Push、按文件名书签同步 Word 说明书中的 Develop、Push 和 Widget SHA-256、重建 `SHA256SUMS.txt`，并执行最终发布校验。该命令可重复运行；在文件已同步时不会继续改写 Word。构建脚本会移除 Develop 专用诊断面板、动效质量记录和回归导出接口，再压缩 HTML、CSS 与 JavaScript。自动检查会拒绝过期或无法重现的 Push、说明书哈希或校验清单。
+`quality:local` 按既有顺序执行发布测试、交付生成、文档与图片检查、小组件测试、Edge 和 WebKit 检查，任一阶段失败即停止。命令与文件用途分别见 [脚本索引](../scripts/README.md) 和 [测试索引](../tests/README.md)，不在多篇文档重复维护详细参数。
+
+交付生成负责从 Develop 构建 Push、统一发布文本换行、按文件名书签同步手册校验值、重建校验清单并核验一致性；已同步时不继续改写手册。手册定位规则只在 [说明书维护](manual-maintenance.md) 中定义。
+
+首页图片使用实际浏览器截图及来源清单，检查包含完整性、尺寸与源文件哈希，不做跨浏览器版本的像素等值判断。视觉测试截图另有用途，不能与首页图片合并。更新流程见下方“文件、截图和说明书同步”。
 
 ## 版本更新
 
@@ -42,6 +46,16 @@ npm run quality:local
 
 ## 目录职责
 
+完整名称与中文用途由 [全文件索引](repository-map.md) 维护，阅读对象由 [仓库地图](repository-map.md) 分类。
+
+### 文件命名规则
+
+- 四份交付文件名及历史记录地址固定。维护文件允许按功能重命名，但必须同步命令、导入、测试匹配和文档引用，完整测试通过后才交付；不保留无用的旧路径兼容副本，具体变更记录只写入验收索引。
+- 新维护文档使用小写英文连字符名称；验收记录使用 `<主题>-YYYYMMDD.md`，版本说明使用现有 `<版本标签>.md`。
+- JavaScript 维护文件统一用小写连字符，Python 模块保留可导入的下划线命名。脚本用动词加操作对象，测试用被测功能加测试后缀；GitHub、npm 和编辑器的标准配置名不改。
+- 对外产品名称、版本和交付编号只由上方“对外名称与交付编号”定义；索引和其他维护文档引用规则，不自行派生另一套名称。
+- 新文件同时补全全文件索引；脚本、测试还需补对应目录用途索引。文档内链接只指向真实文件、目录或有效章节；无引用不能直接认定为可删除。
+
 - 根目录：Develop、生成的 Push、Widget、版本清单与校验值，保留现有下载路径。
 - `config/`：浏览器测试配置与 README 截图配置。
 - `scripts/`：构建、发布校验、截图采集和在线文件核验。
@@ -50,6 +64,14 @@ npm run quality:local
 - `.github/`：自动检查、Pages、Release、安全策略与依赖更新。
 
 ## 候选版与正式发布
+
+### 当前发布约定
+
+- 普通更新与候选交付只通过 PR 更新仓库和 Pages，不创建 GitHub Release 或新标签。
+- 仅在所有者明确确认大版本发布时创建 Release：产品 `3.0.0` 对应名称 `V3`，`4.0.0` 对应 `V4`，`5.0.0` 对应 `V5`，之后依此类推。
+- Release 展示名称与产品语义版本分开；本约定不改变现有 `v<产品版本>` 标签规则、四文件名称或下载路径。
+- 既有历史 Release、标签和资料保留。本次 `2.5.4-rc.2` 发布已取消，不提供候选发布包链接。
+- 下方标签分类规则保留用于维护工具校验，不构成创建候选或补丁 Release 的授权；发布工作流调整另行评估。
 
 - 候选版使用 `v2.5.4-rc.2` 一类标签，工作流标记 `prerelease`，不覆盖正式 Latest。
 - 正式版使用 `v2.5.4` 一类标签，才标记为 Latest。正式发布前确认已覆盖目标用户设备；不能用桌面模拟测试替代 iPhone 实机验收。
@@ -62,7 +84,7 @@ npm run quality:local
 4. 工作流上传 Push、Develop、Widget、Word 说明书、SHA-256 和版本清单。
 5. GitHub Pages 始终发布 `main` 中已验证的 Push 文件。
 
-历史 Release 不覆盖、不替换；修复通过新的补丁版本发布。
+历史 Release 不覆盖、不替换；日常修复更新仓库和 Pages，累积到经所有者确认的大版本再发布。
 
 ## 文件、截图和说明书同步
 
@@ -76,4 +98,4 @@ npm run quality:local
 
 ## 版权
 
-仓库公开仅用于展示、在线预览和版本存档，不构成开源许可。详细限制以 [README](../README.md#版权与使用限制) 为准。
+仓库公开仅用于展示、在线预览和版本存档，不构成开源许可。详细限制以 [LICENSE](../LICENSE) 为准。

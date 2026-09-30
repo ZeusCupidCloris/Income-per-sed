@@ -57,7 +57,7 @@ jobs:
       - name: Verify published Push bytes
         shell: bash
         run: >-
-          python scripts/verify_pages.py
+          python scripts/verify_published_pages.py
           --url "${{ steps.deployment.outputs.page_url }}"
           --expected Income-per-sed-Push.html
           --attempts 12

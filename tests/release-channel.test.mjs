@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { releaseChannel } from '../scripts/release_channel.mjs';
+import { releaseChannel } from '../scripts/release-channel.mjs';
 
 test('stable tags select latest releases', () => {
   assert.equal(releaseChannel('v2.5.4'), 'stable');

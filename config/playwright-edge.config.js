@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, '..');
 
 module.exports = defineConfig({
   testDir: path.join(root, 'tests'),
-  testIgnore: 'webkit.spec.js',
+  testIgnore: 'webkit-mobile.spec.js',
   fullyParallel: false,
   timeout: 45_000,
   expect: {
@@ -31,7 +31,7 @@ module.exports = defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'node scripts/static_server.mjs',
+    command: 'node scripts/serve-test-pages.mjs',
     cwd: root,
     url: 'http://127.0.0.1:4173/Income-per-sed-Push.html',
     reuseExistingServer: !process.env.CI,

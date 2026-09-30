@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { prepareRecovery, resumeAt, sampleRecovery, expectedMonth } = require('./helpers/recovery');
+const { prepareRecovery, resumeAt, sampleRecovery, expectedMonth } = require('./helpers/background-recovery');
 
 for (const channel of process.env.DEVELOP_PREVIEW === '1' ? ['Develop'] : ['Develop', 'Push']) {
  for (const mode of ['fixed-monthly', 'annual-average', 'fixed-daily']) {
@@ -15,7 +15,7 @@ for (const channel of process.env.DEVELOP_PREVIEW === '1' ? ['Develop'] : ['Deve
       const before = (await sampleRecovery(page, 0))[0];
       await resumeAt(page, end);
       const frames = await sampleRecovery(page);
-      await testInfo.attach('month-recovery.json', { body: JSON.stringify({ before, frames }), contentType: 'application/json' });
+      await testInfo.attach('month-background-recovery.json', { body: JSON.stringify({ before, frames }), contentType: 'application/json' });
       expect(frames.filter(f => f.active).length).toBeGreaterThan(5);
       expect(frames.at(-1).active).toBe(false);
       const from = sameMonth ? before.month : 0;

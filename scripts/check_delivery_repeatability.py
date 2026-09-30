@@ -4,7 +4,7 @@ import hashlib
 import subprocess
 import sys
 
-from validate_release import ROOT, RELEASE_FILES, CHECKSUM_FILE, MANIFEST_FILE
+from validate_delivery import ROOT, RELEASE_FILES, CHECKSUM_FILE, MANIFEST_FILE
 
 
 def snapshot():
@@ -15,7 +15,7 @@ def snapshot():
 def main():
     baseline = snapshot()
     for iteration in (1, 2):
-        subprocess.run([sys.executable, str(ROOT / 'scripts/prepare_release.py')], cwd=ROOT, check=True)
+        subprocess.run([sys.executable, str(ROOT / 'scripts/prepare_delivery.py')], cwd=ROOT, check=True)
         current = snapshot()
         changed = [name for name in baseline if baseline[name] != current[name]]
         if changed:
