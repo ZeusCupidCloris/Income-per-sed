@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { prepareRecovery, resumeAt, setHidden, readRecovery, sampleRecovery, expectedMonth } = require('./helpers/recovery');
+const { prepareRecovery, resumeAt, setHidden, readRecovery, sampleRecovery, expectedMonth } = require('./helpers/background-recovery');
 
 for (const channel of process.env.DEVELOP_PREVIEW === '1' ? ['Develop'] : ['Develop', 'Push']) {
  for (const mode of ['fixed-monthly', 'annual-average', 'fixed-daily']) {
@@ -30,7 +30,7 @@ for (const channel of process.env.DEVELOP_PREVIEW === '1' ? ['Develop'] : ['Deve
         await page.locator('#liveAnchor').dispatchEvent('click');
       }
       const frames = await sampleRecovery(page, 4400);
-      await testInfo.attach('interrupted-recovery.json', { body: JSON.stringify({ before, frames }), contentType: 'application/json' });
+      await testInfo.attach('interrupted-background-recovery.json', { body: JSON.stringify({ before, frames }), contentType: 'application/json' });
       const last = frames.at(-1);
       expect(last.active).toBe(false);
       expect(last.history).toBe(false);

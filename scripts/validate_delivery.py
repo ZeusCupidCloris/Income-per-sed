@@ -12,7 +12,7 @@ import re
 import subprocess
 import sys
 import zipfile
-from manual_checksums import read_manual_hashes
+from manual_checksum_bookmarks import read_manual_hashes
 
 
 ROOT = Path(__file__).resolve().parents[1]

@@ -42,7 +42,7 @@ jobs:
           python-version: '3.13'
       - run: npm ci
       - run: npm run test:release
-      - run: node scripts/release_channel.mjs $env:RELEASE_TAG
+      - run: node scripts/release-channel.mjs $env:RELEASE_TAG
       - name: Verify tag belongs to main
         shell: pwsh
         run: |
@@ -84,7 +84,7 @@ jobs:
           if (-not (Test-Path -LiteralPath $notes)) {
             throw "Missing release notes: $notes"
           }
-          $channel = node scripts/release_channel.mjs $env:RELEASE_TAG
+          $channel = node scripts/release-channel.mjs $env:RELEASE_TAG
           if ($LASTEXITCODE -ne 0) { throw 'Invalid release channel' }
           $releaseFlags = @('--latest')
           if ($channel -eq 'prerelease') {

@@ -52,6 +52,8 @@
 
 版本对应关系以 [发布清单](release-manifest.json) 为准；发布是否完成以 GitHub 检查、合并与部署结果为准。旧图片与旧验收不自动代表本次通过。
 
+本批交付入口：[2.5.4-rc.2 候选发布包](https://github.com/ZeusCupidCloris/Income-per-sed/releases/tag/v2.5.4-rc.2)。候选发布不替换上方正式 Latest，请下载同一发布包内的四文件。
+
 ## 维护入口
 
 - [仓库地图](docs/repository-map.md)：日常文件、维护工具与历史资料。

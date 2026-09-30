@@ -11,8 +11,8 @@ import sys
 import tempfile
 import zipfile
 
-from validate_release import CHECKSUM_FILE, MANIFEST_FILE, RELEASE_FILES, ROOT, digest
-from manual_checksums import replace_manual_hashes
+from validate_delivery import CHECKSUM_FILE, MANIFEST_FILE, RELEASE_FILES, ROOT, digest
+from manual_checksum_bookmarks import replace_manual_hashes
 
 
 TEXT_ARTIFACTS = (RELEASE_FILES[1], RELEASE_FILES[2], MANIFEST_FILE.relative_to(ROOT))
@@ -84,10 +84,10 @@ def main() -> int:
 
     try:
         normalized = [relative.as_posix() for relative in TEXT_ARTIFACTS if normalize_lf(relative)]
-        run(["node", "scripts/build_push.mjs", "--write"])
+        run(["node", "scripts/build-release-html.mjs", "--write"])
         manual_updated = sync_manual_hashes()
 
-        validation = [sys.executable, "scripts/validate_release.py"]
+        validation = [sys.executable, "scripts/validate_delivery.py"]
         if args.release_tag:
             validation.extend(["--release-tag", args.release_tag])
         run([*validation, "--write-checksums"])

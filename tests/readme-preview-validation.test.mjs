@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
-import { extractImageReferences, inspectPng } from '../scripts/readme_assets_lib.mjs';
+import { extractImageReferences, inspectPng } from '../scripts/readme-preview-validation.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 
