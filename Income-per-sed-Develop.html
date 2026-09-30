@@ -9368,7 +9368,12 @@ state.paletteKey = '';
 schedule();
 }
 
+let bodyRenderKey = isCritical() + ':' + document.body.classList.contains('performance-degraded');
 function handleBodyClassMutation() {
+const nextKey = isCritical() + ':' + document.body.classList.contains('performance-degraded');
+// Compositor classes can be written every frame without changing grid rendering.
+if (nextKey === bodyRenderKey) return;
+bodyRenderKey = nextKey;
 if (isCritical()) {
 if (state.frameId) cancelAnimationFrame(state.frameId);
 state.frameId = 0;
