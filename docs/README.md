@@ -10,7 +10,7 @@
 - [背景绘制核实与修复](acceptance/grid-idle-20260930.md)：重复属性通知的原因和专项结果。
 - 上批整理经 [PR #33](https://github.com/ZeusCupidCloris/Income-per-sed/pull/33) 合并，提交 `b4555ad`；[当批 Quality 与 Pages 检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/36680488487) 成功，发布后首页与 Push 字节核验一致。这是该提交的证据，不替代后续提交检查。
 - 本轮仓库清理：合并用途索引、删除一个冗余入口，文件数由 100 减为 99；直接重命名 29 个维护文件并同步引用。本地完整质量检查通过（Edge 101 项、WebKit 38 项），99 个文件用途与内部链接、8 项检查器测试和首页图片来源检查通过。四文件、历史记录地址和截图基线不变，工作流仅同步脚本路径，不改检查及发布条件。
-- [后台恢复绘制循环检查](acceptance/grid-recovery-20260930.md) 已纳入默认自动检查，本地双浏览器重复专项通过。远程合并、部署及候选附件发布分别以 [自动检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions) 与 [本批候选发布包](https://github.com/ZeusCupidCloris/Income-per-sed/releases/tag/v2.5.4-rc.2) 为准，不将本地通过写成实机通过。
+- [后台恢复绘制循环检查](acceptance/grid-recovery-20260930.md) 已纳入默认自动检查，本地双浏览器重复专项通过。远程合并与部署以对应提交的 [自动检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions) 为准，不将本地通过写成实机通过。本次不创建 Release，文件从 [首页四文件入口](../README.md#四文件入口) 获取。
 - [发布清单](../release-manifest.json) · [文件校验值](../SHA256SUMS.txt)。
 - [说明书校验维护](manual-maintenance.md) · [年度日历替换](calendar-maintenance.md)。
 
