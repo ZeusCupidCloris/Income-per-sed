@@ -1,5 +1,5 @@
 // Income-per-sed · Scriptable Widget
-// Paired with Pocket Watch v35 / R44 for iPhone widgets.
+// Product 2.5.4-rc.2; widget 2.5.3; delivery 20261001.2.
 // Place this file and Income-per-sed-Push.html in iCloud Drive/Scriptable.
 //
 // v2.5.3 (2026-09-29)
@@ -16,7 +16,8 @@ const APP = {
   ],
   settingsSchema: 3,
   transactionSchema: 2,
-  sourceBuild: "widget-hardening-20260930-preview",
+  deliveryRevision: "20261001.2",
+  sourceBuild: "widget-20261001.2",
   refreshMinutes: {
     working: 1,
     transition: 3,
@@ -871,10 +872,17 @@ function mediumWidget(data) {
 function largeWidget(data) {
   const widget = baseWidget()
   widget.setPadding(17, 17, 16, 17)
-  addStatusHeader(widget, data)
-  widget.addSpacer(12)
+  // Preserve phone proportions while centering the fixed-width body on iPad.
+  const frame = widget.addStack()
+  frame.addSpacer()
+  const content = frame.addStack()
+  content.layoutVertically()
+  content.size = new Size(LAYOUT.large.contentWidth, 0)
+  frame.addSpacer()
+  addStatusHeader(content, data)
+  content.addSpacer(12)
 
-  const hero = widget.addStack()
+  const hero = content.addStack()
   hero.centerAlignContent()
 
   const dial = hero.addImage(drawDial(data.progress, data.statusKey, 232))
@@ -885,13 +893,13 @@ function largeWidget(data) {
   value.layoutVertically()
   addPrimaryAmount(value, data, 40, { showDetail: true })
 
-  widget.addSpacer(12)
-  addLargeMetrics(widget, data)
-  widget.addSpacer(10)
-  addDivider(widget, LAYOUT.large.contentWidth)
-  widget.addSpacer(8)
+  content.addSpacer(12)
+  addLargeMetrics(content, data)
+  content.addSpacer(10)
+  addDivider(content, LAYOUT.large.contentWidth)
+  content.addSpacer(8)
 
-  const monthSummary = widget.addStack()
+  const monthSummary = content.addStack()
   monthSummary.centerAlignContent()
   const monthText = monthSummary.addText(`本月累计 ${formatLayoutCurrency(data.monthEarned)}`)
   monthText.font = Font.semiboldRoundedSystemFont(14)
@@ -904,11 +912,11 @@ function largeWidget(data) {
   monthPct.textColor = C.muted
   monthPct.lineLimit = 1
 
-  widget.addSpacer(6)
-  addProgress(widget, data.monthProgress, LAYOUT.large.contentWidth, 3, C.warm)
-  widget.addSpacer(6)
+  content.addSpacer(6)
+  addProgress(content, data.monthProgress, LAYOUT.large.contentWidth, 3, C.warm)
+  content.addSpacer(6)
 
-  const workdayText = widget.addText(`第 ${currentMonthWorkday(data)} / ${data.workdays} 个工作日`)
+  const workdayText = content.addText(`第 ${currentMonthWorkday(data)} / ${data.workdays} 个工作日`)
   workdayText.font = Font.mediumSystemFont(9)
   workdayText.textColor = C.muted
   workdayText.lineLimit = 1
@@ -1199,7 +1207,6 @@ async function previewWidget() {
   picker.addAction("小号")
   picker.addAction("中号")
   picker.addAction("大号")
-  if (Device.isPad()) picker.addAction("特大号（iPad）")
   picker.addCancelAction("取消")
   const index = await picker.presentSheet()
   if (index < 0) return
@@ -1207,7 +1214,6 @@ async function previewWidget() {
   const data = calculateDashboard(result.settings, new Date())
   if (index === 0) return await smallWidget(data).presentSmall()
   if (index === 2) return await largeWidget(data).presentLarge()
-  if (index === 3 && Device.isPad()) return await extraLargeWidget(data).presentExtraLarge()
   return await mediumWidget(data).presentMedium()
 }
 
