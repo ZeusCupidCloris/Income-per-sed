@@ -8015,7 +8015,7 @@ body.timeline-scrubbing .current-time{
 .fun-fact{opacity:.88;}
 
 /* 03 — preserve R36 typography scale exactly; only restore responsive amount sizes. */
-.flip-digits:not(.task-income-roller){font-size:var(--adaptive-amount-size);}
+.flip-digits:not(.task-income-roller){font-size:var(--amount-runtime-fit,var(--adaptive-amount-size));}
 .section-kicker,
 .info-label,
 .month-workdays-label,
@@ -13699,7 +13699,8 @@ if (!container || !panel || !container.childElementCount) return;
 syncMainIncomeOpticalAlignment();
 container.style.removeProperty('--amount-runtime-fit');
 const baseSize = Number.parseFloat(getComputedStyle(container).fontSize);
-const availableWidth = Math.max(0, panel.clientWidth - 6);
+const opticalShift = Number.parseFloat(panel.style.getPropertyValue('--hero-income-optical-x')) || 0;
+const availableWidth = Math.max(0, panel.clientWidth - 6 - Math.abs(opticalShift) * 2);
 const requiredWidth = Math.max(
 container.scrollWidth,
 Math.ceil(container.getBoundingClientRect().width)
@@ -13710,6 +13711,14 @@ const fittedSize = Math.max(
 baseSize * Math.min(1, availableWidth / requiredWidth) * 0.985
 );
 container.style.setProperty('--amount-runtime-fit', `${fittedSize.toFixed(3)}px`);
+// Borders and fixed gaps do not shrink with the font; verify the fitted geometry.
+for (let pass = 0; pass < 2; pass++) {
+const bounds = [...container.children].map(child => child.getBoundingClientRect());
+const actualWidth = Math.max(container.scrollWidth, Math.max(...bounds.map(r => r.right)) - Math.min(...bounds.map(r => r.left)));
+if (actualWidth <= availableWidth + 0.5) break;
+const currentSize = Number.parseFloat(getComputedStyle(container).fontSize);
+container.style.setProperty('--amount-runtime-fit', `${Math.max(18, currentSize * availableWidth / actualWidth * 0.985).toFixed(3)}px`);
+}
 }
 function requestMainIncomeRollerFit() {
 if (mainIncomeFitFrame) return;

@@ -133,6 +133,7 @@
 | [tests/webkit-mobile.spec.js](../tests/webkit-mobile.spec.js) | WebKit 手机尺寸与基础行为测试 | 维护 |
 | [tests/widget-parity.spec.js](../tests/widget-parity.spec.js) | 小组件与网页计算日历一致性测试 | 维护 |
 | [tests/widget-settings.cjs](../tests/widget-settings.cjs) | 小组件配置异常读写测试 | 维护 |
+| [tests/long-amount-layout.spec.js](../tests/long-amount-layout.spec.js) | 长金额窗格边界布局测试 | 维护 |
 | [tests/workflow-contract.test.mjs](../tests/workflow-contract.test.mjs) | 自动发布门槛与工作流约束测试 | 维护 |
 | [tests/visual.spec.js-snapshots/desktop-dark-edge-win32.png](../tests/visual.spec.js-snapshots/desktop-dark-edge-win32.png) | 桌面深色视觉回归基线 | 维护 |
 | [tests/visual.spec.js-snapshots/desktop-light-edge-win32.png](../tests/visual.spec.js-snapshots/desktop-light-edge-win32.png) | 桌面浅色视觉回归基线 | 维护 |

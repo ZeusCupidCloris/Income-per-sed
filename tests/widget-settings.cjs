@@ -11,13 +11,119 @@ function load(raw, readFails = false, extras = {}) {
   class Color { static dynamic(a) { return a; } }
   const context = vm.createContext({Color, Date, console, FileManager: { local: () => fm }, ...extras});
   const source = fs.readFileSync(path.join(__dirname, '../IncomeWidget.js'), 'utf8');
-  vm.runInContext(source.replace(/await main\(\)\s*$/, '') + '\nthis.api={readSettingsResult,findLatestHtmlPath,nextRefreshDate,defaults:DEFAULTS,main,editSettings,openFullPage};', context);
+  vm.runInContext(source.replace(/await main\(\)\s*$/, '') + '\nthis.api={readSettingsResult,saveSettings,createWidget,findLatestHtmlPath,nextRefreshDate,defaults:DEFAULTS,main,editSettings,openFullPage};', context);
   return {api:context.api,files};
 }
 test('missing config is first use; valid legacy config remains supported', () => {
   const {api}=load(); assert.equal(api.readSettingsResult().status,'missing');
   assert.equal(load(JSON.stringify(api.defaults)).api.readSettingsResult().status,'ok');
   assert.equal(load(JSON.stringify({monthlyIncome:8000})).api.readSettingsResult().status,'ok');
+});
+
+function transaction(failure) {
+  const defaults = load().api.defaults;
+  const original = JSON.stringify(defaults);
+  const target = '/local/IncomeWidget-settings.json';
+  const files = new Map([[target, original]]);
+  const manager = {
+    documentsDirectory: () => '/local', joinPath: (a,b) => `${a}/${b}`,
+    fileExists: p => files.has(p), readString: p => { if (!files.has(p)) throw Error('missing'); return files.get(p); },
+    writeString(p,v) {
+      if (failure === 'temp' && p.endsWith('.tmp')) { files.set(p,'{'); throw Error('temp failed'); }
+      if (failure === 'rollback' && p === target) throw Error('rollback failed');
+      if (failure === 'backup' && p.endsWith('.previous')) { files.set(p,'{'); throw Error('backup failed'); }
+      files.set(p,v);
+    },
+    remove: p => files.delete(p),
+    move(a,b) {
+      files.set(b, files.get(a)); files.delete(a);
+      if (['replace','rollback'].includes(failure)) { files.set(b,'{'); throw Error('replace failed'); }
+      if (failure === 'verify') files.set(b,'{}');
+    }
+  };
+  const api = load(undefined,false,{FileManager:{local:()=>manager}}).api;
+  return {api,files,original,target,defaults};
+}
+
+test('temporary write and replacement failures preserve previous configuration', () => {
+  for (const failure of ['temp','backup','replace','verify']) {
+    const f = transaction(failure);
+    assert.throws(() => f.api.saveSettings({...f.defaults,monthlyIncome:9000}));
+    assert.equal(f.files.get(f.target),f.original);
+    assert.equal(f.api.readSettingsResult().settings.monthlyIncome,f.defaults.monthlyIncome);
+    assert.equal(f.files.has(`${f.target}.tmp`),false);
+  }
+});
+
+test('failed rollback remains recoverable without overwriting damaged primary', () => {
+  const f = transaction('rollback');
+  assert.throws(() => f.api.saveSettings({...f.defaults,monthlyIncome:9000}));
+  const result = f.api.readSettingsResult();
+  assert.equal(result.recovered,true);
+  assert.equal(result.settings.monthlyIncome,f.defaults.monthlyIncome);
+  assert.equal(f.files.get(f.target),'{');
+  assert.equal(f.files.get(`${f.target}.previous`),f.original);
+  assert.throws(() => f.api.saveSettings({...f.defaults,monthlyIncome:9500}));
+  assert.equal(f.files.get(`${f.target}.previous`),f.original);
+});
+
+test('successful replacement is verified and removes temporary recovery data', () => {
+  const f = transaction();
+  assert.equal(f.api.saveSettings({...f.defaults,monthlyIncome:9000}).monthlyIncome,9000);
+  assert.equal(f.api.readSettingsResult().settings.monthlyIncome,9000);
+  assert.equal(f.files.size,1);
+});
+
+test('first-use failed replacement never leaves a broken primary file', () => {
+  const f = transaction('replace');
+  f.files.clear();
+  assert.throws(() => f.api.saveSettings(f.defaults));
+  assert.equal(f.api.readSettingsResult().status,'missing');
+  assert.equal(f.files.size,0);
+});
+
+test('all widget families constrain long text and extraLarge has a dedicated layout', () => {
+  const roots=[];
+  class Item {
+    constructor(text){this.text=text;this.children=[];}
+    addStack(){const item=new Item();this.children.push(item);return item;}
+    addText(text){const item=new Item(text);this.children.push(item);return item;}
+    addImage(){const item=new Item();this.children.push(item);return item;}
+    addSpacer(){} setPadding(...values){this.padding=values;}
+    centerAlignContent(){} layoutVertically(){} centerAlignText(){} rightAlignText(){}
+  }
+  class ListWidget extends Item { constructor(){super();roots.push(this);} }
+  class Size {constructor(width,height){this.width=width;this.height=height;}}
+  const noop = class { constructor(){return new Proxy(this,{get:(o,k)=>k in o?o[k]:()=>({})});} };
+  const api=load(undefined,false,{ListWidget,Size,Point:Size,Rect:noop,Path:noop,DrawContext:noop,LinearGradient:class{},
+    Font:new Proxy({},{get:(_,key)=>size=>({key,size})})}).api;
+  const data={statusKey:'working',status:'工作中',calendarCovered:true,updatedLabel:'截至 23:59',progress:1,monthProgress:1,
+    todayIncome:12000000000,daily:12000000000,secondly:512820.5128,monthEarned:264000000000,
+    nextAction:{value:'明日 09:00',label:'下次上班时间将在下一个工作日开始'},goalLabel:'今日目标',elapsed:23400,
+    workdays:22,year:2026,month:9,day:7,workday:true};
+  function all(node){return [node,...node.children.flatMap(all)];}
+  for(const family of ['small','medium','large','extraLarge']){
+    const tree=api.createWidget(data,family);
+    const items=all(tree);
+    for(const item of items.filter(i=>i.text && i.text!=='●')) assert.equal(item.lineLimit,1,`${family}: ${item.text}`);
+    assert.ok(items.some(i=>i.text && /亿/.test(i.text)),family);
+    for (const item of items.filter(i=>i.text && (i.text.startsWith('¥') || i.text.startsWith('本月累计 ¥')))) {
+      assert.ok(item.text.length<=19,`${family}: ${item.text}`);
+      assert.ok(item.minimumScaleFactor>=0.68);
+    }
+  }
+  assert.notDeepEqual(roots[1].padding,roots[3].padding);
+  assert.ok(all(roots[3]).some(i=>i.imageSize && i.imageSize.width===124));
+  for (const statusKey of ['not-started','break','ended','day-off']) {
+    for (const family of ['small','medium','large','extraLarge']) {
+      const items=all(api.createWidget({...data,statusKey},family));
+      assert.ok(items.some(i=>i.text && /亿/.test(i.text)),`${statusKey}/${family}`);
+      for (const item of items.filter(i=>i.text && i.text.length>20)) {
+        assert.equal(item.lineLimit,1);
+        assert.ok(item.minimumScaleFactor>=0.68,`${statusKey}/${family}: ${item.text}`);
+      }
+    }
+  }
 });
 test('invalid widget shows an action but never a default income',async()=>{
   const texts=[];let widget;
