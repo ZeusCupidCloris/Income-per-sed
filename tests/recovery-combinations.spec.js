@@ -116,7 +116,7 @@ for (const channel of process.env.DEVELOP_PREVIEW === '1' ? ['Develop'] : ['Deve
  }
 }
 
-for (const channel of ['Develop','Push']) {
+for (const channel of process.env.DEVELOP_PREVIEW === '1' ? ['Develop'] : ['Develop','Push']) {
   for (const action of ['settings open','task running','return interrupted']) {
     test(`${channel}: foreground recovery while ${action} preserves UI and accounting`,async({page},testInfo)=>{
       const errors=[];page.on('pageerror',e=>errors.push(e.message));
