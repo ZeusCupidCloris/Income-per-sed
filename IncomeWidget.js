@@ -16,7 +16,7 @@ const APP = {
   ],
   settingsSchema: 3,
   transactionSchema: 2,
-  sourceBuild: "widget-hardening-2026-09-29",
+  sourceBuild: "widget-hardening-20260930-preview",
   refreshMinutes: {
     working: 1,
     transition: 3,
@@ -132,15 +132,24 @@ function settingsPath() {
 }
 
 function readSettingsResult() {
+  let manager
+  let path
   try {
-    const manager = settingsFM()
-    const path = settingsPath()
-    if (!manager.fileExists(path)) return { status: "missing", message: "请先设置工资与工作时段" }
+    manager = settingsFM()
+    path = settingsPath()
+    if (!manager.fileExists(path)) {
+      if (manager.fileExists(`${path}.previous`)) throw new Error("配置替换未完成")
+      return { status: "missing", message: "请先设置工资与工作时段" }
+    }
     const parsed = JSON.parse(manager.readString(path))
     const settings = validateStoredSettings(parsed)
     return { status: "ok", settings }
   } catch (error) {
     console.log(`设置读取失败，保留原文件：${error}`)
+    try {
+      const settings = validateStoredSettings(JSON.parse(manager.readString(`${path}.previous`)))
+      return { status: "ok", settings, recovered: true, message: "已读取上次有效配置，请重新保存设置。" }
+    } catch (_) {}
     return { status: "error", message: "无法读取有效配置，原文件未被覆盖。请检查工资与工作时段。" }
   }
 }
@@ -215,13 +224,50 @@ function saveSettings(value) {
   const manager = settingsFM()
   const path = settingsPath()
   const tempPath = `${path}.tmp`
-  const serialized = JSON.stringify(normalizeSettings(value), null, 2)
+  const backupPath = `${path}.previous`
+  const serialized = JSON.stringify(validateStoredSettings(value), null, 2)
+  let previous = null
+  let replacing = false
 
   try {
     manager.writeString(tempPath, serialized)
+    if (manager.readString(tempPath) !== serialized) throw new Error("临时配置写入不完整")
     validateStoredSettings(JSON.parse(manager.readString(tempPath)))
-    manager.writeString(path, serialized)
-    return validateStoredSettings(JSON.parse(manager.readString(path)))
+    if (manager.fileExists(path)) {
+      previous = manager.readString(path)
+      try { validateStoredSettings(JSON.parse(previous)) } catch (_) {
+        if (manager.fileExists(backupPath)) {
+          const recovered = manager.readString(backupPath)
+          validateStoredSettings(JSON.parse(recovered))
+          previous = recovered
+        }
+      }
+    } else if (manager.fileExists(backupPath)) {
+      previous = manager.readString(backupPath)
+      validateStoredSettings(JSON.parse(previous))
+    }
+    if (previous !== null) {
+      if (!manager.fileExists(backupPath) || manager.readString(backupPath) !== previous) manager.writeString(backupPath, previous)
+      if (manager.readString(backupPath) !== previous) throw new Error("原配置保护失败")
+    }
+    replacing = true
+    manager.move(tempPath, path)
+    if (manager.readString(path) !== serialized) throw new Error("配置替换校验失败")
+    const settings = validateStoredSettings(JSON.parse(manager.readString(path)))
+    try { if (manager.fileExists(backupPath)) manager.remove(backupPath) } catch (_) {}
+    return settings
+  } catch (error) {
+    if (replacing) {
+      try {
+        if (previous !== null) {
+          manager.writeString(path, previous)
+          if (manager.readString(path) !== previous) throw new Error("原配置恢复失败")
+        } else if (manager.fileExists(path)) manager.remove(path)
+      } catch (restoreError) {
+        console.log(`原配置仍保留在恢复文件中：${restoreError}`)
+      }
+    }
+    throw error
   } finally {
     try {
       if (manager.fileExists(tempPath)) manager.remove(tempPath)
@@ -551,6 +597,7 @@ function createWidget(data, family) {
   if (family === "accessoryRectangular") return accessoryRectangular(data)
   if (family === "small") return smallWidget(data)
   if (family === "large") return largeWidget(data)
+  if (family === "extraLarge") return extraLargeWidget(data)
   return mediumWidget(data)
 }
 
@@ -581,6 +628,7 @@ function addStatusHeader(widget, data, options = {}) {
   status.font = Font.mediumSystemFont(compact ? 10 : 11)
   status.textColor = C.secondary
   status.lineLimit = 1
+  status.minimumScaleFactor = 0.72
 
   row.addSpacer()
   const calendarWarning = !data.calendarCovered
@@ -652,7 +700,7 @@ function addPrimaryAmount(parent, data, size, options = {}) {
   if (centered) label.centerAlignText()
 
   parent.addSpacer(2)
-  const amount = parent.addText(compactAmount
+  const amount = parent.addText(compactAmount || formatCurrency(presentation.value).length > 14
     ? formatCompactCurrency(presentation.value)
     : formatCurrency(presentation.value))
   amount.font = Font.semiboldRoundedSystemFont(size)
@@ -701,7 +749,7 @@ function addContextFooter(parent, data) {
   goalLabel.rightAlignText()
   goalLabel.lineLimit = 1
   goalColumn.addSpacer(2)
-  const goalValue = goalColumn.addText(formatCurrency(data.daily))
+  const goalValue = goalColumn.addText(formatLayoutCurrency(data.daily))
   goalValue.font = Font.semiboldMonospacedSystemFont(11)
   goalValue.textColor = C.secondary
   goalValue.minimumScaleFactor = 0.72
@@ -714,6 +762,11 @@ function formatElapsed(seconds) {
   const hours = Math.floor(totalMinutes / 60)
   const minutes = totalMinutes % 60
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+}
+
+function formatLayoutCurrency(value) {
+  const formatted = formatCurrency(value)
+  return formatted.length > 14 ? formatCompactCurrency(value) : formatted
 }
 
 function currentMonthWorkday(data) {
@@ -729,7 +782,7 @@ function addLargeMetrics(parent, data) {
 
   const metrics = [
     { label: "下一节点", value: `${data.nextAction.value} ${data.nextAction.label}`, align: "left" },
-    { label: data.goalLabel, value: formatCurrency(data.daily), align: "center" },
+    { label: data.goalLabel, value: formatLayoutCurrency(data.daily), align: "center" },
     { label: "已工作", value: formatElapsed(data.elapsed), align: "right" }
   ]
 
@@ -840,7 +893,7 @@ function largeWidget(data) {
 
   const monthSummary = widget.addStack()
   monthSummary.centerAlignContent()
-  const monthText = monthSummary.addText(`本月累计 ${formatCurrency(data.monthEarned)}`)
+  const monthText = monthSummary.addText(`本月累计 ${formatLayoutCurrency(data.monthEarned)}`)
   monthText.font = Font.semiboldRoundedSystemFont(14)
   monthText.textColor = C.secondary
   monthText.minimumScaleFactor = 0.72
@@ -859,6 +912,46 @@ function largeWidget(data) {
   workdayText.font = Font.mediumSystemFont(9)
   workdayText.textColor = C.muted
   workdayText.lineLimit = 1
+  return widget
+}
+
+function extraLargeWidget(data) {
+  const widget = baseWidget()
+  widget.setPadding(24, 28, 24, 28)
+  addStatusHeader(widget, data)
+  widget.addSpacer()
+  const hero = widget.addStack()
+  hero.centerAlignContent()
+  hero.addSpacer()
+  const dial = hero.addImage(drawDial(data.progress, data.statusKey, 280))
+  dial.imageSize = new Size(124, 124)
+  hero.addSpacer(24)
+  const value = hero.addStack()
+  value.layoutVertically()
+  addPrimaryAmount(value, data, 40, { showDetail: true })
+  hero.addSpacer()
+  widget.addSpacer(20)
+  const details = widget.addStack()
+  details.centerAlignContent()
+  details.addSpacer()
+  const month = details.addStack()
+  month.layoutVertically()
+  const label = month.addText("本月累计")
+  label.font = Font.mediumSystemFont(10)
+  label.textColor = C.muted
+  label.lineLimit = 1
+  month.addSpacer(4)
+  const amount = month.addText(formatCompactCurrency(data.monthEarned))
+  amount.font = Font.semiboldRoundedSystemFont(24)
+  amount.textColor = C.secondary
+  amount.lineLimit = 1
+  amount.minimumScaleFactor = 0.68
+  details.addSpacer(28)
+  const context = details.addStack()
+  context.layoutVertically()
+  addLargeMetrics(context, data)
+  details.addSpacer()
+  widget.addSpacer()
   return widget
 }
 
@@ -1106,6 +1199,7 @@ async function previewWidget() {
   picker.addAction("小号")
   picker.addAction("中号")
   picker.addAction("大号")
+  if (Device.isPad()) picker.addAction("特大号（iPad）")
   picker.addCancelAction("取消")
   const index = await picker.presentSheet()
   if (index < 0) return
@@ -1113,6 +1207,7 @@ async function previewWidget() {
   const data = calculateDashboard(result.settings, new Date())
   if (index === 0) return await smallWidget(data).presentSmall()
   if (index === 2) return await largeWidget(data).presentLarge()
+  if (index === 3 && Device.isPad()) return await extraLargeWidget(data).presentExtraLarge()
   return await mediumWidget(data).presentMedium()
 }
 
@@ -1123,6 +1218,7 @@ async function editSettings() {
 
   const modeSheet = new Alert()
   modeSheet.title = "收入计算方式"
+  if (result.recovered) modeSheet.message = result.message
   modeSheet.addAction("固定月薪")
   modeSheet.addAction("全年均摊")
   modeSheet.addAction("固定日薪")

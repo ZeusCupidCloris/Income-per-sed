@@ -43,11 +43,14 @@ test('touchpad-style reverse input stays finite and keeps one sequence profile',
   await openDevelop(page, { width: 1440, height: 1000 });
   const time = page.locator('#currentTime');
   await time.hover();
+  const clockTime = new Date('2026-09-07T06:30:00Z');
+  await page.clock.install({ time: clockTime });
+  await page.clock.pauseAt(new Date(clockTime.getTime() + 1000));
   for (const deltaY of [12.5, 10.25, 8.75, -9.5, 8.5, -7.5, 6.5]) {
     await time.dispatchEvent('wheel', { deltaY, deltaMode: 0, bubbles: true, cancelable: true });
-    await page.waitForTimeout(10);
+    await page.clock.runFor(10);
   }
-  await page.waitForTimeout(420);
+  await page.clock.runFor(420);
   const result = await page.evaluate(() => ({
     profile: window.__incomeClockDiagnostics.getHistoryInputProfile(),
     seek: window.__incomeClockDiagnostics.getHistoricalSeekState(),
