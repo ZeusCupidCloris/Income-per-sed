@@ -31,7 +31,7 @@
 | 背景 | background-grid.spec.js | 空闲绘制、鼠标画布变化、降级；Develop/Push 十轮模拟后台恢复，检查后台零绘制、最多一个待执行帧、恢复交互与自然静止；Edge 与 WebKit |
 | 异常存储 | storage-resilience.spec.js | 浏览器存储不可用与损坏 |
 | 页面视觉 | visual.spec.js | 既有截图基线，不随测试失败重建 |
-| WebKit | webkit-mobile.spec.js、background-grid.spec.js、cross-date-month.spec.js、recovery-combinations.spec.js | 默认发布检查包含手机尺寸冒烟、背景绘制与恢复组合；不等于真实 iPhone |
+| WebKit | webkit-mobile.spec.js、background-grid.spec.js、foreground-progress.spec.js、readout-sync.spec.js、cross-date-month.spec.js、recovery-combinations.spec.js、long-amount-layout.spec.js | 默认发布检查包含手机尺寸冒烟、背景绘制、读数同步、长金额与窗口调整和恢复组合；不等于真实 iPhone |
 | 发布与资源 | test_prepare_delivery.py、release-channel.test.mjs、readme-preview-validation.test.mjs | 构建与资源一致性 |
 | 文档有效性 | document-index-validation.test.mjs | 检查器的遗漏、重复、失效地址、章节及中文路径测试；不修改交付 |
 | 文件命名 | release-naming.test.mjs | 既定对外名称、版本与交付编号规则 |

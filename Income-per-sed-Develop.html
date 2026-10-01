@@ -8016,6 +8016,13 @@ body.timeline-scrubbing .current-time{
 
 /* 03 — preserve R36 typography scale exactly; only restore responsive amount sizes. */
 .flip-digits:not(.task-income-roller){font-size:var(--amount-runtime-fit,var(--adaptive-amount-size));}
+/* Long readings follow container width in the same layout pass as a resize. */
+@supports (font-size:1cqw){
+    .income-value-panel{container-type:inline-size;}
+    #flipContainer[data-long-reading="true"]{
+        font-size:min(var(--amount-runtime-fit,var(--adaptive-amount-size)),calc((100cqw - 24px) / var(--amount-width-em)));
+    }
+}
 .section-kicker,
 .info-label,
 .month-workdays-label,
@@ -9016,7 +9023,7 @@ const APP_RELEASE = Object.freeze({
 version: 'v35',
 productVersion: '2.5.4-rc.2',
 sourceTag: 'v2.5.4-rc.2',
-buildId: 'v35-20260930.1',
+buildId: 'v35-20261001.2',
 releaseDate: '2026-09-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
@@ -12893,7 +12900,9 @@ morningStartX: 0,
 afternoonStartX: 0,
 trackWidth: 0
 };
+let lastProgressRender = null;
 function refreshProgressGeometry() {
+const previousGeometry = { ...progressGeometry };
 const trackRect =
 dom.progressTrack
 ?.getBoundingClientRect();
@@ -12917,6 +12926,26 @@ progressGeometry.afternoonStartX =
 trackRect && afternoonRect
 ? afternoonRect.left - trackRect.left
 : progressGeometry.morningWidth;
+if (lastProgressRender) {
+const visual = { ...lastProgressRender.visual };
+// Preserve the current route phase across resize, including a cursor in the lunch gap.
+if (Number.isFinite(visual.routeX) && previousGeometry.trackWidth > 0) {
+const old = previousGeometry;
+const oldMorningEnd = old.morningStartX + old.morningWidth;
+const newMorningEnd = progressGeometry.morningStartX + progressGeometry.morningWidth;
+if (visual.routeX <= oldMorningEnd) {
+visual.routeX = progressGeometry.morningStartX +
+clamp01((visual.routeX - old.morningStartX) / Math.max(1, old.morningWidth)) * progressGeometry.morningWidth;
+} else if (visual.routeX < old.afternoonStartX) {
+visual.routeX = lerp(newMorningEnd, progressGeometry.afternoonStartX,
+clamp01((visual.routeX - oldMorningEnd) / Math.max(1, old.afternoonStartX - oldMorningEnd)));
+} else {
+visual.routeX = progressGeometry.afternoonStartX +
+clamp01((visual.routeX - old.afternoonStartX) / Math.max(1, old.afternoonWidth)) * progressGeometry.afternoonWidth;
+}
+}
+applyProgressVisual(visual, lastProgressRender.status);
+}
 }
 function writeProgressPosition(
 fillNode,
@@ -13700,7 +13729,8 @@ syncMainIncomeOpticalAlignment();
 container.style.removeProperty('--amount-runtime-fit');
 const baseSize = Number.parseFloat(getComputedStyle(container).fontSize);
 const opticalShift = Number.parseFloat(panel.style.getPropertyValue('--hero-income-optical-x')) || 0;
-const availableWidth = Math.max(0, panel.clientWidth - 6 - Math.abs(opticalShift) * 2);
+const visibleWidth = Math.min(panel.clientWidth, panel.getBoundingClientRect().width);
+const availableWidth = Math.max(0, visibleWidth - 6 - Math.abs(opticalShift) * 2);
 const requiredWidth = Math.max(
 container.scrollWidth,
 Math.ceil(container.getBoundingClientRect().width)
@@ -13721,6 +13751,8 @@ container.style.setProperty('--amount-runtime-fit', `${Math.max(18, currentSize 
 }
 }
 function requestMainIncomeRollerFit() {
+// A rebuilt digit row must fit immediately, including a carry to a new window.
+fitMainIncomeRoller();
 if (mainIncomeFitFrame) return;
 mainIncomeFitFrame = AppLifecycle.requestFrame(() => {
 mainIncomeFitFrame = 0;
@@ -13949,6 +13981,10 @@ rebuild(integerCount) {
 this.integerCount = Math.max(this.minimumIntegerDigits, integerCount);
 this.container.dataset.integerDigits = String(this.integerCount);
 this.container.dataset.totalDigits = String(this.integerCount + this.decimalDigits);
+if (this.container === dom.flipContainer) {
+this.container.dataset.longReading = String(this.integerCount >= 8);
+this.container.style.setProperty('--amount-width-em', String((this.integerCount + this.decimalDigits) * 0.65 + 1.2));
+}
 this.integerDigits = [];
 this.decimalDigitsNodes = [];
 this.integerPlaces = Array.from(
@@ -17997,6 +18033,12 @@ progressGeometry.morningWidth *
 morningRatio;
 }
 function foregroundProgressVisual(snapshot, target, progress, status) {
+// Hidden-window resizes may not deliver an observer callback before the first recovery frame.
+if (Math.abs(dom.progressTrack.offsetWidth - progressGeometry.trackWidth) > 1 ||
+Math.abs(dom.morningMarker.parentElement.offsetWidth - progressGeometry.morningWidth) > 1 ||
+Math.abs(dom.afternoonMarker.parentElement.offsetWidth - progressGeometry.afternoonWidth) > 1) {
+refreshProgressGeometry();
+}
 // One route position owns both fills and the cursor, including the lunch gap.
 const routeX = lerp(
 progressRouteXForVisual(snapshot.progress, snapshot.status),
@@ -18010,6 +18052,7 @@ visual.routeX = routeX;
 return visual;
 }
 function applyProgressVisual(visual, status) {
+lastProgressRender = { visual: { ...visual }, status };
 writeProgressPosition(
 dom.morningProgress,
 dom.morningMarker,
@@ -18040,8 +18083,9 @@ const routeX = Math.min(
 progressGeometry.trackWidth,
 Math.max(
 0,
-Number.isFinite(visual.routeX)
-? visual.routeX
+// Segment fills and cursor use the same current geometry; only lunch needs an independent route position.
+Number.isFinite(visual.routeX) && visual.morning >= 99.999 && visual.afternoon <= 0.0001
+? Math.min(progressGeometry.afternoonStartX, Math.max(progressGeometry.morningStartX + progressGeometry.morningWidth, visual.routeX))
 : progressRouteXForVisual(visual,status)
 )
 );
@@ -26717,13 +26761,14 @@ const progressObserver = new ResizeObserver(refreshProgressGeometry);
 ComponentScopes.observers.replaceResource('progress-resize-observer', progressObserver, (observer) => observer.disconnect());
 progressObserver.observe(dom.morningMarker.parentElement);
 progressObserver.observe(dom.afternoonMarker.parentElement);
-const amountFitObserver = new ResizeObserver(requestMainIncomeRollerFit);
+// ResizeObserver already runs before paint; another frame can expose unfitted windows.
+const amountFitObserver = new ResizeObserver(fitMainIncomeRoller);
 ComponentScopes.observers.replaceResource('amount-fit-resize-observer', amountFitObserver, (observer) => observer.disconnect());
 amountFitObserver.observe(dom.incomeValuePanel);
-} else {
-ComponentScopes.observers.listen(window, 'resize', refreshProgressGeometry, { passive: true });
-ComponentScopes.observers.listen(window, 'resize', requestMainIncomeRollerFit, { passive: true });
 }
+ComponentScopes.observers.listen(window, 'resize', refreshProgressGeometry, { passive: true });
+// Fit the new viewport immediately as well as subsequent container-size changes.
+ComponentScopes.observers.listen(window, 'resize', fitMainIncomeRoller, { passive: true });
 roller.rebuild(CONFIG.minimumIntegerDigits);
 const timestamp = performance.now();
 const initialNow = getNow();

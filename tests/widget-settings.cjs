@@ -11,7 +11,7 @@ function load(raw, readFails = false, extras = {}) {
   class Color { static dynamic(a) { return a; } }
   const context = vm.createContext({Color, Date, console, FileManager: { local: () => fm }, ...extras});
   const source = fs.readFileSync(path.join(__dirname, '../IncomeWidget.js'), 'utf8');
-  vm.runInContext(source.replace(/await main\(\)\s*$/, '') + '\nthis.api={readSettingsResult,saveSettings,createWidget,findLatestHtmlPath,nextRefreshDate,defaults:DEFAULTS,main,editSettings,openFullPage};', context);
+  vm.runInContext(source.replace(/await main\(\)\s*$/, '') + '\nthis.api={readSettingsResult,saveSettings,createWidget,previewWidget,findLatestHtmlPath,nextRefreshDate,defaults:DEFAULTS,main,editSettings,openFullPage};', context);
   return {api:context.api,files};
 }
 test('missing config is first use; valid legacy config remains supported', () => {
@@ -89,7 +89,7 @@ test('all widget families constrain long text and extraLarge has a dedicated lay
     addStack(){const item=new Item();this.children.push(item);return item;}
     addText(text){const item=new Item(text);this.children.push(item);return item;}
     addImage(){const item=new Item();this.children.push(item);return item;}
-    addSpacer(){} setPadding(...values){this.padding=values;}
+    addSpacer(length){this.children.push(new Item());this.children.at(-1).spacer=length===undefined?'flex':length;} setPadding(...values){this.padding=values;}
     centerAlignContent(){} layoutVertically(){} centerAlignText(){} rightAlignText(){}
   }
   class ListWidget extends Item { constructor(){super();roots.push(this);} }
@@ -114,6 +114,11 @@ test('all widget families constrain long text and extraLarge has a dedicated lay
   }
   assert.notDeepEqual(roots[1].padding,roots[3].padding);
   assert.ok(all(roots[3]).some(i=>i.imageSize && i.imageSize.width===124));
+  const frame=roots[2].children[0];
+  assert.equal(frame.children[0].spacer,'flex');
+  assert.equal(frame.children.at(-1).spacer,'flex');
+  assert.equal(frame.children[1].size.width,298);
+  assert.ok(all(frame.children[1]).some(i=>i.imageSize && i.imageSize.width===104));
   for (const statusKey of ['not-started','break','ended','day-off']) {
     for (const family of ['small','medium','large','extraLarge']) {
       const items=all(api.createWidget({...data,statusKey},family));
@@ -123,6 +128,33 @@ test('all widget families constrain long text and extraLarge has a dedicated lay
         assert.ok(item.minimumScaleFactor>=0.68,`${statusKey}/${family}: ${item.text}`);
       }
     }
+  }
+});
+
+test('preview menu exposes only small, medium and large on phones and iPads', async () => {
+  for (const scenario of ['iPad','phone']) {
+    const alerts=[];let previews=0;
+    class Item {
+      addStack(){return new Item();} addText(){return new Item();} addImage(){return {};}
+      addSpacer(){} setPadding(){} centerAlignContent(){} layoutVertically(){}
+      centerAlignText(){} rightAlignText(){}
+    }
+    class ListWidget extends Item {
+      async presentLarge(){previews++;}
+    }
+    class Alert {
+      constructor(){this.actions=[];alerts.push(this);} addAction(label){this.actions.push(label);} addCancelAction(){}
+      async presentSheet(){return 2;} async presentAlert(){return 0;}
+    }
+    const noop=class {constructor(){return new Proxy(this,{get:(o,k)=>k in o?o[k]:()=>({})});}};
+    const api=load(JSON.stringify(load().api.defaults),false,{Alert,ListWidget,
+      Device:{isPad:()=>scenario!=='phone',systemVersion:()=> '27.0'},config:{widgetFamily:null},
+      DateFormatter:class {string(){return '2026-10-01-18-28-00';}},
+      Size:noop,Point:noop,Rect:noop,Path:noop,DrawContext:noop,LinearGradient:class{},
+      Font:new Proxy({},{get:()=>()=>({})})}).api;
+    await api.previewWidget();
+    assert.equal(previews,1);
+    assert.deepEqual(alerts[0].actions,['小号','中号','大号']);
   }
 });
 test('invalid widget shows an action but never a default income',async()=>{

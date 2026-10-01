@@ -73,6 +73,7 @@
 | [docs/acceptance/maintenance-round2-20260908.md](../docs/acceptance/maintenance-round2-20260908.md) | 09-08 第二轮维护验收证据 | 维护与历史 |
 | [docs/acceptance/motion-preview-20260922.md](../docs/acceptance/motion-preview-20260922.md) | 09-22 局部动效预览验收证据 | 维护与历史 |
 | [docs/acceptance/naming-20260930.md](../docs/acceptance/naming-20260930.md) | 09-30 命名与交付整理验收证据 | 维护与历史 |
+| [docs/acceptance/delivery-sync-20261001.md](../docs/acceptance/delivery-sync-20261001.md) | 10-01 四文件同步与恢复组合验收证据 | 维护与验收 |
 | [docs/acceptance/overnight-20260915.md](../docs/acceptance/overnight-20260915.md) | 09-15 真实跨夜验收安排与边界 | 维护与历史 |
 | [docs/acceptance/readout-sync-20260924.md](../docs/acceptance/readout-sync-20260924.md) | 09-24 读数同步验收证据 | 维护与历史 |
 | [docs/acceptance/recovery-maintenance-20260927.md](../docs/acceptance/recovery-maintenance-20260927.md) | 09-27 恢复组合维护验收证据 | 维护与历史 |
