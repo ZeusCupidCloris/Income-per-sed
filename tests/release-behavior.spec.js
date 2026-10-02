@@ -9,6 +9,36 @@ async function hidden(page, value) {
   }, value);
 }
 for (const version of ['Develop','Push']) {
+  test(`${version}: both shared settings trajectories survive release generation`, async ({page}) => {
+    const errors=[]; page.on('pageerror', error => errors.push(error.message));
+    await page.setViewportSize({width:390,height:844});
+    await page.emulateMedia({reducedMotion:'no-preference'});
+    await page.clock.install({time:new Date('2026-09-07T06:30:00Z')});
+    await page.goto(`/Income-per-sed-${version}.html`);
+    await page.waitForTimeout(1600);
+    await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()+1000)));
+    for (const kind of ['income','schedule']) {
+      const card=page.locator(`#${kind}SettingsCard`);
+      await card.scrollIntoViewIfNeeded();
+      await card.focus();
+      const origin=await card.boundingBox();
+      await card.dispatchEvent('click');
+      await page.clock.runFor(32);
+      const early=await page.locator('.income-shared-shell').boundingBox();
+      expect(early.height).toBeGreaterThan(origin.height);
+      if(kind==='schedule') expect(Math.abs(early.width-origin.width)).toBeLessThan(.1);
+      else expect(Math.abs(early.width-origin.width)).toBeGreaterThan(.1);
+      await page.clock.runFor(450);
+      await expect(page.locator(`#${kind}SettingsPanel`)).toBeVisible();
+      await expect(page.locator('.income-shared-shell')).toHaveCount(0);
+      await page.keyboard.press('Escape');
+      await page.clock.runFor(520);
+      await expect(page.locator('#settingsDialog')).toBeHidden();
+      await expect(page.locator('.income-shared-shell, .income-shared-origin')).toHaveCount(0);
+      await expect(card).toBeFocused();
+    }
+    expect(errors).toEqual([]);
+  });
   test(`${version}: settings persist across all income modes`, async ({page}) => {
     const errors=[]; page.on('pageerror',e=>errors.push(e.message));
     await page.clock.setFixedTime(new Date('2026-09-07T06:30:00Z'));

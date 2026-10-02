@@ -74,6 +74,8 @@
 | [docs/acceptance/motion-preview-20260922.md](../docs/acceptance/motion-preview-20260922.md) | 09-22 局部动效预览验收证据 | 维护与历史 |
 | [docs/acceptance/naming-20260930.md](../docs/acceptance/naming-20260930.md) | 09-30 命名与交付整理验收证据 | 维护与历史 |
 | [docs/acceptance/delivery-sync-20261001.md](../docs/acceptance/delivery-sync-20261001.md) | 10-01 四文件同步与恢复组合验收证据 | 维护与验收 |
+| [docs/acceptance/lifecycle-install-20261002.md](../docs/acceptance/lifecycle-install-20261002.md) | 安装与生命周期检查及下一步动效研究 | 维护 |
+| [docs/acceptance/delivery-settings-20261002.md](../docs/acceptance/delivery-settings-20261002.md) | 四文件交付与设置卡片动效检查及待验收边界 | 维护与验收 |
 | [docs/acceptance/overnight-20260915.md](../docs/acceptance/overnight-20260915.md) | 09-15 真实跨夜验收安排与边界 | 维护与历史 |
 | [docs/acceptance/readout-sync-20260924.md](../docs/acceptance/readout-sync-20260924.md) | 09-24 读数同步验收证据 | 维护与历史 |
 | [docs/acceptance/recovery-maintenance-20260927.md](../docs/acceptance/recovery-maintenance-20260927.md) | 09-27 恢复组合维护验收证据 | 维护与历史 |
@@ -99,6 +101,7 @@
 | [scripts/readme-preview-validation.mjs](../scripts/readme-preview-validation.mjs) | 首页图片完整性检查公共函数 | 维护 |
 | [scripts/release-channel.mjs](../scripts/release-channel.mjs) | 正式与候选发布标签识别 | 维护 |
 | [scripts/run-python.mjs](../scripts/run-python.mjs) | Python 维护解释器选择工具 | 维护 |
+| [scripts/install-ci-dependencies.mjs](../scripts/install-ci-dependencies.mjs) | 安装超时与有限重试工具 | 维护 |
 | [scripts/serve-test-pages.mjs](../scripts/serve-test-pages.mjs) | 本地测试静态服务 | 维护 |
 | [scripts/validate-readme-previews.mjs](../scripts/validate-readme-previews.mjs) | 首页图片及来源有效性检查 | 维护 |
 | [scripts/validate_delivery.py](../scripts/validate_delivery.py) | 交付版本与校验值检查 | 维护 |
@@ -109,6 +112,8 @@
 
 | 实际路径 | 中文用途名 | 阅读对象 |
 | --- | --- | --- |
+| [tests/install-ci-dependencies.test.mjs](../tests/install-ci-dependencies.test.mjs) | 安装重试与真实子进程超时测试 | 维护 |
+| [tests/browser-lifecycle.spec.js](../tests/browser-lifecycle.spec.js) | 真实冻结、缓存返回及模拟休眠时间差测试 | 维护 |
 | [Attachment/tests-index.md](tests-index.md) | 自动测试用途与验收边界索引 | 维护 |
 | [tests/background-grid.spec.js](../tests/background-grid.spec.js) | 背景交互与恢复绘制循环测试 | 维护 |
 | [tests/recovery-cross-actions.spec.js](../tests/recovery-cross-actions.spec.js) | 设置主题与恢复交叉操作测试 | 维护 |
@@ -121,6 +126,8 @@
 | [tests/input-device-motion.spec.js](../tests/input-device-motion.spec.js) | 输入设备与刷新率验收测试 | 维护 |
 | [tests/interaction-handoff.spec.js](../tests/interaction-handoff.spec.js) | 连续操作接管测试 | 维护 |
 | [tests/motion-feedback.spec.js](../tests/motion-feedback.spec.js) | 保存面板与局部动效反馈测试 | 维护 |
+| [tests/settings-text-continuity.spec.js](../tests/settings-text-continuity.spec.js) | 设置卡片动画文字排版与显隐连续性测试 | 维护 |
+| [tests/settings-frame-budget.spec.js](../tests/settings-frame-budget.spec.js) | 设置卡片实际帧间隔与样式计算开销观察 | 维护 |
 | [tests/release-naming.test.mjs](../tests/release-naming.test.mjs) | 对外名称与版本对应测试 | 维护 |
 | [tests/readme-preview-validation.test.mjs](../tests/readme-preview-validation.test.mjs) | 首页图片检查器测试 | 维护 |
 | [tests/readout-sync.spec.js](../tests/readout-sync.spec.js) | 表盘与金额工时读数同步测试 | 维护 |

@@ -21,9 +21,11 @@
 | 跨日期月收入 | cross-date-month.spec.js | Develop/Push、三种工资模式、次日和工作日/休息日跨月；独立算式校验最终金额；Edge 与 WebKit |
 | 恢复组合 | recovery-combinations.spec.js | 恢复中再次隐藏、跨日恢复中回溯后返回实时；三种工资模式及双版本；模拟后台，不代表实机 |
 | 连续接管 | interaction-handoff.spec.js | 前台恢复、历史播放、返回实时途中滚轮接管与显示值连续性 |
-| 局部动效预览 | motion-feedback.spec.js | 保存结果、反向开合、错误占位、码表暂停、连续回溯、默认关闭的吸附实验及多窗口；直接测试 Develop |
+| 局部动效预览 | motion-feedback.spec.js | 保存结果、反向开合、错误占位、码表暂停、连续回溯、默认关闭的吸附实验及多窗口；Develop 两种设置展开覆盖完整开合时长一致、遮罩同步、浅深主题、桌面手机、纵向先行、窗口调整、保存收回、错误修正、后台中断和清理；短视口与后台模拟不代表手机键盘或实机验收 |
+| 设置文字连续性 | settings-text-continuity.spec.js | Develop 动画副本与原卡片的文字排版一致性、面板文字固定坐标和透明度连续性；桌面浏览器自动检查，不替代实机流畅度验收 |
+| 设置帧开销观察 | settings-frame-budget.spec.js | Edge 中实际采样两种设置卡片的帧间隔与布局、样式计算开销；用于同机对比，不用固定帧率阈值判断所有设备 |
 | 交叉操作 | recovery-cross-actions.spec.js | 恢复过程中设置与主题切换、历史播放保存设置、码表跨零点；模拟时间 |
-| 双版本行为 | release-behavior.spec.js | 实际 Develop 与 Push 的设置持久化、移动端回溯恢复及计算结果一致性 |
+| 双版本行为 | release-behavior.spec.js | 实际 Develop 与 Push 的两种设置展开轨迹、设置持久化、移动端回溯恢复及计算结果一致性；Edge 与 WebKit |
 | 小组件异常配置 | widget-settings.cjs | 缺失与损坏配置、保存和下载失败、标准文件名、刷新边界；使用 Scriptable 替身 |
 | 长内容布局 | long-amount-layout.spec.js | 真实设置驱动 8、9、10 位整数金额；双版本、浅深主题、390/1440px，检查窗格边缘；Edge 与 WebKit |
 | 小组件一致性 | widget-parity.spec.js | 三种工资模式、完整内置日历、金额缩写；Scriptable 日期接口使用测试适配 |
@@ -31,11 +33,13 @@
 | 背景 | background-grid.spec.js | 空闲绘制、鼠标画布变化、降级；Develop/Push 十轮模拟后台恢复，检查后台零绘制、最多一个待执行帧、恢复交互与自然静止；Edge 与 WebKit |
 | 异常存储 | storage-resilience.spec.js | 浏览器存储不可用与损坏 |
 | 页面视觉 | visual.spec.js | 既有截图基线，不随测试失败重建 |
-| WebKit | webkit-mobile.spec.js、background-grid.spec.js、foreground-progress.spec.js、readout-sync.spec.js、cross-date-month.spec.js、recovery-combinations.spec.js、long-amount-layout.spec.js | 默认发布检查包含手机尺寸冒烟、背景绘制、读数同步、长金额与窗口调整和恢复组合；不等于真实 iPhone |
+| WebKit | webkit-mobile.spec.js、background-grid.spec.js、foreground-progress.spec.js、readout-sync.spec.js、cross-date-month.spec.js、recovery-combinations.spec.js、long-amount-layout.spec.js、release-behavior.spec.js | 默认发布检查包含手机尺寸冒烟、背景绘制、读数同步、长金额、窗口调整和恢复组合，以及双版本交付行为；不等于真实 iPhone |
 | 发布与资源 | test_prepare_delivery.py、release-channel.test.mjs、readme-preview-validation.test.mjs | 构建与资源一致性 |
 | 文档有效性 | document-index-validation.test.mjs | 检查器的遗漏、重复、失效地址、章节及中文路径测试；不修改交付 |
 | 文件命名 | release-naming.test.mjs | 既定对外名称、版本与交付编号规则 |
 | 部署结构 | workflow-contract.test.mjs | 静态约束；仍需 GitHub 实际运行验收 |
+| 安装稳定性 | install-ci-dependencies.test.mjs | 成功不重试、失败最多两次、真实子进程超时终止 |
+| 浏览器生命周期 | browser-lifecycle.spec.js | Edge 实际 BFCache 冻结与返回、三轮计时器暂停证据、冻结结合模拟五小时墙钟差；不等于实体电脑休眠或真实跨夜 |
 
 公共时钟辅助函数放在 helpers/business-clock.js，仅为内容稳定场景固定业务日期，不冻结动画时钟。启动与后台时间推进测试继续单独控制时钟，不强行统一。
 
