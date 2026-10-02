@@ -8627,6 +8627,19 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 .settings-dialog:not(.is-visible) .settings-sheet{opacity:0;transform:translateY(6px) !important;}
 .settings-dialog.is-visible .settings-sheet{opacity:1;transform:translateY(0) !important;}
 .settings-dialog.is-closing .settings-sheet,.settings-dialog.is-closing .settings-backdrop{transition-duration:var(--panel-motion-ms,190ms) !important;}
+
+/* Settings cards share timing while retaining their distinct spatial paths. */
+.income-shared-origin{visibility:hidden!important;}
+.income-shared-shell{position:fixed;left:0;top:0;box-sizing:border-box;pointer-events:none;z-index:var(--z-settings-backdrop);contain:layout style;will-change:transform;backdrop-filter:blur(28px) saturate(1.12);-webkit-backdrop-filter:blur(28px) saturate(1.12);}
+.income-shared-shell>.income-shared-mirror{position:absolute!important;inset:0 auto auto 0!important;box-sizing:border-box;margin:0!important;transform:none!important;translate:0 0!important;background:transparent!important;box-shadow:none!important;border-color:transparent!important;pointer-events:none!important;animation:none!important;transition:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;}
+.income-shared-mirror *{animation:none!important;transition:none!important;}
+.income-shared-mirror::before,.income-shared-mirror::after{display:none!important;}
+.income-shared-skin{position:absolute;inset:0;box-sizing:border-box;pointer-events:none;border-radius:inherit;will-change:opacity;}
+.settings-dialog.income-shared-active .settings-sheet{transform:none!important;transition:none!important;background:transparent!important;box-shadow:none!important;border-color:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;clip-path:inset(0);will-change:opacity;}
+.settings-dialog.income-shared-active .settings-backdrop{transition:none!important;}
+.settings-dialog.income-shared-active .settings-sheet-header,
+.settings-dialog.income-shared-active .settings-panel:not([hidden]),
+.settings-dialog.income-shared-active .settings-actions{opacity:1!important;transform:none!important;transition:none!important;}
 .history-quick-panel,.history-quick-backdrop{transition-duration:var(--quick-motion-ms,240ms) !important;}
 .settings-dialog .settings-sheet-header,.settings-dialog .settings-panel:not([hidden]),.settings-dialog .settings-actions{opacity:1 !important;transform:none !important;animation:none !important;}
 #settingsSaveButton{min-width:84px;position:relative;}
@@ -9023,7 +9036,7 @@ const APP_RELEASE = Object.freeze({
 version: 'v35',
 productVersion: '2.5.4-rc.2',
 sourceTag: 'v2.5.4-rc.2',
-buildId: 'v35-20261001.2',
+buildId: 'v35-20261002.2',
 releaseDate: '2026-09-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
@@ -17079,6 +17092,160 @@ dom.scheduleSettingsPanel.classList.toggle('has-error', !valid);
 dom.scheduleCalibrationSummary.setAttribute('data-valid', String(valid));
 }
 function getDialogSheet() { return dom.settingsDialog.querySelector('.settings-sheet'); }
+const SETTINGS_SHARED_MOTION = Object.freeze({ duration: 360, axisLead: 45, contentStart: .70, contentSpan: .30, landingDuration: 120, landingDepth: 2 });
+let incomeSharedMotion = null;
+let incomeSharedFrame = 0;
+const sharedKeys = ['left', 'top', 'width', 'height', 'radius', 'mix'];
+function sharedBox(element, mix) {
+const rect = element.getBoundingClientRect();
+return { left: rect.left, top: rect.top, width: rect.width, height: rect.height, radius: parseFloat(getComputedStyle(element).borderTopLeftRadius) || 0, mix };
+}
+function clearIncomeSharedSurface() {
+if (incomeSharedFrame) ComponentScopes.settings.cancelFrame(incomeSharedFrame);
+incomeSharedFrame = 0;
+incomeSharedMotion?.origin.classList.remove('income-shared-origin');
+incomeSharedMotion?.shell.remove();
+incomeSharedMotion = null;
+dom.incomeSettingsCard.classList.remove('income-shared-origin');
+dom.settingsDialog.classList.remove('income-shared-active');
+getDialogSheet().style.removeProperty('opacity');
+dom.settingsDialog.querySelector('.settings-backdrop').style.removeProperty('opacity');
+}
+function paintIncomeSharedSurface() {
+const motion = incomeSharedMotion;
+if (!motion) return;
+const box = motion.box;
+const sheet = getDialogSheet();
+motion.shell.style.transform = `translate3d(${box.left}px,${box.top}px,0)`;
+for (const key of ['width', 'height']) motion.shell.style[key] = `${box[key]}px`;
+motion.shell.style.borderRadius = `${box.radius}px`;
+motion.mirror.style.opacity = String(clamp01(1 - box.mix / .45));
+motion.skin.style.opacity = String(clamp01(box.mix));
+motion.sourceSkin.style.opacity = String(1 - clamp01(box.mix));
+const contentProgress = clamp01((box.mix - SETTINGS_SHARED_MOTION.contentStart) / SETTINGS_SHARED_MOTION.contentSpan);
+sheet.style.setProperty('opacity', String(contentProgress * contentProgress * (3 - 2 * contentProgress)), 'important');
+motion.backdrop.style.setProperty('opacity', String(clamp01(box.mix)), 'important');
+}
+function tickIncomeSharedSurface(timestamp) {
+incomeSharedFrame = 0;
+const motion = incomeSharedMotion;
+if (!motion) return;
+// Hermite interpolation keeps the current velocity when an opening is reversed.
+for (const key of sharedKeys) {
+// Fresh timeline closing retraces the opening path; interruptions preserve velocity.
+const horizontal = key === 'left' || key === 'width';
+const vertical = key === 'top' || key === 'height';
+const staged = motion.axisLead && (horizontal || vertical);
+const delay = staged && (motion.closing ? vertical : horizontal) ? SETTINGS_SHARED_MOTION.axisLead : 0;
+const duration = motion.duration - (staged ? SETTINGS_SHARED_MOTION.axisLead : 0);
+const p = clamp01((timestamp - motion.startedAt - delay) / duration);
+const h00 = 2*p*p*p - 3*p*p + 1;
+const h10 = p*p*p - 2*p*p + p;
+const h01 = -2*p*p*p + 3*p*p;
+motion.box[key] = h00*motion.from[key] + h10*duration*motion.initialVelocity[key] + h01*motion.to[key];
+motion.velocity[key] = ((6*p*p - 6*p)*motion.from[key] + (3*p*p - 4*p + 1)*duration*motion.initialVelocity[key] + (-6*p*p + 6*p)*motion.to[key]) / duration;
+}
+// A single small landing compression returns with zero velocity at both ends.
+const landingElapsed = timestamp - motion.startedAt - motion.duration;
+if (motion.landingDuration && landingElapsed >= 0) {
+const p = clamp01(landingElapsed / motion.landingDuration);
+const pulse = Math.sin(Math.PI * p) ** 2;
+const speed = Math.PI * Math.sin(2 * Math.PI * p) / motion.landingDuration;
+const offsets = { left: 1, top: SETTINGS_SHARED_MOTION.landingDepth, width: -2, height: -2 };
+for (const key of sharedKeys) {
+const offset = offsets[key] || 0;
+motion.box[key] = motion.to[key] + offset * pulse;
+motion.velocity[key] = offset * speed;
+}
+}
+motion.box.width = Math.max(1, motion.box.width);
+motion.box.height = Math.max(1, motion.box.height);
+motion.box.mix = clamp01(motion.box.mix);
+paintIncomeSharedSurface();
+if (timestamp - motion.startedAt < motion.duration + motion.landingDuration) incomeSharedFrame = ComponentScopes.settings.requestFrame(tickIncomeSharedSurface);
+else {
+const closing = motion.closing;
+clearIncomeSharedSurface();
+if (closing) finalizeClose();
+}
+}
+function animateIncomeSharedSurface(opening) {
+if (reduceMotionQuery.matches) { clearIncomeSharedSurface(); return false; }
+const origin = activePanel === 'income' ? dom.incomeSettingsCard : dom.scheduleSettingsCard;
+const sheet = getDialogSheet();
+const fresh = !incomeSharedMotion;
+if (!incomeSharedMotion) {
+const originBox = sharedBox(origin, 0);
+const originStyle = getComputedStyle(origin);
+const sheetStyle = getComputedStyle(sheet);
+const targetSkin = { background: sheetStyle.background, border: sheetStyle.border, shadow: sheetStyle.boxShadow };
+const mirror = origin.cloneNode(true);
+// Preserve typography and layout before removing IDs and parent-dependent styles.
+const textLayoutProperties = ['display', 'box-sizing', 'flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'align-content', 'align-self', 'flex-grow', 'flex-shrink', 'flex-basis', 'grid-template-columns', 'grid-template-rows', 'grid-column', 'grid-row', 'column-gap', 'row-gap', 'font-family', 'font-size', 'font-weight', 'font-style', 'font-variant-numeric', 'line-height', 'letter-spacing', 'text-align', 'white-space', 'word-break', 'overflow-wrap', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-style'];
+const originals = [origin, ...origin.querySelectorAll('*')];
+const copies = [mirror, ...mirror.querySelectorAll('*')];
+originals.forEach((element, index) => {
+const style = getComputedStyle(element);
+for (const property of textLayoutProperties) copies[index].style.setProperty(property, style.getPropertyValue(property));
+});
+for (const element of [mirror, ...mirror.querySelectorAll('[id]')]) element.removeAttribute('id');
+mirror.classList.add('income-shared-mirror');
+mirror.removeAttribute('role');
+mirror.removeAttribute('tabindex');
+mirror.setAttribute('aria-hidden', 'true');
+mirror.inert = true;
+mirror.style.width = `${originBox.width}px`;
+mirror.style.height = `${originBox.height}px`;
+mirror.style.padding = originStyle.padding;
+mirror.style.font = originStyle.font;
+const shell = document.createElement('div');
+shell.className = 'income-shared-shell';
+shell.setAttribute('aria-hidden', 'true');
+shell.inert = true;
+const sourceSkin = document.createElement('div');
+sourceSkin.className = 'income-shared-skin';
+sourceSkin.style.background = originStyle.background;
+sourceSkin.style.border = originStyle.border;
+sourceSkin.style.boxShadow = originStyle.boxShadow;
+const skin = document.createElement('div');
+skin.className = 'income-shared-skin';
+skin.style.background = targetSkin.background;
+skin.style.border = targetSkin.border;
+skin.style.boxShadow = targetSkin.shadow;
+shell.append(sourceSkin, skin, mirror);
+dom.settingsDialog.append(shell);
+dom.settingsDialog.classList.add('income-shared-active');
+const box = opening ? originBox : sharedBox(sheet, 1);
+incomeSharedMotion = { origin, timeline: activePanel === 'schedule', shell, mirror, skin, sourceSkin, backdrop: dom.settingsDialog.querySelector('.settings-backdrop'), box, velocity: Object.fromEntries(sharedKeys.map(key => [key, 0])) };
+origin.classList.add('income-shared-origin');
+}
+if (incomeSharedFrame) ComponentScopes.settings.cancelFrame(incomeSharedFrame);
+const motion = incomeSharedMotion;
+motion.from = { ...motion.box };
+motion.initialVelocity = { ...motion.velocity };
+motion.to = opening ? sharedBox(sheet, 1) : sharedBox(origin, 0);
+motion.closing = !opening;
+motion.startedAt = performance.now();
+motion.duration = Math.max(90, SETTINGS_SHARED_MOTION.duration * Math.sqrt(Math.abs(motion.to.mix - motion.from.mix)));
+motion.landingDuration = !opening && motion.from.mix > .02 ? SETTINGS_SHARED_MOTION.landingDuration : 0;
+motion.axisLead = motion.timeline && fresh;
+paintIncomeSharedSurface();
+incomeSharedFrame = ComponentScopes.settings.requestFrame(tickIncomeSharedSurface);
+return true;
+}
+ComponentScopes.settings.replaceResource('income-shared-surface-preview', {}, clearIncomeSharedSurface);
+ComponentScopes.settings.listen(window, 'resize', () => {
+if (incomeSharedMotion) animateIncomeSharedSurface(!incomeSharedMotion.closing);
+}, { passive: true });
+if (window.visualViewport) ComponentScopes.settings.listen(window.visualViewport, 'resize', () => {
+if (incomeSharedMotion) animateIncomeSharedSurface(!incomeSharedMotion.closing);
+}, { passive: true });
+ComponentScopes.settings.listen(document, 'visibilitychange', () => {
+if (!document.hidden || !incomeSharedMotion) return;
+const closing = incomeSharedMotion.closing;
+clearIncomeSharedSurface();
+if (closing) finalizeClose();
+});
 function setCalendarDataExpanded(expanded, options = {}) {
 if (!dom.calendarDataSection || !dom.calendarDataToggle || !dom.calendarDataContent) return;
 const next = Boolean(expanded);
@@ -17257,6 +17424,7 @@ dom.calendarImportInput.value = '';
 }
 }
 function open(panel) {
+if (incomeSharedMotion && incomeSharedMotion.timeline !== (panel === 'schedule')) clearIncomeSharedSurface();
 const reopening = !dom.settingsDialog.hidden;
 const openingOpacity = reopening ? Number(getComputedStyle(getDialogSheet()).opacity) : 0;
 dom.settingsDialog.style.setProperty('--panel-motion-ms', `${reduceMotionQuery.matches ? 1 : Math.max(1,240 * (1 - openingOpacity))}ms`);
@@ -17292,6 +17460,8 @@ setIncomeMode(CONFIG.incomeMode);
 buildScheduleWheels();
 }
 dom.settingsDialog.querySelector('.settings-sheet').focus({ preventScroll: true });
+const sharedPreview = animateIncomeSharedSurface(true);
+if (sharedPreview) dom.settingsDialog.classList.add('is-visible');
 AppLifecycle.requestFrame(() => {
 if (generation !== settingsOpenGeneration || dom.settingsDialog.hidden) return;
 AppLifecycle.requestFrame(() => {
@@ -17303,11 +17473,12 @@ if (generation !== settingsOpenGeneration || dom.settingsDialog.hidden) return;
 if (document.activeElement !== dom.settingsDialog.querySelector('.settings-sheet')) return;
 if (income) dom.incomeAmountInput.focus();
 else wheelInstances[0]?.focus();
-}, reduceMotionQuery.matches ? 0 : MOTION.fast);
+}, reduceMotionQuery.matches ? 0 : sharedPreview ? SETTINGS_SHARED_MOTION.duration : MOTION.fast);
 });
 recordDiagnosticEvent('settings', income ? '打开收入设置' : '打开工作时间设置');
 }
 function finalizeClose() {
+clearIncomeSharedSurface();
 AppLifecycle.clearTimeout(settingsCloseTimer);
 destroyScheduleWheels();
 dom.settingsDialog.hidden = true;
@@ -17329,6 +17500,7 @@ dom.settingsDialog.classList.remove('is-visible');
 dom.settingsDialog.classList.add('is-closing');
 body.classList.remove('settings-open');
 const generation = settingsOpenGeneration;
+if (animateIncomeSharedSurface(false)) return;
 settingsCloseTimer = AppLifecycle.setTimeout(() => {
 if (generation === settingsOpenGeneration) finalizeClose();
 }, closeDuration);
@@ -23203,6 +23375,7 @@ if (!historyBoundaryFeedback.frameId) {
 historyBoundaryFeedback.frameId =
 AppLifecycle.requestFrame(updateHistoryBoundaryFeedback);
 }
+}
 
 function settleHistoryBoundaryFeedback() {
 if (historyBoundaryFeedback.frameId) {
@@ -23213,7 +23386,6 @@ historyBoundaryFeedback.offset = 0;
 historyBoundaryFeedback.target = 0;
 historyBoundaryFeedback.velocity = 0;
 document.documentElement.style.setProperty('--history-boundary-shift', '0px');
-}
 }
 
 function touchTimelineScrubProfile(deltaX) {

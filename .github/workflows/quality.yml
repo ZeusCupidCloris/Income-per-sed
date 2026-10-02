@@ -36,7 +36,8 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-      - run: npm ci
+      - run: node scripts/install-ci-dependencies.mjs npm
+        timeout-minutes: 11
       - run: npm run test:release
       - run: npm run test:widget
       - run: npm run release:prepare
@@ -55,7 +56,8 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-      - run: npm ci
+      - run: node scripts/install-ci-dependencies.mjs npm
+        timeout-minutes: 11
       - run: npm test
       - name: Upload visual diagnostics
         if: failure()
@@ -80,8 +82,10 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
-      - run: npm ci
-      - run: npx playwright install --with-deps webkit
+      - run: node scripts/install-ci-dependencies.mjs npm
+        timeout-minutes: 11
+      - run: node scripts/install-ci-dependencies.mjs webkit
+        timeout-minutes: 15
       - run: npm run test:webkit
       - name: Upload WebKit diagnostics
         if: failure()

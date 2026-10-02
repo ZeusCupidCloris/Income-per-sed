@@ -23,6 +23,7 @@
 
 | 文件 | 用途 | 写入行为 |
 | --- | --- | --- |
+| install-ci-dependencies.mjs | CI 依赖安装最多两次，npm 单次 5 分钟、WebKit 单次 7 分钟；失败保留错误，不重试测试 | 写依赖目录，不改四文件 |
 | build-release-html.mjs | 从 Develop 生成压缩 Push | --write 写入；--check 只检查 |
 | prepare_delivery.py | 生成 Push、同步手册校验值和清单 | 修改交付 |
 | manual_checksum_bookmarks.py | 按文件名书签定位说明书校验值 | 供构建调用 |

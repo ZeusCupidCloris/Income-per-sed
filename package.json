@@ -10,7 +10,7 @@
     "release:repeatability": "node scripts/run-python.mjs scripts/check_delivery_repeatability.py",
     "validate": "node scripts/run-python.mjs scripts/validate_delivery.py",
     "checksums": "node scripts/run-python.mjs scripts/validate_delivery.py --write-checksums",
-    "test:release": "node scripts/run-python.mjs -m unittest discover -s tests -p test_prepare_delivery.py && node --test tests/release-channel.test.mjs tests/workflow-contract.test.mjs tests/release-naming.test.mjs",
+    "test:release": "node scripts/run-python.mjs -m unittest discover -s tests -p test_prepare_delivery.py && node --test tests/release-channel.test.mjs tests/workflow-contract.test.mjs tests/release-naming.test.mjs tests/install-ci-dependencies.test.mjs",
     "test:readme": "node --test tests/readme-preview-validation.test.mjs && node scripts/validate-readme-previews.mjs && npm run test:docs",
     "test:docs": "node --test tests/document-index-validation.test.mjs && node scripts/validate-document-index.mjs",
     "test:widget": "node --test tests/widget-settings.cjs",

@@ -4,6 +4,15 @@ import { readFileSync } from 'node:fs';
 
 const quality = readFileSync(new URL('../.github/workflows/quality.yml', import.meta.url), 'utf8');
 const pages = readFileSync(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
+const release = readFileSync(new URL('../.github/workflows/release.yml', import.meta.url), 'utf8');
+
+test('all dependency installs have bounded retries and outer step deadlines', () => {
+  for (const workflow of [quality, pages, release]) {
+    assert.doesNotMatch(workflow, /- run: npm ci/);
+    assert.match(workflow, /install-ci-dependencies\.mjs npm\r?\n\s+timeout-minutes: 11/);
+  }
+  assert.match(quality, /install-ci-dependencies\.mjs webkit\r?\n\s+timeout-minutes: 15/);
+});
 
 test('Pages is callable only after all three Quality jobs', () => {
   const job = quality.replace(/\r/g, '').split('\n  pages:\n')[1].split('\n  release-validation:')[0];
