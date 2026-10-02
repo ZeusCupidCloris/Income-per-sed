@@ -23375,6 +23375,7 @@ if (!historyBoundaryFeedback.frameId) {
 historyBoundaryFeedback.frameId =
 AppLifecycle.requestFrame(updateHistoryBoundaryFeedback);
 }
+}
 
 function settleHistoryBoundaryFeedback() {
 if (historyBoundaryFeedback.frameId) {
@@ -23385,7 +23386,6 @@ historyBoundaryFeedback.offset = 0;
 historyBoundaryFeedback.target = 0;
 historyBoundaryFeedback.velocity = 0;
 document.documentElement.style.setProperty('--history-boundary-shift', '0px');
-}
 }
 
 function touchTimelineScrubProfile(deltaX) {
