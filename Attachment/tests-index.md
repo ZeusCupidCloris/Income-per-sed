@@ -31,7 +31,7 @@
 | 小组件一致性 | widget-parity.spec.js | 三种工资模式、完整内置日历、金额缩写；Scriptable 日期接口使用测试适配 |
 | 输入设备与刷新率 | input-device-motion.spec.js | 固定工作日业务时间，动画时钟继续 |
 | 背景 | background-grid.spec.js | 空闲绘制、鼠标画布变化、降级；Develop/Push 十轮模拟后台恢复，检查后台零绘制、最多一个待执行帧、恢复交互与自然静止；Edge 与 WebKit |
-| 异常存储 | storage-resilience.spec.js | 浏览器存储不可用与损坏 |
+| 异常存储 | storage-resilience.spec.js | 浏览器存储不可用与损坏；Develop/Push 临时键及主键写入失败时保留旧配置、清理临时键并允许重试；收入/工时保存中关闭或模拟后台恢复；多窗口分别保存收入与工时后刷新核对；Edge 与 WebKit，不代表实机后台 |
 | 页面视觉 | visual.spec.js | 既有截图基线，不随测试失败重建 |
 | WebKit | webkit-mobile.spec.js、background-grid.spec.js、foreground-progress.spec.js、readout-sync.spec.js、cross-date-month.spec.js、recovery-combinations.spec.js、long-amount-layout.spec.js、release-behavior.spec.js | 默认发布检查包含手机尺寸冒烟、背景绘制、读数同步、长金额、窗口调整和恢复组合，以及双版本交付行为；不等于真实 iPhone |
 | 发布与资源 | test_prepare_delivery.py、release-channel.test.mjs、readme-preview-validation.test.mjs | 构建与资源一致性 |

@@ -135,6 +135,8 @@
 | [tests/release-behavior.spec.js](../tests/release-behavior.spec.js) | 开发版与发布版业务一致性测试 | 维护 |
 | [tests/release-channel.test.mjs](../tests/release-channel.test.mjs) | 发布标签识别测试 | 维护 |
 | [tests/storage-resilience.spec.js](../tests/storage-resilience.spec.js) | 异常存储与页面恢复测试 | 维护 |
+| [docs/acceptance/storage-runtime-20261003.md](../docs/acceptance/storage-runtime-20261003.md) | 保存可靠性与长时资源验收记录 | 维护 |
+| [docs/acceptance/runtime-observation-20261003.json](../docs/acceptance/runtime-observation-20261003.json) | 30 分钟资源观察原始采样证据 | 维护 |
 | [tests/startup-history-playback.spec.js](../tests/startup-history-playback.spec.js) | 启动与历史播放运动测试 | 维护 |
 | [tests/test_prepare_delivery.py](../tests/test_prepare_delivery.py) | 交付生成与手册书签测试 | 维护 |
 | [tests/visual.spec.js](../tests/visual.spec.js) | 页面截图回归测试 | 维护 |
