@@ -1,11 +1,14 @@
 const { test, expect } = require('@playwright/test');
 
-async function assertSettledSheet(page) {
+async function assertSettledSheet(page, clockPaused = false) {
   const state = await page.evaluate(() => {
     const dialog = document.querySelector('#settingsDialog');
     const sheet = dialog.querySelector('.settings-sheet');
     const style = getComputedStyle(sheet);
-    return { sheet: sheet.getBoundingClientRect().toJSON(), dialog: dialog.getBoundingClientRect().toJSON(), overflow: sheet.scrollWidth - sheet.clientWidth, transform: style.transform, clip: style.clipPath };
+    const save = document.querySelector('#settingsSaveButton');
+    const saveRect = save.getBoundingClientRect();
+    const hit = document.elementFromPoint(saveRect.left + saveRect.width / 2, saveRect.top + saveRect.height / 2);
+    return { sheet: sheet.getBoundingClientRect().toJSON(), dialog: dialog.getBoundingClientRect().toJSON(), save: saveRect.toJSON(), saveHit: hit === save || save.contains(hit), overflow: sheet.scrollWidth - sheet.clientWidth, transform: style.transform, clip: style.clipPath };
   });
   expect(state.sheet.left).toBeGreaterThanOrEqual(state.dialog.left - 1);
   expect(state.sheet.right).toBeLessThanOrEqual(state.dialog.right + 1);
@@ -14,8 +17,16 @@ async function assertSettledSheet(page) {
   expect(state.overflow).toBeLessThanOrEqual(1);
   expect(state.transform).toBe('none');
   expect(state.clip).toBe('inset(0px)');
+  expect(state.save.left, JSON.stringify(state)).toBeGreaterThanOrEqual(state.dialog.left - 1);
+  expect(state.save.right, JSON.stringify(state)).toBeLessThanOrEqual(state.dialog.right + 1);
+  expect(state.save.top, JSON.stringify(state)).toBeGreaterThanOrEqual(state.dialog.top - 1);
+  expect(state.save.bottom, JSON.stringify(state)).toBeLessThanOrEqual(state.dialog.bottom + 1);
+  expect(state.saveHit, JSON.stringify(state)).toBe(true);
   await expect(page.locator('.income-shared-shell, .income-shared-origin')).toHaveCount(0);
+  // Native intersection delivery needs live rendering after simulated suspension.
+  if (clockPaused) await page.clock.resume();
   await expect(page.locator('#settingsSaveButton')).toBeInViewport();
+  if (clockPaused) await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
 }
 
 for (const artifact of ['Develop', 'Push']) {
@@ -43,13 +54,13 @@ for (const artifact of ['Develop', 'Push']) {
         document.dispatchEvent(new Event('visibilitychange'));
       });
       await page.clock.runFor(600);
-      await assertSettledSheet(page);
+      await assertSettledSheet(page, true);
       await page.keyboard.press('Escape');
       await page.clock.runFor(80);
       await page.locator(`#${kind}SettingsCard`).dispatchEvent('click');
       await page.setViewportSize({ width: 390, height: 844 });
       await page.clock.runFor(600);
-      await assertSettledSheet(page);
+      await assertSettledSheet(page, true);
       await expect(page.locator(`#${kind}SettingsPanel`)).toBeVisible();
       await page.keyboard.press('Escape');
       await page.clock.runFor(600);
