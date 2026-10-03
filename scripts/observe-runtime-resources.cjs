@@ -21,6 +21,8 @@ if (args.length || !Number.isFinite(minutes) || minutes < 1 || minutes > 120 || 
 }
 
 (async () => {
+  // Reject invalid sources before acquiring a browser process.
+  const sourceSha256 = createHash('sha256').update(fs.readFileSync(source)).digest('hex');
   const browser = await chromium.launch({ channel: 'msedge' });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, timezoneId: 'Asia/Shanghai', reducedMotion: 'no-preference' });
   const errors = [];
@@ -28,7 +30,7 @@ if (args.length || !Number.isFinite(minutes) || minutes < 1 || minutes > 120 || 
   const violations = [];
   const counts = { settingsCycles: 0, visibilityCycles: 0 };
   const start = Date.now();
-  const metadata = { complete: false, browser: browser.version(), source, sourceSha256: createHash('sha256').update(fs.readFileSync(source)).digest('hex'), startedAt: new Date(start).toISOString(), requestedMinutes: minutes, sampleSeconds, businessTime: '2026-09-07T06:30:00Z', simulatedVisibility: true, forcedGCBeforeSamples: true };
+  const metadata = { complete: false, browser: browser.version(), source, sourceSha256, startedAt: new Date(start).toISOString(), requestedMinutes: minutes, sampleSeconds, businessTime: '2026-09-07T06:30:00Z', simulatedVisibility: true, forcedGCBeforeSamples: true };
   page.on('pageerror', e => errors.push(e.message));
   try {
     await page.clock.setFixedTime(new Date('2026-09-07T06:30:00Z'));

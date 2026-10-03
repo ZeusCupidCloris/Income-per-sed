@@ -144,8 +144,10 @@ for (const artifact of ['Develop', 'Push']) {
     await other.locator('#scheduleSettingsCard').dispatchEvent('click');
     await other.waitForTimeout(500);
     await other.locator('[data-time-key="morningStart"] [role="spinbutton"]').last().press('ArrowDown');
-    await page.locator('#settingsSaveButton').dispatchEvent('click');
-    await other.locator('#settingsSaveButton').dispatchEvent('click');
+    await Promise.all([
+      page.locator('#settingsSaveButton').dispatchEvent('click'),
+      other.locator('#settingsSaveButton').dispatchEvent('click'),
+    ]);
     await expect.poll(async () => {
       const result = await stored(page);
       return { amount: result?.payload?.settings?.monthlyIncome, start: result?.payload?.settings?.schedule?.morningStart };
