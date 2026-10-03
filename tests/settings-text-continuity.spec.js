@@ -1,6 +1,14 @@
 const { test, expect } = require('@playwright/test');
 
 async function assertSettledSheet(page, clockPaused = false) {
+  // Native paint/hit testing can lag synthetic RAF after suspension or rotation.
+  if (clockPaused) await page.clock.resume();
+  await expect.poll(() => page.evaluate(() => {
+    const save = document.querySelector('#settingsSaveButton');
+    const rect = save.getBoundingClientRect();
+    const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    return { hit: hit === save || save.contains(hit), blocker: hit?.id || hit?.className || hit?.tagName || null };
+  })).toMatchObject({ hit: true });
   const state = await page.evaluate(() => {
     const dialog = document.querySelector('#settingsDialog');
     const sheet = dialog.querySelector('.settings-sheet');
@@ -23,8 +31,6 @@ async function assertSettledSheet(page, clockPaused = false) {
   expect(state.save.bottom, JSON.stringify(state)).toBeLessThanOrEqual(state.dialog.bottom + 1);
   expect(state.saveHit, JSON.stringify(state)).toBe(true);
   await expect(page.locator('.income-shared-shell, .income-shared-origin')).toHaveCount(0);
-  // Native intersection delivery needs live rendering after simulated suspension.
-  if (clockPaused) await page.clock.resume();
   await expect(page.locator('#settingsSaveButton')).toBeInViewport();
   if (clockPaused) await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
 }
