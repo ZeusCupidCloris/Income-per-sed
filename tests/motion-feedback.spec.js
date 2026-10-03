@@ -306,7 +306,7 @@ test(`income shared shell stays continuous and interruptible: ${width} ${theme}`
   await page.clock.runFor(450);
   await expect(page.locator('.income-shared-shell')).toHaveCount(0);
   await expect(page.locator('#incomeSettingsPanel')).toBeVisible();
-  await expect(page.locator('.settings-sheet')).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+  await expect(page.locator('.settings-sheet')).toHaveCSS('transform', 'none');
   const panel = await page.locator('.settings-sheet').boundingBox();
   expect(panel.x).toBeGreaterThanOrEqual(0);
   expect(panel.x + panel.width).toBeLessThanOrEqual(width + 1);
@@ -358,7 +358,7 @@ test('known field errors block saving until valid and preserve button position',
   await open(page);
   await page.locator('#incomeSettingsCard').click();
   await page.locator('#incomeAmountInput').fill('-1');
-  await expect(page.locator('.settings-sheet')).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+  await expect(page.locator('.settings-sheet')).toHaveCSS('transform', 'none');
   const before = await page.locator('#settingsSaveButton').boundingBox();
   await page.locator('#settingsSaveButton').click();
   await expect(page.locator('#settingsSaveButton')).toBeDisabled();
