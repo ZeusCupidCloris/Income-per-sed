@@ -16,6 +16,7 @@ test('public titles remain short and channel-specific', () => {
 test('component and delivery identifiers agree with the manifest', () => {
   const widget = read('IncomeWidget.js').match(/\bversion:\s*"([^"]+)"/)[1];
   assert.equal(widget, manifest.widgetVersion);
+  assert.equal(manifest.widgetVersion, manifest.productVersion, 'Four-file versions must advance together');
   assert.equal(read('IncomeWidget.js').match(/\bdeliveryRevision:\s*"([^"]+)"/)[1], manifest.deliveryRevision);
   assert.equal(read('IncomeWidget.js').match(/\bsourceBuild:\s*"([^"]+)"/)[1], `widget-${manifest.deliveryRevision}`);
   assert.match(manifest.deliveryRevision, /^\d{8}\.\d+$/);
