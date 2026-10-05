@@ -1,6 +1,6 @@
 {
   "name": "income-per-sed-quality",
-  "version": "2.5.4-rc.10",
+  "version": "2.5.5",
   "private": true,
   "description": "Release validation and visual regression for Income-per-sed.",
   "scripts": {
@@ -17,7 +17,7 @@
     "test:checks": "npm run test:release && npm run test:widget && npm run test:readme && npm run build:check && npm run validate",
     "test:recovery": "playwright test --config=config/playwright-edge.config.js tests/foreground-resume.spec.js tests/foreground-progress.spec.js tests/readout-sync.spec.js tests/cross-date-month.spec.js tests/recovery-combinations.spec.js tests/recovery-cross-actions.spec.js tests/browser-lifecycle.spec.js",
     "test:layout": "playwright test --config=config/playwright-edge.config.js tests/long-amount-layout.spec.js tests/visual.spec.js",
-    "test:settings": "playwright test --config=config/playwright-edge.config.js tests/motion-feedback.spec.js tests/settings-local-motion.spec.js tests/settings-stability.spec.js tests/settings-input-safety.spec.js tests/settings-text-continuity.spec.js tests/storage-resilience.spec.js",
+    "test:settings": "playwright test --config=config/playwright-edge.config.js tests/motion-feedback.spec.js tests/settings-local-motion.spec.js tests/settings-scrollbar-handoff.spec.js tests/settings-refinements.spec.js tests/settings-stability.spec.js tests/settings-input-safety.spec.js tests/settings-text-continuity.spec.js tests/storage-resilience.spec.js",
     "test:observe": "playwright test --config=config/playwright-edge.config.js tests/settings-frame-budget.spec.js",
     "test": "playwright test --config=config/playwright-edge.config.js",
     "test:webkit": "playwright test --config=config/playwright-webkit.config.js",

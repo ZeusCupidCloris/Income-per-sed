@@ -7530,7 +7530,9 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
     }
 
     body.history-quick-sheet-dragging .history-quick-panel,
-    body.history-quick-sheet-dragging .history-quick-backdrop{
+    body.history-quick-sheet-dragging .history-quick-backdrop,
+    body.history-quick-sheet-returning .history-quick-panel,
+    body.history-quick-sheet-returning .history-quick-backdrop{
         transition:none !important;
         user-select:none;
     }
@@ -7540,7 +7542,7 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
     }
 
     body.history-quick-panel-closing .history-quick-panel{
-        transform:translate3d(0,calc(var(--history-sheet-drag-y) + 16px),0);
+        transform:translate3d(0,var(--history-sheet-dismiss-y,16px),0);
     }
 
     .storage-warning-toast{
@@ -8633,7 +8635,12 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
     .work-segment::after{display:none;}
 }
 /* Reversible local feedback; no changes to the dashboard's motion clock. */
-.settings-sheet,.settings-backdrop{transition:opacity var(--panel-motion-ms,240ms) ease-out,transform var(--panel-motion-ms,240ms) ease-out !important;animation:none !important;}
+@property --settings-scrollbar-reveal{syntax:'<number>';inherits:true;initial-value:1;}
+@property --calendar-reveal{syntax:'<number>';inherits:true;initial-value:0;}
+.settings-sheet,.settings-backdrop{transition:opacity var(--panel-motion-ms,240ms) ease-out,transform var(--panel-motion-ms,240ms) ease-out,--settings-scrollbar-reveal 128ms ease-out !important;animation:none !important;}
+.settings-sheet{--settings-scrollbar-reveal:1;scrollbar-color:color-mix(in srgb,var(--scrollbar-thumb) calc(var(--settings-scrollbar-reveal)*100%),transparent) transparent;}
+.settings-sheet::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--scrollbar-thumb) calc(var(--settings-scrollbar-reveal)*100%),transparent);}
+.settings-sheet::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--scrollbar-thumb-hover) calc(var(--settings-scrollbar-reveal)*100%),transparent);}
 .settings-dialog:not(.is-visible) .settings-sheet{opacity:0;transform:translateY(6px) !important;}
 /* Keep the completed sheet on the same transform and clip basis as its morph. */
 .settings-dialog.is-visible .settings-sheet{opacity:1;transform:none !important;clip-path:inset(0);will-change:opacity;}
@@ -8648,15 +8655,38 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 .income-shared-skin{position:absolute;inset:0;box-sizing:border-box;pointer-events:none;border-radius:inherit;will-change:opacity;}
 .settings-dialog.income-shared-active .settings-sheet{transform:none!important;transition:none!important;background:transparent!important;box-shadow:none!important;border-color:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;clip-path:inset(0);will-change:opacity;}
 .settings-dialog.income-shared-active .settings-backdrop{transition:none!important;}
+/* Keep the scroll gutter stable, but reveal its paint only after shell handoff. */
+.settings-dialog.income-shared-active .settings-sheet{--settings-scrollbar-reveal:0;scrollbar-color:transparent transparent;}
+.settings-dialog.income-shared-active .settings-sheet::-webkit-scrollbar-thumb,
+.settings-dialog.income-shared-active .settings-sheet::-webkit-scrollbar-track,
+.settings-dialog.income-shared-active .settings-sheet::-webkit-scrollbar-corner{background:transparent!important;border-color:transparent!important;box-shadow:none!important;}
 .settings-dialog.income-shared-active .settings-sheet-header,
 .settings-dialog.income-shared-active .settings-panel:not([hidden]),
 .settings-dialog.income-shared-active .settings-actions{opacity:var(--settings-layer-opacity,1)!important;transform:none!important;transition:none!important;}
 .history-quick-panel,.history-quick-backdrop{transition-duration:var(--quick-motion-ms,240ms) !important;}
+.history-quick-grid button.is-recent-source{background:color-mix(in srgb,var(--accent-warm) 10%,var(--bg-soft));border-color:color-mix(in srgb,var(--accent-warm) 28%,var(--border-light));}
+.settings-sheet-header,.settings-actions{transition:box-shadow 140ms ease-out;}
+.settings-sheet.has-scroll-above .settings-sheet-header{box-shadow:0 5px 7px -6px color-mix(in srgb,var(--text-primary) 22%,transparent);}
+.settings-sheet.has-scroll-below .settings-actions{box-shadow:0 -5px 7px -6px color-mix(in srgb,var(--text-primary) 22%,transparent);}
+.settings-dialog.income-shared-active .settings-sheet-header,.settings-dialog.income-shared-active .settings-actions{box-shadow:none!important;}
+.time-wheel-column{-webkit-mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);}
 .settings-dialog .settings-sheet-header,.settings-dialog .settings-panel:not([hidden]),.settings-dialog .settings-actions{opacity:var(--settings-layer-opacity,1) !important;transform:none !important;animation:none !important;transition:none!important;}
+.settings-dialog:not(.income-shared-active) .settings-sheet-header,.settings-dialog:not(.income-shared-active) .settings-actions{transition:box-shadow 140ms ease-out!important;}
 .settings-dialog.income-shared-active .settings-data-section{opacity:var(--settings-layer-opacity,1)!important;transition:none!important;}
 .income-mode-copy{display:grid;}
 .income-mode-copy>span{grid-area:1 / 1;min-width:0;}
 .income-mode-copy>.income-mode-previous{pointer-events:none;}
+.income-mode-segments{position:relative;isolation:isolate;}
+.income-mode-indicator{position:absolute;top:5px;bottom:5px;left:0;pointer-events:none;border-radius:var(--settings-control-radius);border:1px solid color-mix(in srgb,var(--border-light) 64%,transparent);background:color-mix(in srgb,var(--card-hover) 92%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--glass-edge-light) 34%,transparent),0 1px 3px rgba(74,63,56,.035);}
+.income-mode-segments.has-moving-indicator .income-mode-button{position:relative;z-index:1;border:1px solid transparent;background:transparent;box-shadow:none;}
+.settings-data-section{--calendar-reveal:0;}
+.settings-data-section.is-expanded{--calendar-reveal:1;}
+.settings-data-section .settings-data-content,.settings-data-section.is-expanded .settings-data-content{opacity:var(--calendar-reveal);transition:none!important;}
+.settings-data-section .settings-data-chevron,.settings-data-section.is-expanded .settings-data-chevron{transform:translateY(calc(var(--calendar-reveal)*3px)) rotate(calc(45deg + var(--calendar-reveal)*180deg));transition:none!important;}
+.settings-data-section .settings-data-content-inner,.settings-data-section.is-expanded .settings-data-content-inner{transform:translateY(calc((var(--calendar-reveal) - 1)*4px));transition:none!important;}
+.settings-input-wrap,.time-wheel-card{transition:border-color 150ms ease-out,box-shadow 150ms ease-out;}
+.settings-field-error.is-error-clearing,.time-wheel-field-error.is-error-clearing,.settings-error-summary.is-error-clearing{display:flex;align-items:flex-start;gap:5px;}
+.settings-field-error.is-error-clearing::before,.time-wheel-field-error.is-error-clearing::before,.settings-error-summary.is-error-clearing::before{content:'!';flex:0 0 auto;display:grid;place-items:center;width:14px;height:14px;margin-top:1px;border:1px solid currentColor;border-radius:50%;font-size:.58rem;font-weight:760;line-height:1;}
 /* Physical distance, not the committed value, controls wheel emphasis. */
 .time-wheel-item,.time-wheel-item.selected,.time-wheel-item:not(.selected){opacity:1;font-size:1.04rem;font-weight:610;letter-spacing:0;color:var(--text-primary);transition:none;}
 .time-wheel-value{transition:none;}
@@ -8671,10 +8701,13 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 .editable-card.is-hovered{transition-duration:160ms;}
 .editable-card:focus-visible{outline:2px solid color-mix(in srgb,var(--accent-blue) 40%,var(--border-light));outline-offset:3px;}
 @media (prefers-reduced-motion:reduce){
+    .settings-dialog:not(.income-shared-active) .settings-sheet-header,.settings-dialog:not(.income-shared-active) .settings-actions{transition-duration:1ms!important;}
     .settings-sheet,.settings-backdrop,.editable-card,.settings-field-error,.time-wheel-field-error{transition-duration:1ms !important;transition-delay:0ms !important;}
     .settings-dialog:not(.is-visible) .settings-sheet,.editable-card.is-hovered{transform:none !important;}
     .settings-data-content-inner{transform:none!important;transition:none!important;}
+    .settings-sheet{--settings-scrollbar-reveal:1;}
 }
+@media (forced-colors:active){.time-wheel-column{-webkit-mask-image:none;mask-image:none;}}
 </style>
 </head>
 <body class="startup-presentation-active">
@@ -9055,10 +9088,10 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v35',
-productVersion: '2.5.4-rc.10',
-sourceTag: 'v2.5.4-rc.10',
-buildId: 'v35-20261005.4',
-releaseDate: '2026-09-06',
+productVersion: '2.5.5',
+sourceTag: 'v2.5.5',
+buildId: 'v35-20261005.8',
+releaseDate: '2026-10-05',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
@@ -17043,6 +17076,26 @@ let settingsCloseTimer = 0;
 let settingsOpenGeneration = 0;
 let saveFeedbackTimer = 0;
 let saveBusy = false;
+let savedReadoutTargets = [];
+let readoutFeedbackAnimations = [];
+let scrollEdgeFrame = 0;
+function clearReadoutFeedback() {
+for (const animation of readoutFeedbackAnimations) animation.cancel();
+readoutFeedbackAnimations = [];
+}
+function updateSettingsScrollEdges() {
+if (dom.settingsDialog.hidden) return;
+const sheet = getDialogSheet();
+sheet.classList.toggle('has-scroll-above', sheet.scrollTop > 2);
+sheet.classList.toggle('has-scroll-below', sheet.scrollHeight - sheet.clientHeight - sheet.scrollTop > 2);
+}
+function requestSettingsScrollEdges() {
+if (scrollEdgeFrame || dom.settingsDialog.hidden) return;
+scrollEdgeFrame = ComponentScopes.settings.requestFrame(() => {
+scrollEdgeFrame = 0;
+updateSettingsScrollEdges();
+});
+}
 let incomeValidationActive = false;
 let scheduleValidationActive = false;
 function resetSaveFeedback() {
@@ -17062,7 +17115,7 @@ setFieldError(dom.annualWorkDaysInput, dom.annualWorkDaysError, validDays ? '' :
 dom.settingsSaveButton.disabled = saveBusy || !amount.valid || !validDays;
 if (amount.valid && validDays) setError(dom.incomeSettingsError);
 }
-let calendarAccordionTimer = 0;
+let calendarAccordionAnimation = null;
 let calendarAccordionToken = 0;
 let calendarDataExpanded = false;
 let scheduleDirty = false;
@@ -17080,11 +17133,13 @@ function setError(node, message = '') {
 if (!node) return;
 if (!message && node.hidden) return;
 AppLifecycle.clearTimeout(errorClearTimers.get(node));
+node.classList.toggle('is-error-clearing', !message && !reduceMotionQuery.matches);
 node.hidden = !message;
 node.setAttribute('aria-hidden', String(!message));
 if (message) setTextIfChanged(node, message);
 else errorClearTimers.set(node, AppLifecycle.setTimeout(() => {
 if (node.hidden) setTextIfChanged(node, '');
+node.classList.remove('is-error-clearing');
 errorClearTimers.delete(node);
 }, reduceMotionQuery.matches ? 0 : 150));
 }
@@ -17399,36 +17454,41 @@ const calendarInner = dom.calendarDataContent.firstElementChild;
 calendarDataExpanded = next;
 calendarAccordionToken += 1;
 const token = calendarAccordionToken;
-AppLifecycle.clearTimeout(calendarAccordionTimer);
-calendarAccordionTimer = 0;
+const current = Number(getComputedStyle(dom.calendarDataSection).getPropertyValue('--calendar-reveal')) || 0;
+calendarAccordionAnimation?.cancel();
+calendarAccordionAnimation = null;
 dom.calendarDataToggle.setAttribute('aria-expanded', String(next));
 dom.calendarDataContent.setAttribute('aria-hidden', String(!next));
 dom.calendarDataContent.inert = !next;
 if (immediate) {
-calendarInner.style.transition = 'none';
 dom.calendarDataSection.classList.toggle('is-expanded', next);
+dom.calendarDataSection.style.setProperty('--calendar-reveal', String(Number(next)));
+dom.calendarDataContent.style.visibility = next ? 'visible' : 'hidden';
 dom.calendarDataContent.style.height = next ? 'auto' : '0px';
+calendarInner.style.transform = next ? 'none' : '';
 return;
 }
-const currentHeight = dom.calendarDataContent.getBoundingClientRect().height;
-calendarInner.style.removeProperty('transition');
-dom.calendarDataContent.style.height = `${currentHeight}px`;
-void dom.calendarDataContent.offsetHeight;
+calendarInner.style.removeProperty('transform');
+const fullHeight = dom.calendarDataContent.firstElementChild.getBoundingClientRect().height;
+dom.calendarDataContent.style.visibility = 'visible';
+dom.calendarDataContent.style.height = `calc(var(--calendar-reveal)*${fullHeight}px)`;
+dom.calendarDataSection.style.setProperty('--calendar-reveal', String(current));
 dom.calendarDataSection.classList.toggle('is-expanded', next);
-AppLifecycle.requestFrame(() => {
+const animation = dom.calendarDataSection.animate([
+{ '--calendar-reveal': String(current) },
+{ '--calendar-reveal': String(Number(next)) }
+], { duration: Math.max(1, 280 * Math.abs(Number(next) - current)), easing: 'cubic-bezier(.22,.8,.32,1)', fill: 'backwards' });
+calendarAccordionAnimation = animation;
+dom.calendarDataSection.style.setProperty('--calendar-reveal', String(Number(next)));
+animation.finished.then(() => {
 if (token !== calendarAccordionToken) return;
-dom.calendarDataContent.style.height = next
-? `${dom.calendarDataContent.scrollHeight}px`
-: '0px';
-});
-calendarAccordionTimer = AppLifecycle.setTimeout(() => {
-if (token !== calendarAccordionToken) return;
-calendarAccordionTimer = 0;
-// End the native content transition on the same frame as height cleanup.
-calendarInner.style.transition = 'none';
+calendarAccordionAnimation = null;
+dom.calendarDataContent.style.visibility = next ? 'visible' : 'hidden';
 dom.calendarDataContent.style.height = next ? 'auto' : '0px';
-}, 300);
+calendarInner.style.transform = next ? 'none' : '';
+}).catch(() => {});
 }
+ComponentScopes.settings.replaceResource('calendar-reveal', {}, () => setCalendarDataExpanded(calendarDataExpanded, { immediate: true }));
 function getFocusableElements() {
 return [...getDialogSheet().querySelectorAll(focusableSelector)].filter(
 (node) => !node.hidden && !node.closest('[inert]') && node.getClientRects().length > 0
@@ -17499,6 +17559,29 @@ element.classList.remove('income-mode-copy');
 incomeCopyMotions.delete(element);
 }).catch(() => {});
 }
+const incomeModeSegments = dom.incomeSettingsPanel.querySelector('.income-mode-segments');
+const incomeModeIndicator = document.createElement('span');
+incomeModeIndicator.className = 'income-mode-indicator';
+incomeModeIndicator.setAttribute('aria-hidden', 'true');
+incomeModeSegments.prepend(incomeModeIndicator);
+incomeModeSegments.classList.add('has-moving-indicator');
+let incomeModeAnimation = null;
+function updateIncomeModeIndicator(animate = false) {
+const selected = incomeModeSegments.querySelector('.income-mode-button.active');
+if (!selected || !incomeModeSegments.clientWidth) return;
+const current = getComputedStyle(incomeModeIndicator).transform;
+incomeModeAnimation?.cancel();
+incomeModeAnimation = null;
+incomeModeIndicator.style.width = `${selected.offsetWidth}px`;
+const target = `translateX(${selected.offsetLeft}px)`;
+incomeModeIndicator.style.transform = target;
+if (!animate || reduceMotionQuery.matches || current === 'none') return;
+const animation = incomeModeIndicator.animate([{ transform: current }, { transform: target }], { duration: 180, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'backwards' });
+incomeModeAnimation = animation;
+animation.finished.then(() => { if (incomeModeAnimation === animation) incomeModeAnimation = null; }).catch(() => {});
+}
+ComponentScopes.settings.replaceResource('income-mode-indicator', {}, () => { incomeModeAnimation?.cancel(); incomeModeAnimation = null; });
+ComponentScopes.settings.listen(window, 'resize', () => updateIncomeModeIndicator());
 function setIncomeMode(mode) {
 const animateCopy = dom.settingsDialog.classList.contains('is-visible') && activePanel === 'income';
 selectedIncomeMode = IncomeEngine.modes.includes(mode) ? mode : 'fixed-monthly';
@@ -17507,6 +17590,7 @@ const active = button.dataset.incomeMode === selectedIncomeMode;
 button.classList.toggle('active', active);
 button.setAttribute('aria-pressed', String(active));
 }
+updateIncomeModeIndicator(animateCopy);
 const fixedDaily = selectedIncomeMode === 'fixed-daily';
 const limits = incomeAmountLimits(selectedIncomeMode);
 transitionIncomeCopy(dom.incomeAmountLabel, fixedDaily ? '每个工作日到手收入' : '每月到手收入', animateCopy);
@@ -17630,6 +17714,8 @@ dom.calendarImportInput.value = '';
 }
 }
 function open(panel) {
+savedReadoutTargets = [];
+clearReadoutFeedback();
 if (incomeSharedMotion && incomeSharedMotion.timeline !== (panel === 'schedule')) clearIncomeSharedSurface();
 const reopening = !dom.settingsDialog.hidden;
 const resetScroll = !reopening || activePanel !== panel;
@@ -17668,6 +17754,7 @@ buildScheduleWheels();
 }
 dom.settingsDialog.querySelector('.settings-sheet').focus({ preventScroll: true });
 if (resetScroll) getDialogSheet().scrollTop = 0;
+requestSettingsScrollEdges();
 const sharedPreview = animateIncomeSharedSurface(true);
 if (sharedPreview) dom.settingsDialog.classList.add('is-visible');
 AppLifecycle.requestFrame(() => {
@@ -17688,13 +17775,29 @@ recordDiagnosticEvent('settings', income ? '打开收入设置' : '打开工作�
 function finalizeClose() {
 clearIncomeSharedSurface();
 clearIncomeCopyMotions();
+incomeModeAnimation?.cancel();
+incomeModeAnimation = null;
+setCalendarDataExpanded(calendarDataExpanded, { immediate: true });
 AppLifecycle.clearTimeout(settingsCloseTimer);
 destroyScheduleWheels();
 dom.settingsDialog.hidden = true;
 dom.settingsDialog.classList.remove('is-closing', 'is-visible');
+getDialogSheet().classList.remove('has-scroll-above', 'has-scroll-below');
+if (scrollEdgeFrame) ComponentScopes.settings.cancelFrame(scrollEdgeFrame);
+scrollEdgeFrame = 0;
 body.classList.remove('settings-open');
 isolateBackground(false);
 if (lastFocused?.isConnected) lastFocused.focus?.();
+clearReadoutFeedback();
+if (!reduceMotionQuery.matches) {
+readoutFeedbackAnimations = savedReadoutTargets.filter(node => node.isConnected).map(node => node.animate(
+[{ opacity: .62 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' }
+));
+Promise.all(readoutFeedbackAnimations.map(animation => animation.finished.catch(() => {}))).then(() => {
+readoutFeedbackAnimations = readoutFeedbackAnimations.filter(animation => animation.playState !== 'finished');
+});
+}
+savedReadoutTargets = [];
 }
 function close(options = {}) {
 if (
@@ -17767,8 +17870,13 @@ return result;
 }
 function save() {
 if (saveBusy || dom.settingsSaveButton.disabled) return;
+const readouts = [...document.querySelectorAll(activePanel === 'income'
+? '#hourlyRateDisplay, #dailyRateDisplay'
+: '#progressPercent, #progressRemaining, .schedule-range span')];
+const previousReadouts = readouts.map(node => node.textContent);
 const result = activePanel === 'income' ? saveIncome() : saveSchedule();
 if (!result || (!result.persisted && !result.pendingRemote)) return;
+savedReadoutTargets = result.persisted ? readouts.filter((node, index) => node.textContent !== previousReadouts[index]) : [];
 saveBusy = true;
 dom.settingsSaveButton.disabled = true;
 dom.settingsSaveButton.textContent = result.persisted ? '✓' : '已提交';
@@ -17814,6 +17922,15 @@ open(panel);
 });
 }
 function bind() {
+const sheet = getDialogSheet();
+ComponentScopes.settings.listen(sheet, 'scroll', requestSettingsScrollEdges, { passive: true });
+ComponentScopes.settings.listen(window, 'resize', requestSettingsScrollEdges, { passive: true });
+if ('ResizeObserver' in window) {
+const observer = new ResizeObserver(requestSettingsScrollEdges);
+for (const node of [sheet, dom.incomeSettingsPanel, dom.scheduleSettingsPanel, dom.calendarDataSection]) observer.observe(node);
+ComponentScopes.settings.replaceResource('scroll-edge-observer', observer, value => value.disconnect());
+}
+ComponentScopes.settings.replaceResource('saved-readout-feedback', {}, clearReadoutFeedback);
 bindCard(dom.incomeSettingsCard, 'income');
 bindCard(dom.scheduleSettingsCard, 'schedule');
 setCalendarDataExpanded(false, { immediate: true });
@@ -23997,7 +24114,9 @@ closeTimer: 0,
 actionTimer: 0,
 pendingSeconds: 0,
 pendingAction: '',
-pressedButton: null
+pressedButton: null,
+recentButton: null,
+recentTimer: 0
 };
 const historyQuickSheetDrag = {
 active: false,
@@ -24006,8 +24125,16 @@ startY: 0,
 lastY: 0,
 lastAt: 0,
 offset: 0,
-velocity: 0
+velocity: 0,
+returnAnimations: []
 };
+
+function cancelHistoryQuickReturn() {
+for (const animation of historyQuickSheetDrag.returnAnimations) animation.cancel();
+historyQuickSheetDrag.returnAnimations = [];
+body.classList.remove('history-quick-sheet-returning');
+}
+ComponentScopes.timeline.replaceResource('quick-sheet-return', {}, cancelHistoryQuickReturn);
 
 function setHistoryQuickSheetDragVisual(offset) {
 const panelHeight = Math.max(
@@ -24028,6 +24155,7 @@ document.documentElement.style.setProperty(
 }
 
 function resetHistoryQuickSheetDrag() {
+cancelHistoryQuickReturn();
 historyQuickSheetDrag.active = false;
 historyQuickSheetDrag.pointerId = -1;
 historyQuickSheetDrag.startY = 0;
@@ -24047,12 +24175,15 @@ historyQuickPanelState.closing ||
 event.button !== 0
 ) return;
 event.preventDefault();
+const currentOffset = Math.max(0, new DOMMatrix(getComputedStyle(dom.historyQuickPanel).transform).m42);
+cancelHistoryQuickReturn();
+setHistoryQuickSheetDragVisual(currentOffset);
 historyQuickSheetDrag.active = true;
 historyQuickSheetDrag.pointerId = event.pointerId;
-historyQuickSheetDrag.startY = event.clientY;
+historyQuickSheetDrag.startY = event.clientY - currentOffset;
 historyQuickSheetDrag.lastY = event.clientY;
 historyQuickSheetDrag.lastAt = event.timeStamp || performance.now();
-historyQuickSheetDrag.offset = 0;
+historyQuickSheetDrag.offset = currentOffset;
 historyQuickSheetDrag.velocity = 0;
 body.classList.add('history-quick-sheet-dragging');
 try {
@@ -24100,7 +24231,7 @@ historyQuickSheetDrag.active = false;
 historyQuickSheetDrag.pointerId = -1;
 body.classList.remove('history-quick-sheet-dragging');
 if (dismiss) {
-setHistoryQuickSheetDragVisual(Math.max(16, releaseOffset));
+setHistoryQuickSheetDragVisual(releaseOffset);
 setHistoryQuickPanelOpen(false);
 recordDiagnosticEvent('input', '快速回溯面板下滑关闭', {
 offset: releaseOffset,
@@ -24108,7 +24239,24 @@ velocity: historyQuickSheetDrag.velocity
 });
 return;
 }
+const transform = getComputedStyle(dom.historyQuickPanel).transform;
+const opacity = getComputedStyle(dom.historyQuickBackdrop).opacity;
+body.classList.add('history-quick-sheet-returning');
 setHistoryQuickSheetDragVisual(0);
+if (!reduceMotionQuery.matches && releaseOffset > 0) {
+const duration = Math.min(240, Math.max(140, releaseOffset * 1.6));
+historyQuickSheetDrag.returnAnimations = [
+dom.historyQuickPanel.animate([{ transform }, { transform: 'translate3d(0,0,0)' }], { duration, easing: 'cubic-bezier(.22,.8,.32,1)', fill: 'backwards' }),
+dom.historyQuickBackdrop.animate([{ opacity }, { opacity: 1 }], { duration, easing: 'cubic-bezier(.22,.8,.32,1)', fill: 'backwards' })
+];
+const animations = historyQuickSheetDrag.returnAnimations;
+Promise.all(animations.map(animation => animation.finished.catch(() => {}))).then(() => {
+if (historyQuickSheetDrag.returnAnimations === animations) {
+historyQuickSheetDrag.returnAnimations = [];
+body.classList.remove('history-quick-sheet-returning');
+}
+});
+} else body.classList.remove('history-quick-sheet-returning');
 historyQuickSheetDrag.velocity = 0;
 }
 
@@ -24161,6 +24309,9 @@ const returnFocus = dom.historyQuickPanel.contains(document.activeElement);
 AppLifecycle.clearTimeout(historyQuickPanelState.closeTimer);
 historyQuickPanelState.closeTimer = 0;
 historyQuickPanelState.closing = false;
+AppLifecycle.clearTimeout(historyQuickPanelState.recentTimer);
+historyQuickPanelState.recentButton?.classList.remove('is-recent-source');
+historyQuickPanelState.recentButton = null;
 dom.historyQuickPanel.hidden = true;
 if (dom.historyQuickBackdrop) {
 dom.historyQuickBackdrop.hidden = true;
@@ -24235,6 +24386,10 @@ return;
 
 historyQuickPanelState.open = false;
 historyQuickPanelState.closing = true;
+const currentOffset = Math.max(0, new DOMMatrix(getComputedStyle(dom.historyQuickPanel).transform).m42);
+cancelHistoryQuickReturn();
+setHistoryQuickSheetDragVisual(currentOffset);
+document.documentElement.style.setProperty('--history-sheet-dismiss-y', `${dom.historyQuickPanel.getBoundingClientRect().height + 24}px`);
 dom.historyQuickOpen.setAttribute(
 'aria-expanded',
 'false'
@@ -24356,6 +24511,15 @@ const action =
 button.dataset.historyAction || '';
 
 clearHistoryQuickPressedButton();
+AppLifecycle.clearTimeout(historyQuickPanelState.recentTimer);
+if (historyQuickPanelState.recentButton !== button) historyQuickPanelState.recentButton?.classList.remove('is-recent-source');
+historyQuickPanelState.recentButton = button;
+button.classList.add('is-recent-source');
+historyQuickPanelState.recentTimer = AppLifecycle.setTimeout(() => {
+button.classList.remove('is-recent-source');
+historyQuickPanelState.recentButton = null;
+historyQuickPanelState.recentTimer = 0;
+}, reduceMotionQuery.matches ? 0 : 420);
 historyQuickPanelState.pressedButton =
 button;
 button.classList.add('is-pressed');

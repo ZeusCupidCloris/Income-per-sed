@@ -55,6 +55,8 @@ WebKit 长金额运动四种尺寸/主题组合全部通过（390/1440px、浅/�
 | 局部动效预览 | motion-feedback.spec.js | 保存结果、反向开合、错误占位、码表暂停、连续回溯、默认关闭的吸附实验及多窗口；Develop 两种设置展开覆盖完整开合时长一致、遮罩同步、浅深主题、桌面手机、纵向先行、窗口调整、保存收回、错误修正、后台中断和清理；短视口与后台模拟不代表手机键盘或实机验收 |
 | 设置文字连续性 | settings-text-continuity.spec.js | Develop 动画副本与原卡片的文字排版一致性、面板文字固定坐标和透明度连续性；桌面浏览器自动检查，不替代实机流畅度验收 |
 | 设置局部动效 | settings-local-motion.spec.js | 分层显现、日历反向展开、收入口径文字交接和滚轮明度；设置 SETTINGS_RELEASE_CHANNEL=push 可验证生成的 Push |
+| 设置滚动条交接 | settings-scrollbar-handoff.spec.js | Develop 展开及关闭期间隐藏滚动条绘制，保留滚动空间；桌面、手机宽度、中途反向和减少动态效果 |
+| 设置细节精修 | settings-refinements.spec.js | 滚动条淡入、口径底板与日历反向接管、错误占位、快速回溯拖动归位及来源反馈、保存后读数交接、时间滚轮渐隐和滚动边界；原生动画时钟中间帧检查，SETTINGS_RELEASE_CHANNEL=push 验证生成版 |
 | 设置稳定性 | settings-stability.spec.js | 日历及错误滚动锚定、摘要固定读数、高频操作清理和同帧几何读写；性能采样仅用于定位本机耗时 |
 | 设置输入安全 | settings-input-safety.spec.js | 展开早期防误触、关闭接管、触屏意图及停靠后摘要播报；可用 SETTINGS_RELEASE_CHANNEL=push 检查 Push；模拟不替代 iPhone 和 VoiceOver 实机验收 |
 | 设置帧开销观察 | settings-frame-budget.spec.js | Edge 中实际采样两种设置卡片的帧间隔与布局、样式计算开销；用于同机对比，不用固定帧率阈值判断所有设备 |
