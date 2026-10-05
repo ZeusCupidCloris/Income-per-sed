@@ -127,6 +127,9 @@
 | [tests/interaction-handoff.spec.js](../tests/interaction-handoff.spec.js) | 连续操作接管测试 | 维护 |
 | [tests/motion-feedback.spec.js](../tests/motion-feedback.spec.js) | 保存面板与局部动效反馈测试 | 维护 |
 | [tests/settings-text-continuity.spec.js](../tests/settings-text-continuity.spec.js) | 设置卡片动画文字排版与显隐连续性测试 | 维护 |
+| [tests/settings-local-motion.spec.js](../tests/settings-local-motion.spec.js) | 设置分层显现、口径文字交接、日历展开和滚轮明度测试 | 维护 |
+| [tests/settings-stability.spec.js](../tests/settings-stability.spec.js) | 设置滚动锚定、摘要布局、快速操作清理与读写耗时检查 | 维护 |
+| [tests/settings-input-safety.spec.js](../tests/settings-input-safety.spec.js) | 不可见控件防误触、触屏手势意图及停靠后摘要播报测试 | 维护 |
 | [tests/settings-frame-budget.spec.js](../tests/settings-frame-budget.spec.js) | 设置卡片实际帧间隔与样式计算开销观察 | 维护 |
 | [tests/release-naming.test.mjs](../tests/release-naming.test.mjs) | 对外名称与版本对应测试 | 维护 |
 | [tests/readme-preview-validation.test.mjs](../tests/readme-preview-validation.test.mjs) | 首页图片检查器测试 | 维护 |
@@ -136,6 +139,7 @@
 | [tests/release-channel.test.mjs](../tests/release-channel.test.mjs) | 发布标签识别测试 | 维护 |
 | [tests/storage-resilience.spec.js](../tests/storage-resilience.spec.js) | 异常存储与页面恢复测试 | 维护 |
 | [docs/acceptance/storage-runtime-20261003.md](../docs/acceptance/storage-runtime-20261003.md) | 保存可靠性与长时资源验收记录 | 维护 |
+| [docs/acceptance/settings-delivery-20261005.md](../docs/acceptance/settings-delivery-20261005.md) | 设置局部反馈、输入安全与四文件交付验收 | 维护 |
 | [docs/acceptance/runtime-observation-20261003.json](../docs/acceptance/runtime-observation-20261003.json) | 30 分钟资源观察原始采样证据 | 维护 |
 | [tests/startup-history-playback.spec.js](../tests/startup-history-playback.spec.js) | 启动与历史播放运动测试 | 维护 |
 | [tests/test_prepare_delivery.py](../tests/test_prepare_delivery.py) | 交付生成与手册书签测试 | 维护 |
