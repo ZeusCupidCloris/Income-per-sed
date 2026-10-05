@@ -326,7 +326,9 @@ test(`income shared shell stays continuous and interruptible: ${width} ${theme}`
 test('save commits once, confirms in place, and Escape cancels stale close', async ({ page }) => {
   await open(page);
   await page.locator('#incomeSettingsCard').click();
+  await expect(page.locator('#incomeSettingsPanel')).not.toHaveAttribute('data-settings-unready');
   await page.locator('#incomeAmountInput').fill('12345');
+  await expect(page.locator('#settingsSaveButton')).not.toHaveAttribute('data-settings-unready');
   await page.locator('#settingsSaveButton').evaluate(button => { button.click(); button.click(); });
   await expect(page.locator('#settingsSaveButton')).toHaveAttribute('data-save-state', 'saved');
   expect(await page.evaluate(() => window.__incomeClockDiagnostics.getSettings().monthlyIncome)).toBe(12345);
@@ -357,7 +359,9 @@ test('failed persistence keeps the editor open without a success check', async (
 test('known field errors block saving until valid and preserve button position', async ({ page }) => {
   await open(page);
   await page.locator('#incomeSettingsCard').click();
+  await expect(page.locator('#incomeSettingsPanel')).not.toHaveAttribute('data-settings-unready');
   await page.locator('#incomeAmountInput').fill('-1');
+  await expect(page.locator('#settingsSaveButton')).not.toHaveAttribute('data-settings-unready');
   await expect(page.locator('.settings-sheet')).toHaveCSS('transform', 'none');
   const before = await page.locator('#settingsSaveButton').boundingBox();
   await page.locator('#settingsSaveButton').click();
@@ -517,7 +521,9 @@ test('follower save reports submitted rather than saved', async ({ page, context
   }).toBe(true);
   const follower = await page.evaluate(() => window.__incomeClockDiagnostics.getMultiWindowState().role) === 'follower' ? page : other;
   await follower.locator('#incomeSettingsCard').click();
+  await expect(follower.locator('#incomeSettingsPanel')).not.toHaveAttribute('data-settings-unready');
   await follower.locator('#incomeAmountInput').fill('45678');
+  await expect(follower.locator('#settingsSaveButton')).not.toHaveAttribute('data-settings-unready');
   const feedback = await follower.locator('#settingsSaveButton').evaluate(button => {
     button.click();
     return { text: button.textContent, state: button.dataset.saveState };

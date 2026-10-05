@@ -83,7 +83,8 @@ for (const artifact of ['Develop', 'Push']) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`/Income-per-sed-${artifact}.html`);
     await page.locator('#incomeSettingsCard').dispatchEvent('click');
-    await page.waitForTimeout(500);
+    await expect(page.locator('#incomeSettingsPanel')).not.toHaveAttribute('data-settings-unready');
+    await expect(page.locator('.income-shared-shell')).toHaveCount(0);
     await page.locator('#annualWorkDaysInput').fill('277');
     await page.evaluate(() => {
       Object.defineProperty(window.visualViewport, 'height', { configurable: true, get: () => 320 });

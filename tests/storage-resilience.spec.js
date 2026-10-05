@@ -51,7 +51,8 @@ const stored = page => page.evaluate(key => JSON.parse(localStorage.getItem(key)
 async function openIncome(page, amount) {
   await page.locator('#incomeSettingsCard').dispatchEvent('click');
   await expect(page.locator('#incomeSettingsPanel')).toBeVisible();
-  await page.waitForTimeout(500);
+  await expect(page.locator('#incomeSettingsPanel')).not.toHaveAttribute('data-settings-unready');
+  await expect(page.locator('#settingsSaveButton')).not.toHaveAttribute('data-settings-unready');
   if (amount !== undefined) await page.locator('#incomeAmountInput').fill(String(amount));
 }
 
@@ -101,7 +102,8 @@ for (const artifact of ['Develop', 'Push']) {
         if (kind === 'income') await openIncome(page, 12345);
         else {
           await page.locator('#scheduleSettingsCard').dispatchEvent('click');
-          await page.waitForTimeout(500);
+          await expect(page.locator('#scheduleSettingsPanel')).not.toHaveAttribute('data-settings-unready');
+          await expect(page.locator('#settingsSaveButton')).not.toHaveAttribute('data-settings-unready');
           await page.locator('[data-time-key="morningStart"] [role="spinbutton"]').last().press('ArrowDown');
         }
         const saved = await page.evaluate(({ key, interruption }) => {
@@ -142,7 +144,8 @@ for (const artifact of ['Develop', 'Push']) {
     await page.waitForTimeout(800);
     await openIncome(page, 24680);
     await other.locator('#scheduleSettingsCard').dispatchEvent('click');
-    await other.waitForTimeout(500);
+    await expect(other.locator('#scheduleSettingsPanel')).not.toHaveAttribute('data-settings-unready');
+    await expect(other.locator('#settingsSaveButton')).not.toHaveAttribute('data-settings-unready');
     await other.locator('[data-time-key="morningStart"] [role="spinbutton"]').last().press('ArrowDown');
     await Promise.all([
       page.locator('#settingsSaveButton').dispatchEvent('click'),

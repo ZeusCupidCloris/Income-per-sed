@@ -7473,7 +7473,10 @@ html[data-theme="dark"] .time-wheel-card[aria-invalid="true"]{
 
 .settings-data-content-inner{
     padding-top:2px;
+    transform:translateY(-4px);
+    transition:transform 280ms cubic-bezier(.22,.8,.32,1);
 }
+.settings-data-section.is-expanded .settings-data-content-inner{transform:none;}
 
 .storage-warning-toast{
     top:max(16px,env(safe-area-inset-top));
@@ -8647,9 +8650,18 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 .settings-dialog.income-shared-active .settings-backdrop{transition:none!important;}
 .settings-dialog.income-shared-active .settings-sheet-header,
 .settings-dialog.income-shared-active .settings-panel:not([hidden]),
-.settings-dialog.income-shared-active .settings-actions{opacity:1!important;transform:none!important;transition:none!important;}
+.settings-dialog.income-shared-active .settings-actions{opacity:var(--settings-layer-opacity,1)!important;transform:none!important;transition:none!important;}
 .history-quick-panel,.history-quick-backdrop{transition-duration:var(--quick-motion-ms,240ms) !important;}
-.settings-dialog .settings-sheet-header,.settings-dialog .settings-panel:not([hidden]),.settings-dialog .settings-actions{opacity:1 !important;transform:none !important;animation:none !important;}
+.settings-dialog .settings-sheet-header,.settings-dialog .settings-panel:not([hidden]),.settings-dialog .settings-actions{opacity:var(--settings-layer-opacity,1) !important;transform:none !important;animation:none !important;transition:none!important;}
+.settings-dialog.income-shared-active .settings-data-section{opacity:var(--settings-layer-opacity,1)!important;transition:none!important;}
+.income-mode-copy{display:grid;}
+.income-mode-copy>span{grid-area:1 / 1;min-width:0;}
+.income-mode-copy>.income-mode-previous{pointer-events:none;}
+/* Physical distance, not the committed value, controls wheel emphasis. */
+.time-wheel-item,.time-wheel-item.selected,.time-wheel-item:not(.selected){opacity:1;font-size:1.04rem;font-weight:610;letter-spacing:0;color:var(--text-primary);transition:none;}
+.time-wheel-value{transition:none;}
+.schedule-calibration-total strong{min-inline-size:8em;min-block-size:1.4em;line-height:1.4;}
+.schedule-calibration-split b{display:inline-block;inline-size:7.5em;flex:0 0 7.5em;min-block-size:1.4em;line-height:1.4;}
 #settingsSaveButton{min-width:84px;position:relative;}
 #settingsSaveButton[data-save-state]{opacity:1;}
 .settings-field-error,.time-wheel-field-error{min-height:2.8em;}
@@ -8661,6 +8673,7 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 @media (prefers-reduced-motion:reduce){
     .settings-sheet,.settings-backdrop,.editable-card,.settings-field-error,.time-wheel-field-error{transition-duration:1ms !important;transition-delay:0ms !important;}
     .settings-dialog:not(.is-visible) .settings-sheet,.editable-card.is-hovered{transform:none !important;}
+    .settings-data-content-inner{transform:none!important;transition:none!important;}
 }
 </style>
 </head>
@@ -8982,7 +8995,7 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 
             <div class="settings-panel" id="scheduleSettingsPanel" hidden>
                 <div class="settings-section-label">拖动小时和分钟滚轮，设置四个时间节点</div>
-                <div class="schedule-calibration-summary" id="scheduleCalibrationSummary" aria-live="polite">
+                <div class="schedule-calibration-summary" id="scheduleCalibrationSummary">
                     <div class="schedule-calibration-total">
                         <span>当日工时</span>
                         <strong id="scheduleCalibrationTotal">—</strong>
@@ -9042,9 +9055,9 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v35',
-productVersion: '2.5.4-rc.6',
-sourceTag: 'v2.5.4-rc.6',
-buildId: 'v35-20261003.4',
+productVersion: '2.5.4-rc.10',
+sourceTag: 'v2.5.4-rc.10',
+buildId: 'v35-20261005.4',
 releaseDate: '2026-09-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
@@ -16715,6 +16728,8 @@ this.dragState = null;
 this.clickSuppressUntil = 0;
 this.inputState = { remainder: 0, lastAt: 0, lastDirection: 0, streak: 0, lastStepAt: 0 };
 this.element = this.createElement();
+this.items = [...this.element.children];
+this.visualStyles = this.items.map(() => Object.create(null));
 this.bind();
 this.scope.requestFrame(() => this.setValue(this.value, { animate: false, emit: false }));
 }
@@ -16754,7 +16769,7 @@ this.setValue(Number(item.dataset.value), { animate: true });
 });
 this.scope.listen(this.element, 'scroll', () => {
 this.scheduleVisuals();
-if (this.programmatic) return;
+if (this.programmatic || this.dragState?.intent === 'wheel') return;
 this.scope.clearTimeout(this.scrollTimer);
 this.scrollTimer = this.scope.setTimeout(() => {
 this.scrollTimer = 0;
@@ -16775,7 +16790,7 @@ const normalized = this.normalize(value);
 const changed = !this.selectionInitialized || normalized !== this.value;
 this.value = normalized;
 if (changed) {
-for (const item of this.element.querySelectorAll('.time-wheel-item')) {
+for (const item of this.items) {
 item.classList.toggle('selected', Number(item.dataset.value) === this.value);
 }
 this.element.setAttribute('aria-valuenow', String(this.value));
@@ -16799,18 +16814,27 @@ this.scope.requestFrame(() => { this.programmatic = false; });
 }
 return normalized;
 }
+setVisualStyle(index, property, value) {
+const cached = this.visualStyles[index];
+if (cached[property] === value) return;
+cached[property] = value;
+this.items[index].style.setProperty(property, value);
+}
 updateVisuals() {
 const viewportCenter = this.element.scrollTop + this.element.clientHeight / 2;
-for (const item of this.element.querySelectorAll('.time-wheel-item')) {
-const itemCenter = item.offsetTop + item.offsetHeight / 2;
+// Read all geometry before writing styles, preserving the same visual positions.
+const centers = this.items.map(item => item.offsetTop + item.offsetHeight / 2);
+for (const [index, item] of this.items.entries()) {
+const itemCenter = centers[index];
 const distance = (itemCenter - viewportCenter) / TIME_WHEEL_ITEM_HEIGHT;
 const absDistance = Math.abs(distance);
 const clamped = Math.max(-3.25, Math.min(3.25, distance));
-item.style.setProperty('--wheel-angle', `${(clamped * -19).toFixed(2)}deg`);
-item.style.setProperty('--wheel-depth', `${(-Math.min(38, absDistance * 12)).toFixed(2)}px`);
-item.style.setProperty('--wheel-scale', Math.max(0.76, 1 - absDistance * 0.075).toFixed(3));
-item.style.setProperty('--wheel-opacity', Math.max(0.10, 1 - absDistance * 0.255).toFixed(3));
-item.style.setProperty('--wheel-shade', Math.min(1, absDistance / 3).toFixed(3));
+this.setVisualStyle(index, '--wheel-angle', `${(clamped * -19).toFixed(2)}deg`);
+this.setVisualStyle(index, '--wheel-depth', `${(-Math.min(38, absDistance * 12)).toFixed(2)}px`);
+this.setVisualStyle(index, '--wheel-scale', Math.max(0.76, 1 - absDistance * 0.075).toFixed(3));
+const emphasis = Math.exp(-absDistance * absDistance * .65);
+this.setVisualStyle(index, '--wheel-opacity', (0.10 + .90 * emphasis).toFixed(3));
+this.setVisualStyle(index, '--wheel-shade', Math.min(1, absDistance / 3).toFixed(3));
 }
 }
 scheduleVisuals() {
@@ -16859,11 +16883,17 @@ this.animationFrame = this.scope.requestFrame(frame);
 }
 beginDrag(event) {
 if (event.button !== undefined && event.button !== 0) return;
-this.cancelAnimation();
+const touch = event.pointerType === 'touch';
+if (!touch) this.cancelAnimation();
 this.scope.clearTimeout(this.scrollTimer);
+const bounds = this.element.getBoundingClientRect();
 const now = performance.now();
 this.dragState = {
 pointerId: event.pointerId,
+touch,
+intent: touch ? 'pending' : 'wheel',
+centerStart: Math.abs(event.clientY - (bounds.top + bounds.height / 2)) <= TIME_WHEEL_ITEM_HEIGHT * .75,
+startX: event.clientX,
 startY: event.clientY,
 lastY: event.clientY,
 lastAt: now,
@@ -16871,7 +16901,7 @@ velocity: 0,
 moved: false
 };
 this.element.classList.add('dragging');
-this.element.setPointerCapture?.(event.pointerId);
+try { this.element.setPointerCapture?.(event.pointerId); } catch (_) {}
 }
 updateDrag(event) {
 const state = this.dragState;
@@ -16880,6 +16910,31 @@ const now = performance.now();
 const delta = event.clientY - state.lastY;
 const totalDelta = event.clientY - state.startY;
 const elapsed = Math.max(8, now - state.lastAt);
+if (state.touch) {
+const horizontal = Math.abs(event.clientX - state.startX);
+if (state.intent === 'pending') {
+// Only a deliberate vertical drag in the selection band claims the wheel.
+if (Math.hypot(horizontal, totalDelta) < 8) return;
+state.intent = state.centerStart && Math.abs(totalDelta) >= horizontal * 1.3 ? 'wheel' : 'panel';
+if (state.intent === 'wheel') this.cancelAnimation();
+}
+if (state.intent === 'wheel') {
+const rect = this.element.getBoundingClientRect();
+if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) {
+state.intent = 'panel';
+const target = this.normalize(Math.round(this.element.scrollTop / TIME_WHEEL_ITEM_HEIGHT));
+this.setValue(target, { animate: true });
+}
+}
+if (state.intent === 'panel') {
+this.element.closest('.settings-sheet').scrollTop -= delta;
+state.moved = true;
+state.lastY = event.clientY;
+state.lastAt = now;
+event.preventDefault();
+return;
+}
+}
 if (Math.abs(totalDelta) > 3) state.moved = true;
 const instantVelocity = -delta / elapsed;
 state.velocity = state.velocity * 0.66 + instantVelocity * 0.34;
@@ -16897,8 +16952,9 @@ this.element.classList.remove('dragging');
 try { this.element.releasePointerCapture?.(event.pointerId); } catch (_) {}
 const releasedAt = performance.now();
 if (state.moved) this.clickSuppressUntil = releasedAt + 300;
+if (state.intent !== 'wheel') return;
 const currentIndex = this.element.scrollTop / TIME_WHEEL_ITEM_HEIGHT;
-const velocity = releasedAt - state.lastAt <= 96 ? state.velocity : 0;
+const velocity = event.type !== 'pointercancel' && releasedAt - state.lastAt <= 96 ? state.velocity : 0;
 const extraSteps = TimeWheel.flingSteps(Math.abs(velocity), this.unit);
 const target = this.normalize(Math.round(currentIndex + Math.sign(velocity) * extraSteps));
 this.updateSelection(target, true);
@@ -17111,8 +17167,68 @@ setTextIfChanged(dom.scheduleCalibrationTotal, valid ? formatScheduleDuration(mo
 dom.scheduleSettingsPanel.classList.toggle('has-error', !valid);
 dom.scheduleCalibrationSummary.setAttribute('data-valid', String(valid));
 }
+const scheduleAnnouncement = document.createElement('div');
+scheduleAnnouncement.id = 'scheduleCalibrationAnnouncement';
+scheduleAnnouncement.className = 'sr-only';
+scheduleAnnouncement.setAttribute('role', 'status');
+scheduleAnnouncement.setAttribute('aria-live', 'polite');
+scheduleAnnouncement.setAttribute('aria-atomic', 'true');
+dom.scheduleCalibrationSummary.after(scheduleAnnouncement);
+let scheduleAnnouncementTimer = 0;
+function clearScheduleAnnouncement() {
+ComponentScopes.settings.clearTimeout(scheduleAnnouncementTimer);
+scheduleAnnouncementTimer = 0;
+scheduleAnnouncement.textContent = '';
+}
+function queueScheduleAnnouncement() {
+ComponentScopes.settings.clearTimeout(scheduleAnnouncementTimer);
+if (dom.scheduleCalibrationSummary.dataset.valid !== 'true') {
+clearScheduleAnnouncement();
+return;
+}
+const announce = () => {
+scheduleAnnouncementTimer = 0;
+if (dom.settingsDialog.hidden || dom.settingsDialog.classList.contains('is-closing') || document.hidden) return;
+if (wheelInstances.some(wheel => wheel.animationFrame || wheel.dragState)) {
+scheduleAnnouncementTimer = ComponentScopes.settings.setTimeout(announce, 80);
+return;
+}
+if (dom.scheduleCalibrationSummary.dataset.valid !== 'true') {
+clearScheduleAnnouncement();
+return;
+}
+setTextIfChanged(scheduleAnnouncement, `当日工时 ${dom.scheduleCalibrationTotal.textContent}，上午 ${dom.scheduleMorningDuration.textContent}，下午 ${dom.scheduleAfternoonDuration.textContent}`);
+};
+scheduleAnnouncementTimer = ComponentScopes.settings.setTimeout(announce, 180);
+}
 function getDialogSheet() { return dom.settingsDialog.querySelector('.settings-sheet'); }
 const SETTINGS_SHARED_MOTION = Object.freeze({ duration: 360, axisLead: 45, contentStart: .70, contentSpan: .30, landingDuration: 120, landingDepth: 2 });
+const settingsContentLayers = [
+{ element: dom.settingsDialog.querySelector('.settings-sheet-header'), start: .60 },
+{ element: dom.incomeSettingsPanel, start: .70 },
+{ element: dom.scheduleSettingsPanel, start: .70 },
+{ element: dom.calendarDataSection, start: .70 },
+{ element: dom.settingsDialog.querySelector('.settings-actions'), start: .78 }
+];
+const smoothSettingsMix = value => { const p = clamp01(value); return p*p*(3 - 2*p); };
+function gateSettingsLayer(element, visible) {
+const target = element.classList.contains('settings-actions') ? dom.settingsSaveButton
+: element === dom.incomeSettingsPanel || element === dom.scheduleSettingsPanel || element === dom.calendarDataSection ? element : null;
+if (!target) return;
+if (target.inert !== !visible) target.inert = !visible;
+if (visible) {
+if (target.hasAttribute('data-settings-unready')) target.removeAttribute('data-settings-unready');
+} else if (!target.hasAttribute('data-settings-unready')) target.setAttribute('data-settings-unready', '');
+}
+for (const type of ['click', 'keydown', 'wheel', 'pointerdown']) {
+ComponentScopes.settings.listen(dom.settingsDialog, type, event => {
+if (event.key === 'Escape' || event.target.closest('[data-settings-close]')) return;
+if (event.target.closest('[data-settings-unready]')) {
+event.preventDefault();
+event.stopImmediatePropagation();
+}
+}, { capture: true, passive: false });
+}
 let incomeSharedMotion = null;
 let incomeSharedFrame = 0;
 const sharedKeys = ['left', 'top', 'width', 'height', 'radius', 'mix'];
@@ -17129,6 +17245,10 @@ incomeSharedMotion = null;
 dom.incomeSettingsCard.classList.remove('income-shared-origin');
 dom.settingsDialog.classList.remove('income-shared-active');
 getDialogSheet().style.removeProperty('opacity');
+for (const layer of settingsContentLayers) {
+layer.element.style.removeProperty('--settings-layer-opacity');
+gateSettingsLayer(layer.element, true);
+}
 dom.settingsDialog.querySelector('.settings-backdrop').style.removeProperty('opacity');
 }
 function paintIncomeSharedSurface() {
@@ -17140,11 +17260,15 @@ motion.shell.style.transform = `translate3d(${box.left}px,${box.top}px,0)`;
 for (const key of ['width', 'height']) motion.shell.style[key] = `${box[key]}px`;
 motion.shell.style.borderRadius = `${box.radius}px`;
 motion.mirror.style.opacity = String(clamp01(1 - box.mix / .45));
-motion.skin.style.opacity = String(clamp01(box.mix));
-motion.sourceSkin.style.opacity = String(1 - clamp01(box.mix));
-const contentProgress = clamp01((box.mix - SETTINGS_SHARED_MOTION.contentStart) / SETTINGS_SHARED_MOTION.contentSpan);
-sheet.style.setProperty('opacity', String(contentProgress * contentProgress * (3 - 2 * contentProgress)), 'important');
-motion.backdrop.style.setProperty('opacity', String(clamp01(box.mix)), 'important');
+motion.skin.style.opacity = String(smoothSettingsMix(box.mix));
+motion.sourceSkin.style.opacity = String(1 - smoothSettingsMix(box.mix));
+sheet.style.setProperty('opacity', '1', 'important');
+for (const layer of settingsContentLayers) {
+const opacity = smoothSettingsMix((box.mix - layer.start) / (1 - layer.start));
+layer.element.style.setProperty('--settings-layer-opacity', String(opacity));
+gateSettingsLayer(layer.element, opacity >= .15);
+}
+motion.backdrop.style.setProperty('opacity', String(smoothSettingsMix(box.mix)), 'important');
 }
 function tickIncomeSharedSurface(timestamp) {
 incomeSharedFrame = 0;
@@ -17261,6 +17385,7 @@ if (window.visualViewport) ComponentScopes.settings.listen(window.visualViewport
 if (incomeSharedMotion) animateIncomeSharedSurface(!incomeSharedMotion.closing);
 }, { passive: true });
 ComponentScopes.settings.listen(document, 'visibilitychange', () => {
+if (document.hidden) clearScheduleAnnouncement();
 if (!document.hidden || !incomeSharedMotion) return;
 const closing = incomeSharedMotion.closing;
 clearIncomeSharedSurface();
@@ -17270,6 +17395,7 @@ function setCalendarDataExpanded(expanded, options = {}) {
 if (!dom.calendarDataSection || !dom.calendarDataToggle || !dom.calendarDataContent) return;
 const next = Boolean(expanded);
 const immediate = Boolean(options.immediate) || reduceMotionQuery.matches;
+const calendarInner = dom.calendarDataContent.firstElementChild;
 calendarDataExpanded = next;
 calendarAccordionToken += 1;
 const token = calendarAccordionToken;
@@ -17279,11 +17405,13 @@ dom.calendarDataToggle.setAttribute('aria-expanded', String(next));
 dom.calendarDataContent.setAttribute('aria-hidden', String(!next));
 dom.calendarDataContent.inert = !next;
 if (immediate) {
+calendarInner.style.transition = 'none';
 dom.calendarDataSection.classList.toggle('is-expanded', next);
 dom.calendarDataContent.style.height = next ? 'auto' : '0px';
 return;
 }
 const currentHeight = dom.calendarDataContent.getBoundingClientRect().height;
+calendarInner.style.removeProperty('transition');
 dom.calendarDataContent.style.height = `${currentHeight}px`;
 void dom.calendarDataContent.offsetHeight;
 dom.calendarDataSection.classList.toggle('is-expanded', next);
@@ -17296,6 +17424,8 @@ dom.calendarDataContent.style.height = next
 calendarAccordionTimer = AppLifecycle.setTimeout(() => {
 if (token !== calendarAccordionToken) return;
 calendarAccordionTimer = 0;
+// End the native content transition on the same frame as height cleanup.
+calendarInner.style.transition = 'none';
 dom.calendarDataContent.style.height = next ? 'auto' : '0px';
 }, 300);
 }
@@ -17317,7 +17447,60 @@ else dom.mainContainer.setAttribute('aria-hidden', mainAriaHiddenBeforeOpen);
 mainAriaHiddenBeforeOpen = null;
 }
 }
+const incomeCopyMotions = new Map();
+function clearIncomeCopyMotions() {
+for (const [element, motion] of incomeCopyMotions) {
+for (const animation of motion.animations) animation.cancel();
+element.textContent = motion.text;
+element.classList.remove('income-mode-copy');
+}
+incomeCopyMotions.clear();
+}
+ComponentScopes.settings.replaceResource('income-copy-motion', {}, clearIncomeCopyMotions);
+function transitionIncomeCopy(element, text, animate) {
+const previous = incomeCopyMotions.get(element);
+const oldText = previous?.text ?? element.textContent;
+// Capture the current blend before cancelling; rapid reversals must not flash.
+let parts = [{ text: oldText, opacity: 1 }];
+if (previous) {
+const oldOpacity = Number(getComputedStyle(previous.old).opacity);
+const weights = new Map();
+for (const part of previous.parts) weights.set(part.text, (weights.get(part.text) || 0) + part.opacity * oldOpacity);
+weights.set(previous.text, (weights.get(previous.text) || 0) + Number(getComputedStyle(previous.next).opacity));
+parts = [...weights].filter(([, opacity]) => opacity > .001).map(([text, opacity]) => ({ text, opacity }));
+}
+if (previous) {
+for (const animation of previous.animations) animation.cancel();
+incomeCopyMotions.delete(element);
+}
+element.textContent = text;
+element.classList.remove('income-mode-copy');
+if (!animate || reduceMotionQuery.matches || oldText === text) return;
+const next = document.createElement('span');
+next.textContent = text;
+const old = document.createElement('span');
+old.className = 'income-mode-previous income-mode-copy';
+for (const part of parts) {
+const copy = document.createElement('span');
+copy.textContent = part.text;
+copy.style.opacity = String(part.opacity);
+old.appendChild(copy);
+}
+old.setAttribute('aria-hidden', 'true');
+element.classList.add('income-mode-copy');
+element.replaceChildren(next, old);
+const animations = [next.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: 'ease-out' }), old.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: 'ease-out', fill: 'forwards' })];
+const motion = { text, animations, next, old, parts };
+incomeCopyMotions.set(element, motion);
+Promise.all(animations.map(animation => animation.finished)).then(() => {
+if (incomeCopyMotions.get(element) !== motion) return;
+element.textContent = text;
+element.classList.remove('income-mode-copy');
+incomeCopyMotions.delete(element);
+}).catch(() => {});
+}
 function setIncomeMode(mode) {
+const animateCopy = dom.settingsDialog.classList.contains('is-visible') && activePanel === 'income';
 selectedIncomeMode = IncomeEngine.modes.includes(mode) ? mode : 'fixed-monthly';
 for (const button of dom.settingsDialog.querySelectorAll('[data-income-mode]')) {
 const active = button.dataset.incomeMode === selectedIncomeMode;
@@ -17326,17 +17509,19 @@ button.setAttribute('aria-pressed', String(active));
 }
 const fixedDaily = selectedIncomeMode === 'fixed-daily';
 const limits = incomeAmountLimits(selectedIncomeMode);
-dom.incomeAmountLabel.textContent = fixedDaily ? '每个工作日到手收入' : '每月到手收入';
+transitionIncomeCopy(dom.incomeAmountLabel, fixedDaily ? '每个工作日到手收入' : '每月到手收入', animateCopy);
 dom.incomeAmountInput.value = (fixedDaily ? CONFIG.dailyIncome : CONFIG.monthlyIncome).toFixed(2);
 dom.incomeAmountInput.min = limits.minimum.toFixed(limits.decimals);
 dom.incomeAmountInput.max = String(limits.maximum);
 dom.incomeAmountInput.step = (1 / (10 ** limits.decimals)).toFixed(limits.decimals);
-dom.annualWorkDaysField.hidden = selectedIncomeMode === 'fixed-monthly';
-dom.incomeModeHelp.textContent = IncomeEngine.help(selectedIncomeMode);
+// Retain the existing editable field and its space across calculation modes.
+dom.annualWorkDaysField.hidden = false;
+transitionIncomeCopy(dom.incomeModeHelp, IncomeEngine.help(selectedIncomeMode), animateCopy);
 clearIncomeErrors();
 revalidateIncome();
 }
 function destroyScheduleWheels() {
+clearScheduleAnnouncement();
 for (const wheel of wheelInstances) wheel.destroy();
 wheelInstances = [];
 dom.scheduleWheelGrid.replaceChildren();
@@ -17360,6 +17545,7 @@ setError(dom.scheduleSettingsError, violation ? '请修正标出的时间节点�
 dom.settingsSaveButton.disabled = saveBusy || Boolean(violation);
 } else clearScheduleErrors();
 updateScheduleCalibrationSummary();
+queueScheduleAnnouncement();
 }
 function buildScheduleWheels() {
 destroyScheduleWheels();
@@ -17501,6 +17687,7 @@ recordDiagnosticEvent('settings', income ? '打开收入设置' : '打开工作�
 }
 function finalizeClose() {
 clearIncomeSharedSurface();
+clearIncomeCopyMotions();
 AppLifecycle.clearTimeout(settingsCloseTimer);
 destroyScheduleWheels();
 dom.settingsDialog.hidden = true;
@@ -17515,6 +17702,7 @@ dom.settingsDialog.hidden ||
 dom.settingsDialog.classList.contains('is-closing')
 ) return;
 const closeDuration = reduceMotionQuery.matches ? 0 : Math.max(1,190 * Number(getComputedStyle(getDialogSheet()).opacity));
+clearScheduleAnnouncement();
 dom.settingsDialog.style.setProperty('--panel-motion-ms', `${closeDuration}ms`);
 resetSaveFeedback();
 settingsOpenGeneration += 1;

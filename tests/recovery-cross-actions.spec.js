@@ -33,6 +33,7 @@ test('saving work hours during history preserves playback and updates duration',
   await page.locator('#currentTime').click();
   await page.getByRole('button',{name:'修改上午、午休和下午工作时间',exact:true}).click();
   const wheel=page.locator('[data-time-key="morningStart"] [data-unit="hour"]');
+  await expect(page.locator('#scheduleSettingsPanel')).not.toHaveAttribute('data-settings-unready');
   await wheel.press('ArrowUp');
   const selected=await wheel.getAttribute('aria-valuenow');
   expect(selected).not.toBe('9');
