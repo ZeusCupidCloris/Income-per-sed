@@ -9,10 +9,13 @@
 | 日常检查 | 仅整理文档、入口或索引 | `npm run test:docs` | 否 |
 | 日常检查 | 首页文字、图片或图片来源变化 | `npm run test:readme`，已包含文档检查，不必再重复执行 | 否 |
 | 日常检查 | 核查网页构建和当前交付一致性 | `npm run build:check`、`npm run validate` | 否 |
+| 日常检查 | 发布规则、组件逻辑、文档和交付只读总检查 | `npm run test:checks` | 不生成交付，测试可写临时报告 |
 | 完整验收 | 网页、组件、交付或维护工具发生实质修改；合并或交付前 | `npm run quality:local` | 会生成并同步交付，先保留原文件并检查差异 |
 | 完整验收 | 确认生成产物可重复 | `npm run release:repeatability` | 连续构建写入，必须串行 |
 | 专项排查 | 小组件设置异常 | `npm run test:widget` | 测试替身，不等于实机验证 |
 | 专项排查 | 指定网页问题 | `npm test -- <测试文件>`；手机模拟用 `npm run test:webkit -- <测试文件>` | 可能写测试报告，不修改产品；文件范围见测试索引 |
+| 专项排查 | 恢复、布局或设置问题 | `npm run test:recovery`、`npm run test:layout`、`npm run test:settings`，只选相关一类 | 筛选已有用例，完整测试已运行时不重复全跑 |
+| 专项排查 | 设置展开帧和布局开销 | `npm run test:observe` | 写观察附件，不设跨设备统一帧率阈值 |
 | 专项排查 | 运行资源或线上文件异常 | `node scripts/observe-runtime-resources.cjs <输出路径>`；线上校验使用 `verify_published_pages.py` | 观察可能写报告；线上核验不写交付 |
 
 首次维护或依赖锁定文件变化后先运行 `npm ci`，它会写入依赖目录。上表不是绕过远程必需检查的许可：本地按改动选择，PR/main 仍沿用全部质量关卡。

@@ -6,6 +6,15 @@ const quality = readFileSync(new URL('../.github/workflows/quality.yml', import.
 const pages = readFileSync(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
 const release = readFileSync(new URL('../.github/workflows/release.yml', import.meta.url), 'utf8');
 
+test('browser evidence survives a retry-passed job', () => {
+  for (const name of ['Upload visual diagnostics', 'Upload WebKit diagnostics']) {
+    const step = quality.split(`- name: ${name}`)[1].split('retention-days: 14')[0];
+    assert.match(step, /if: \$\{\{ !cancelled\(\) \}\}/);
+    assert.match(step, /test-results\//);
+    assert.match(step, /playwright-report\//);
+  }
+});
+
 test('all dependency installs have bounded retries and outer step deadlines', () => {
   for (const workflow of [quality, pages, release]) {
     assert.doesNotMatch(workflow, /- run: npm ci/);

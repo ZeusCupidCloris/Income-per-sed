@@ -1,13 +1,16 @@
 const { test, expect } = require('@playwright/test');
 
-for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 86400000], ['next-afternoon', 100800000], ['morning-start', 86400000, '2026-09-08T00:59:59.500Z'], ['afternoon-start', 86400000, '2026-09-08T05:29:59.500Z']]) {
+for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 86400000], ['next-afternoon', 100800000], ['morning-start', 86400000, '2026-09-08T00:59:59.500Z'], ['afternoon-start', 86400000, '2026-09-08T05:29:59.500Z'], ['afternoon-fractional', 86400000, '2026-09-08T05:29:59.517Z']]) {
   test(`${label} foreground recovery is continuous without replaying midnight`, async ({ page }, testInfo) => {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.clock.install({ time: new Date('2026-09-07T02:30:00Z') });
+    const deterministic = label === 'afternoon-fractional';
+    if (deterministic) await page.clock.pauseAt(new Date('2026-09-07T02:30:01Z'));
     await page.goto('/Income-per-sed-Develop.html');
-    await page.waitForTimeout(1500);
+    if (deterministic) await page.clock.runFor(1500);
+    else await page.waitForTimeout(1500);
     await page.evaluate(() => {
       Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
       Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
@@ -19,7 +22,7 @@ for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 864000
       window.resumeFrames = [];
       const start = performance.now();
       function sample() {
-        window.resumeFrames.push({ t: performance.now() - start,
+        window.resumeFrames.push({ t: performance.now() - start, now: Date.now(),
           ...window.__incomeClockDiagnostics.getUnifiedMotionState().displayed,
           midnight: document.body.classList.contains('midnight-reset-active'),
           catchup: document.body.classList.contains('foreground-catchup-active') });
@@ -30,7 +33,8 @@ for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 864000
       delete document.visibilityState;
       document.dispatchEvent(new Event('visibilitychange'));
     });
-    await page.waitForTimeout(5200);
+    if (deterministic) await page.clock.runFor(5200);
+    else await page.waitForTimeout(5200);
     const frames = await page.evaluate(() => window.resumeFrames);
     await testInfo.attach('resume-frames.json', { body: JSON.stringify(frames), contentType: 'application/json' });
     await testInfo.attach('resumed.png', { body: await page.screenshot(), contentType: 'image/png' });
@@ -41,7 +45,8 @@ for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 864000
     if (resumeAt) {
       const end = frames.findIndex((f, i) => i > 0 && !f.catchup && frames[i - 1].catchup);
       expect(end).toBeGreaterThan(0);
-      expect(delta(frames[end].mainAngle, frames[end - 1].mainAngle)).toBeGreaterThanOrEqual(-0.1);
+      expect(delta(frames[end].mainAngle, frames[end - 1].mainAngle),
+        JSON.stringify({ before: frames[end - 1], after: frames[end] })).toBeGreaterThanOrEqual(-0.1);
     }
     for (let i = 1; i < active.length; i++) {
       expect(delta(active[i].minuteAngle, active[i - 1].minuteAngle)).toBeGreaterThanOrEqual(-0.01);
