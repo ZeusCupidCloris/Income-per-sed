@@ -95,6 +95,37 @@ test('summary changes visually immediately but has a single settled announcement
   await expect(page.locator('#scheduleCalibrationAnnouncement')).toHaveText('');
 });
 
+for (const artifact of ['Develop', 'Push']) {
+  test(`${artifact}: invalid draft clears stale speech and identical recovery announces again`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto(`/Income-per-sed-${artifact}.html`);
+    await page.locator('#scheduleSettingsCard').dispatchEvent('click');
+    await expect(page.locator('#scheduleSettingsPanel')).not.toHaveAttribute('data-settings-unready');
+    const announcement = page.locator('#scheduleCalibrationAnnouncement');
+    const minute = page.locator('[data-time-key="morningEnd"] [data-unit="minute"]');
+    const hour = page.locator('[data-time-key="morningEnd"] [data-unit="hour"]');
+    await page.evaluate(() => {
+      window.__recoveredAnnouncements = [];
+      const region = document.querySelector('#scheduleCalibrationAnnouncement');
+      new MutationObserver(() => window.__recoveredAnnouncements.push(region.textContent))
+        .observe(region, { childList: true, subtree: true, characterData: true });
+    });
+    await minute.dispatchEvent('keydown', { key: 'ArrowDown' });
+    await expect(announcement).toHaveText(/当日工时/);
+    const original = await announcement.textContent();
+    for (let i = 0; i < 3; i++) await hour.dispatchEvent('keydown', { key: 'ArrowUp' });
+    await expect(page.locator('#scheduleCalibrationSummary')).toHaveAttribute('data-valid', 'false');
+    await expect(announcement).toHaveText('');
+    await page.waitForTimeout(500);
+    await expect(announcement).toHaveText('');
+    for (let i = 0; i < 3; i++) await hour.dispatchEvent('keydown', { key: 'ArrowDown' });
+    await expect(announcement).toHaveText(original);
+    expect(await page.evaluate(text => window.__recoveredAnnouncements.filter(value => value === text).length, original)).toBe(2);
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => window.__recoveredAnnouncements.filter(Boolean).length)).toBe(2);
+  });
+}
+
 test('reduced motion has no invisible interaction gate', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(settingsPage);

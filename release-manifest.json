@@ -1,12 +1,12 @@
 {
-  "productVersion": "2.5.4-rc.9",
-  "releaseTag": "v2.5.4-rc.9",
+  "productVersion": "2.5.4-rc.10",
+  "releaseTag": "v2.5.4-rc.10",
   "internalVersion": "v35",
-  "buildId": "v35-20261005.3",
+  "buildId": "v35-20261005.4",
   "releaseDate": "2026-09-06",
-  "deliveryRevision": "20261005.3",
-  "manualRevision": "20261005.3",
-  "widgetVersion": "2.5.4-rc.9",
+  "deliveryRevision": "20261005.4",
+  "manualRevision": "20261005.4",
+  "widgetVersion": "2.5.4-rc.10",
   "canonicalSource": "Income-per-sed-Develop.html",
   "derivedArtifacts": [
     "Income-per-sed-Push.html"

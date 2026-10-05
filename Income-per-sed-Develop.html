@@ -9055,9 +9055,9 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v35',
-productVersion: '2.5.4-rc.9',
-sourceTag: 'v2.5.4-rc.9',
-buildId: 'v35-20261005.3',
+productVersion: '2.5.4-rc.10',
+sourceTag: 'v2.5.4-rc.10',
+buildId: 'v35-20261005.4',
 releaseDate: '2026-09-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
@@ -17182,6 +17182,10 @@ scheduleAnnouncement.textContent = '';
 }
 function queueScheduleAnnouncement() {
 ComponentScopes.settings.clearTimeout(scheduleAnnouncementTimer);
+if (dom.scheduleCalibrationSummary.dataset.valid !== 'true') {
+clearScheduleAnnouncement();
+return;
+}
 const announce = () => {
 scheduleAnnouncementTimer = 0;
 if (dom.settingsDialog.hidden || dom.settingsDialog.classList.contains('is-closing') || document.hidden) return;
@@ -17189,7 +17193,10 @@ if (wheelInstances.some(wheel => wheel.animationFrame || wheel.dragState)) {
 scheduleAnnouncementTimer = ComponentScopes.settings.setTimeout(announce, 80);
 return;
 }
-if (dom.scheduleCalibrationSummary.dataset.valid !== 'true') return;
+if (dom.scheduleCalibrationSummary.dataset.valid !== 'true') {
+clearScheduleAnnouncement();
+return;
+}
 setTextIfChanged(scheduleAnnouncement, `当日工时 ${dom.scheduleCalibrationTotal.textContent}，上午 ${dom.scheduleMorningDuration.textContent}，下午 ${dom.scheduleAfternoonDuration.textContent}`);
 };
 scheduleAnnouncementTimer = ComponentScopes.settings.setTimeout(announce, 180);
