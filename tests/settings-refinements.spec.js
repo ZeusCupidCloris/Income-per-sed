@@ -16,7 +16,8 @@ test('quick sheet return is continuous and a new drag can take over', async ({ p
     panel.dispatchEvent(event('pointermove', 540));
     const drag = { y: new DOMMatrix(getComputedStyle(panel).transform).m42, opacity: Number(getComputedStyle(backdrop).opacity) };
     panel.dispatchEvent(event('pointercancel', 540));
-    const animation = panel.getAnimations()[0];
+    const animation = panel.getAnimations().find(candidate => candidate.id === 'income-history-quick-return-panel');
+    if (!animation) throw new Error('Quick-history return animation was not created');
     animation.pause(); animation.currentTime = 0;
     backdrop.getAnimations()[0].pause(); backdrop.getAnimations()[0].currentTime = 0;
     const release = new DOMMatrix(getComputedStyle(panel).transform).m42;

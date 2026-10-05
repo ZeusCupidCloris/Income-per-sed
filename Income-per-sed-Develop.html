@@ -8685,7 +8685,7 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 .settings-data-section .settings-data-chevron,.settings-data-section.is-expanded .settings-data-chevron{transform:translateY(calc(var(--calendar-reveal)*3px)) rotate(calc(45deg + var(--calendar-reveal)*180deg));transition:none!important;}
 .settings-data-section .settings-data-content-inner,.settings-data-section.is-expanded .settings-data-content-inner{transform:translateY(calc((var(--calendar-reveal) - 1)*4px));transition:none!important;}
 .settings-input-wrap,.time-wheel-card{transition:border-color 150ms ease-out,box-shadow 150ms ease-out;}
-.settings-field-error.is-error-clearing,.time-wheel-field-error.is-error-clearing,.settings-error-summary.is-error-clearing{display:flex;align-items:flex-start;gap:5px;}
+.settings-field-error.is-error-clearing,.time-wheel-field-error.is-error-clearing,.settings-error-summary.is-error-clearing{display:flex;align-items:flex-start;gap:5px;opacity:0;}
 .settings-field-error.is-error-clearing::before,.time-wheel-field-error.is-error-clearing::before,.settings-error-summary.is-error-clearing::before{content:'!';flex:0 0 auto;display:grid;place-items:center;width:14px;height:14px;margin-top:1px;border:1px solid currentColor;border-radius:50%;font-size:.58rem;font-weight:760;line-height:1;}
 /* Physical distance, not the committed value, controls wheel emphasis. */
 .time-wheel-item,.time-wheel-item.selected,.time-wheel-item:not(.selected){opacity:1;font-size:1.04rem;font-weight:610;letter-spacing:0;color:var(--text-primary);transition:none;}
@@ -9087,11 +9087,11 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 
     <script>
 const APP_RELEASE = Object.freeze({
-version: 'v35',
-productVersion: '2.5.5',
-sourceTag: 'v2.5.5',
-buildId: 'v35-20261005.8',
-releaseDate: '2026-10-05',
+version: 'v37',
+productVersion: '2.5.7',
+sourceTag: 'v2.5.7',
+buildId: 'v37-20261006.2',
+releaseDate: '2026-10-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
@@ -17131,14 +17131,20 @@ return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 const errorClearTimers = new WeakMap();
 function setError(node, message = '') {
 if (!node) return;
-if (!message && node.hidden) return;
 AppLifecycle.clearTimeout(errorClearTimers.get(node));
-node.classList.toggle('is-error-clearing', !message && !reduceMotionQuery.matches);
-node.hidden = !message;
-node.setAttribute('aria-hidden', String(!message));
-if (message) setTextIfChanged(node, message);
-else errorClearTimers.set(node, AppLifecycle.setTimeout(() => {
-if (node.hidden) setTextIfChanged(node, '');
+if (message) {
+node.hidden = false;
+node.setAttribute('aria-hidden', 'false');
+node.classList.remove('is-error-clearing');
+setTextIfChanged(node, message);
+return;
+}
+if (node.hidden) return;
+node.setAttribute('aria-hidden', 'true');
+node.classList.toggle('is-error-clearing', !reduceMotionQuery.matches);
+errorClearTimers.set(node, AppLifecycle.setTimeout(() => {
+node.hidden = true;
+setTextIfChanged(node, '');
 node.classList.remove('is-error-clearing');
 errorClearTimers.delete(node);
 }, reduceMotionQuery.matches ? 0 : 150));
@@ -20341,7 +20347,7 @@ coordinator
 
 function runReleaseRegressionChecks() {
 const failures = [];
-if (APP_RELEASE.version !== 'v35') failures.push(`内部版本应为 v35，实际 ${APP_RELEASE.version}`);
+if (APP_RELEASE.version !== 'v37') failures.push(`内部版本应为 v37，实际 ${APP_RELEASE.version}`);
 if (APP_RELEASE.taskStopwatchSchema !== TaskStopwatch.schemaVersion) failures.push('内部版本与怀表 schema 不一致');
 if (APP_RELEASE.settingsSchema !== SettingsStore.schemaVersion) failures.push('内部版本与设置 schema 不一致');
 if (APP_RELEASE.transactionSchema !== 2) failures.push('事务存储 schema 异常');
@@ -24245,10 +24251,17 @@ body.classList.add('history-quick-sheet-returning');
 setHistoryQuickSheetDragVisual(0);
 if (!reduceMotionQuery.matches && releaseOffset > 0) {
 const duration = Math.min(240, Math.max(140, releaseOffset * 1.6));
-historyQuickSheetDrag.returnAnimations = [
-dom.historyQuickPanel.animate([{ transform }, { transform: 'translate3d(0,0,0)' }], { duration, easing: 'cubic-bezier(.22,.8,.32,1)', fill: 'backwards' }),
-dom.historyQuickBackdrop.animate([{ opacity }, { opacity: 1 }], { duration, easing: 'cubic-bezier(.22,.8,.32,1)', fill: 'backwards' })
-];
+const panelReturnAnimation = dom.historyQuickPanel.animate(
+[{ transform }, { transform: 'translate3d(0,0,0)' }],
+{ duration, easing: 'cubic-bezier(.22,.8,.32,1)', fill: 'backwards' }
+);
+const backdropReturnAnimation = dom.historyQuickBackdrop.animate(
+[{ opacity }, { opacity: 1 }],
+{ duration, easing: 'cubic-bezier(.22,.8,.32,1)', fill: 'backwards' }
+);
+panelReturnAnimation.id = 'income-history-quick-return-panel';
+backdropReturnAnimation.id = 'income-history-quick-return-backdrop';
+historyQuickSheetDrag.returnAnimations = [panelReturnAnimation, backdropReturnAnimation];
 const animations = historyQuickSheetDrag.returnAnimations;
 Promise.all(animations.map(animation => animation.finished.catch(() => {}))).then(() => {
 if (historyQuickSheetDrag.returnAnimations === animations) {
