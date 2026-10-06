@@ -9087,10 +9087,10 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 
     <script>
 const APP_RELEASE = Object.freeze({
-version: 'v37',
-productVersion: '2.5.7',
-sourceTag: 'v2.5.7',
-buildId: 'v37-20261006.2',
+version: 'v38',
+productVersion: '2.5.8',
+sourceTag: 'v2.5.8',
+buildId: 'v38-20261006.3',
 releaseDate: '2026-10-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
@@ -12968,7 +12968,7 @@ afternoonStartX: 0,
 trackWidth: 0
 };
 let lastProgressRender = null;
-function refreshProgressGeometry() {
+function refreshProgressGeometry(reapply = true) {
 const previousGeometry = { ...progressGeometry };
 const trackRect =
 dom.progressTrack
@@ -12993,7 +12993,7 @@ progressGeometry.afternoonStartX =
 trackRect && afternoonRect
 ? afternoonRect.left - trackRect.left
 : progressGeometry.morningWidth;
-if (lastProgressRender) {
+if (reapply && lastProgressRender) {
 const visual = { ...lastProgressRender.visual };
 // Preserve the current route phase across resize, including a cursor in the lunch gap.
 if (Number.isFinite(visual.routeX) && previousGeometry.trackWidth > 0) {
@@ -18559,6 +18559,12 @@ visual.routeX = routeX;
 return visual;
 }
 function applyProgressVisual(visual, status) {
+// A suspended resize observer must not leave a moving cursor on the old track.
+if (Math.abs(dom.progressTrack.offsetWidth - progressGeometry.trackWidth) > 1 ||
+Math.abs(dom.morningMarker.parentElement.offsetWidth - progressGeometry.morningWidth) > 1 ||
+Math.abs(dom.afternoonMarker.parentElement.offsetWidth - progressGeometry.afternoonWidth) > 1) {
+refreshProgressGeometry(false);
+}
 lastProgressRender = { visual: { ...visual }, status };
 writeProgressPosition(
 dom.morningProgress,
@@ -20347,7 +20353,7 @@ coordinator
 
 function runReleaseRegressionChecks() {
 const failures = [];
-if (APP_RELEASE.version !== 'v37') failures.push(`内部版本应为 v37，实际 ${APP_RELEASE.version}`);
+if (APP_RELEASE.version !== 'v38') failures.push(`内部版本应为 v38，实际 ${APP_RELEASE.version}`);
 if (APP_RELEASE.taskStopwatchSchema !== TaskStopwatch.schemaVersion) failures.push('内部版本与怀表 schema 不一致');
 if (APP_RELEASE.settingsSchema !== SettingsStore.schemaVersion) failures.push('内部版本与设置 schema 不一致');
 if (APP_RELEASE.transactionSchema !== 2) failures.push('事务存储 schema 异常');

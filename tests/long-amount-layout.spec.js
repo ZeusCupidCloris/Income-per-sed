@@ -1,5 +1,50 @@
 const { test, expect } = require('@playwright/test');
 
+test('progress rendering refreshes geometry when resize notifications are delayed', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.clock.setFixedTime(new Date('2026-09-07T06:30:00Z'));
+  await page.addInitScript(() => {
+    const NativeObserver = window.ResizeObserver;
+    window.ResizeObserver = class extends NativeObserver {
+      observe(element, options) {
+        if (element.classList.contains('work-segment')) return;
+        super.observe(element, options);
+      }
+    };
+    window.addEventListener('resize', event => event.stopImmediatePropagation());
+  });
+  await page.goto('/Income-per-sed-Develop.html');
+  await page.waitForTimeout(2400);
+  await page.setViewportSize({ width: 900, height: 1000 });
+  await page.locator('[data-history-seconds="-14400"]').dispatchEvent('click');
+  await page.waitForTimeout(350);
+  await page.locator('#liveAnchor').dispatchEvent('click');
+  const maxError = await page.locator('#progressTrack').evaluate(track => new Promise(resolve => {
+    let frames = 0;
+    let error = 0;
+    let worst = null;
+    const sample = () => {
+      const fills = [...track.querySelectorAll('.segment-fill')];
+      const active = fills.findLast(fill => new DOMMatrixReadOnly(getComputedStyle(fill).transform).a > 0.001);
+      const marker = track.querySelector('.timeline-handoff-marker').getBoundingClientRect();
+      const center = marker.left + marker.width / 2;
+      const lunch = { left: fills[0].parentElement.getBoundingClientRect().right, right: fills[1].parentElement.getBoundingClientRect().left };
+      if (active && (center < lunch.left || center > lunch.right)) {
+        const distance = Math.abs(center - active.getBoundingClientRect().right);
+        if (distance > error) {
+          error = distance;
+          worst = { center, right: active.getBoundingClientRect().right, lunch: [lunch.left, lunch.right], x: track.style.getPropertyValue('--timeline-cursor-x'), body: document.body.className };
+        }
+      }
+      if (++frames < 100) requestAnimationFrame(sample);
+      else resolve({ error, worst });
+    };
+    requestAnimationFrame(sample);
+  }));
+  expect(maxError.error, JSON.stringify(maxError.worst)).toBeLessThan(2.5);
+});
+
 for (const channel of ['Develop', 'Push']) {
   for (const width of [390, 1440]) {
     for (const theme of ['light', 'dark']) {
