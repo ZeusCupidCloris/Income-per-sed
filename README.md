@@ -4,7 +4,7 @@
 
 可离线运行的收入仪表与任务计价工具，提供机械表盘、数字滚轮、工作进度、历史回溯、主题切换和 Scriptable 小组件。
 
-[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/) · [正式发布](https://github.com/ZeusCupidCloris/Income-per-sed/releases/latest)
+[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/) · [最新四文件](#四文件入口)
 
 ![桌面预览](docs/images/preview-desktop.png)
 
@@ -42,50 +42,29 @@
 
 | 项目 | 标识 |
 | --- | --- |
-| 产品版本 | `2.5.9`，四文件统一版本；本次修复窗口缩小后返回实时的工作进度拨钮越界 |
+| 产品与四文件版本 | `2.5.9` |
 | 交付编号 | `20261006.4` |
-| 小组件组件版本 | `2.5.9`，与网页和手册一致；本轮仅更新版本标识 |
-| Push 浏览器标题 | `Income-per-sed` |
-| Develop 浏览器标题 | `Income-per-sed · Develop` |
-| 小组件设置菜单 | `Income-per-sed` |
-| 手册封面 | `Income-per-sed 使用手册` |
+| 小组件版本 | `2.5.9`，本批仅同步版本标识 |
 
-版本对应关系以 [发布清单](release-manifest.json) 为准；发布是否完成以 GitHub 检查、合并与部署结果为准。旧图片与旧验收不自动代表本次通过。
+本批修复尺寸通知延迟时的进度拨钮越界，并保留时间滚轮键盘焦点轮廓；既有核心动效与小组件外观不变。
 
-本批为 `2.5.9` 交付，修复尺寸通知延迟时工作进度拨钮仍使用旧轨道宽度的问题，并让键盘聚焦的时间滚轮保留完整焦点轮廓；保留错误修正的淡出反馈；快速回溯测试改为等待开场与重新打开真正结束后取样。既有页面视觉、交互参数和核心动效不变。每轮改动或优化递增统一产品版本，即使某个文件没有功能改动，四文件的版本标识也一起更新。交付编号只区分打包批次。普通更新只同步仓库和 Pages；经所有者确认的大版本才创建 Release，名称依次为 `V3`、`V4`、`V5`，产品版本仍使用 `3.0.0` 等格式。历史正式 Release 保留。
+版本对应关系见[发布清单](release-manifest.json)，本批检查、合并与 Pages 结果见[当前交付](docs/README.md#当前交付)。普通更新只同步仓库与 Pages，大版本 Release 需另行确认；历史 Release 不一定是最新四文件。
 
 ## 维护入口
 
-按角色选择：[日常用户](docs/user/README.md) · [开发者](docs/developer/README.md) · [验收人员](docs/verification/README.md) · [项目维护者](docs/maintainer/README.md)。角色目录只提供导航，原文件位置与下载地址不变。
+[集中入口](Attachment/README.md#从这里开始)按任务选择使用、修改、验收或发布；不再经过重复角色导航。
 
-首页目录用途如下。日常打开网页只需要 Push，使用小组件再下载 Widget，其余主要供开发维护。
+| 要找什么 | 位置 |
+| --- | --- |
+| 全部文件路径和用途 | [仓库地图](Attachment/repository-map.md) |
+| 三个检查入口 | [脚本索引](Attachment/scripts-index.md#三个主要入口) |
+| 五类测试与覆盖边界 | [测试索引](Attachment/tests-index.md#五类覆盖矩阵) |
+| 当前交付、待验收、历史证据 | [验收索引](docs/README.md) |
+| 命名、日历、手册与发布规则 | [维护策略](docs/REPOSITORY_POLICY.md) |
+| CI 的作用与重复检查评估 | [工作流评估](docs/maintainer/workflow-review.md) |
 
-| 文件或目录 | 用途 | 阅读对象 |
-| --- | --- | --- |
-| `Income-per-sed-Push.html` | 日常使用的独立网页 | 用户 |
-| `Income-per-sed-Develop.html` | 网页唯一修改源，包含诊断 | 开发者 |
-| `IncomeWidget.js` | Scriptable 手机与平板小组件 | 用户 |
-| `README.md` | 产品介绍、下载与快速使用 | 用户 |
-| `docs/` | Word 手册、角色入口、维护与历史验收资料 | 用户与开发者 |
-| `Attachment/` | 仓库地图、脚本用途和测试用途的集中索引 | 用户与开发者 |
-| `CHANGELOG.md` | 版本与维护变更记录 | 用户与开发者 |
-| `LICENSE` | 保留全部权利及使用范围 | 用户与开发者 |
-| `release-manifest.json` | 产品、组件、交付版本及文件对应关系 | 开发者 |
-| `SHA256SUMS.txt` | 文件完整性校验值 | 用户与开发者 |
-| `.github/` | 自动检查、Pages、发布与安全配置 | 开发者 |
-| `scripts/` | 构建、截图、校验及资源观察工具 | 开发者 |
-| `tests/` | 业务、动效、恢复和视觉回归测试 | 开发者 |
-| `config/` | 浏览器测试和截图配置 | 开发者 |
-| `package.json` | 维护命令和工具依赖，不是网页运行依赖 | 开发者 |
-| `package-lock.json` | 锁定维护工具的依赖版本 | 开发者 |
-| `.editorconfig` | 编辑器缩进与格式约定 | 开发者 |
-| `.gitattributes` | Git 换行和二进制文件规则 | 开发者 |
-| `.gitignore` | 排除缓存、依赖和测试输出 | 开发者 |
+开发工具在 `scripts/`、`tests/`、`config/`；自动检查在 `.github/`，均不是运行网页所需的依赖。旧版本与旧验收仍保留原地址。
 
-- [仓库地图](Attachment/repository-map.md)：日常文件、维护工具与历史资料。
-- [文档与验收索引](docs/README.md)：当前交付、待验收和历史记录。
-- [脚本用途](Attachment/scripts-index.md) · [测试用途](Attachment/tests-index.md)。
-- [维护与发布规则](docs/REPOSITORY_POLICY.md) · [更新记录](CHANGELOG.md)。
-- [自动检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions) · [安全报告](.github/SECURITY.md)。
+[自动检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions) · [更新记录](CHANGELOG.md) · [安全报告](.github/SECURITY.md)
 
-维护时只修改 Develop，再生成 Push；不要分别编辑两个网页版本。日常下载路径与历史记录地址保持不变。
+维护时只编辑 Develop，再生成 Push；四文件的日常下载路径不变。

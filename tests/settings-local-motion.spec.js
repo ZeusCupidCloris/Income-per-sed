@@ -1,13 +1,8 @@
 const { test, expect } = require('@playwright/test');
-const settingsPage = process.env.SETTINGS_RELEASE_CHANNEL === 'push' ? '/Income-per-sed-Push.html' : '/Income-per-sed-Develop.html';
+const { openSettings } = require('./helpers/settings-page');
 
 async function open(page, kind = 'income', motion = 'no-preference') {
-  await page.emulateMedia({ reducedMotion: motion });
-  await page.goto(settingsPage);
-  await page.locator(`#${kind}SettingsCard`).dispatchEvent('click');
-  await expect(page.locator(`#${kind}SettingsPanel`)).toBeVisible();
-  await page.waitForTimeout(motion === 'reduce' ? 50 : 520);
-  await expect(page.locator('.income-shared-shell')).toHaveCount(0);
+  await openSettings(page, { kind, motion, settleMs: motion === 'reduce' ? 50 : 520, verifyShell: true });
 }
 
 for (const theme of ['light', 'dark']) {

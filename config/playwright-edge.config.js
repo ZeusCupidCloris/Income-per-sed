@@ -5,7 +5,8 @@ const root = path.resolve(__dirname, '..');
 
 module.exports = defineConfig({
   testDir: path.join(root, 'tests'),
-  testIgnore: 'webkit-mobile.spec.js',
+  testMatch: '**/*.spec.js',
+  testIgnore: process.env.QUALITY_OBSERVE === '1' ? 'webkit-mobile.spec.js' : ['webkit-mobile.spec.js', 'settings-frame-budget.spec.js'],
   fullyParallel: false,
   timeout: 45_000,
   expect: {

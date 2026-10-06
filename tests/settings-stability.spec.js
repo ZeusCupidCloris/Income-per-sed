@@ -1,10 +1,8 @@
 const { test, expect } = require('@playwright/test');
+const { openSettings } = require('./helpers/settings-page');
 
 async function open(page, kind) {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/Income-per-sed-Develop.html');
-  await page.locator(`#${kind}SettingsCard`).dispatchEvent('click');
-  await page.waitForTimeout(550);
+  await openSettings(page, { kind, channel: 'develop' });
 }
 
 test('calendar disclosure preserves its entry and editor scroll position', async ({ page }) => {

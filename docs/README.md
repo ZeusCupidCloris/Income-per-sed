@@ -1,56 +1,49 @@
 # 文档与验收索引
 
-[仓库地图与文件用途](../Attachment/repository-map.md) · [使用手册](Income-per-sed（说明文档）.docx) · [维护规则](REPOSITORY_POLICY.md)
-
-按角色进入：[日常用户](user/README.md) · [开发者](developer/README.md) · [验收人员](verification/README.md) · [项目维护者](maintainer/README.md)。入口只链接现有资料，验收结果仍在下方唯一索引维护。
+[使用手册](Income-per-sed（说明文档）.docx) · [维护策略](REPOSITORY_POLICY.md) · [集中入口](../Attachment/README.md)
 
 ## 当前交付
 
-产品与小组件统一为 `2.5.4-rc.10`，交付 `20261005.4`。编号不代表已创建正式发布标签。
+产品与小组件统一为 **2.5.9**，交付 **20261006.4**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。
 
-- [10-05 设置交互与四文件交付](acceptance/settings-delivery-20261005.md)：已确认 Develop 的局部设置反馈、交付一致性及双浏览器专项结果；远程结果以对应提交的检查为准。
-- [10-03 保存可靠性与长时资源观察](acceptance/storage-runtime-20261003.md)：上一批检查范围、自动验收和 30 分钟桌面观察，不作为本轮重新观察的结果。
+| 事项 | 当前证据 |
+| --- | --- |
+| PR 合并 | [PR #46](https://github.com/ZeusCupidCloris/Income-per-sed/pull/46)，main 提交 `61e0f31` |
+| 合并前自动检查 | [Quality](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/37403208552)：发布校验、Edge、WebKit 全部通过 |
+| main 复验与部署 | [Quality 与 Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/37404721637)：全部通过 |
+| 线上内容 | 2026-10-06 下载首页及 Push，SHA-256 均为 `d3e9026ba57cd78e5a4b5f20610db790416cf182dd468c96eaa71752dd61ff11`，与该批本地 Push 一致 |
+| 实体设备 | 本批未新增 iPhone/iPad 或 VoiceOver 实机验收 |
 
-- [10-01 四文件同步与验收](acceptance/delivery-sync-20261001.md)：本次命名、小组件居中、长金额和窗口调整与恢复组合；自动检查与实机边界分别记录。
-
-- [09-30 整理与验收记录](acceptance/naming-20260930.md)：保留当批四文件、命名及当时结果。
-- [背景绘制核实与修复](acceptance/grid-idle-20260930.md)：重复属性通知的原因和专项结果。
-- 上批整理经 [PR #33](https://github.com/ZeusCupidCloris/Income-per-sed/pull/33) 合并，提交 `b4555ad`；[当批 Quality 与 Pages 检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/36680488487) 成功，发布后首页与 Push 字节核验一致。这是该提交的证据，不替代后续提交检查。
-- 本轮仓库清理：合并用途索引、删除一个冗余入口，文件数由 100 减为 99；直接重命名 29 个维护文件并同步引用。本地完整质量检查通过（Edge 101 项、WebKit 38 项），99 个文件用途与内部链接、8 项检查器测试和首页图片来源检查通过。四文件、历史记录地址和截图基线不变，工作流仅同步脚本路径，不改检查及发布条件。
-- [后台恢复绘制循环检查](acceptance/grid-recovery-20260930.md) 已纳入默认自动检查，本地双浏览器重复专项通过。远程合并与部署以对应提交的 [自动检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions) 为准，不将本地通过写成实机通过。本次不创建 Release，文件从 [首页四文件入口](../README.md#四文件入口) 获取。
-- [发布清单](../release-manifest.json) · [文件校验值](../SHA256SUMS.txt)。
-- [说明书校验维护](manual-maintenance.md) · [年度日历替换](calendar-maintenance.md)。
+本轮仓库维护未改四文件，产品交付仍为上表版本；维护检查单独记录在[本次维护记录](acceptance/maintenance-simplification-20261006.md)。本地维护通过不代表已经推送或合并。
 
 ## 待验收
 
-- [10-02 四文件与设置动效交付](acceptance/delivery-settings-20261002.md)：交付 20261002.2 的本地检查、帧开销观察及远程/实机验收边界。
-- [10-02 安装与生命周期维护](acceptance/lifecycle-install-20261002.md)：此前实施记录，包含真实冻结与模拟休眠区别；其中动效研究及未推送说明为记录当时状态，最新交付见上方记录。
+- 真实跨夜验收仍暂停，不用模拟时间替代。
+- 小组件设置读写、手机键盘、VoiceOver 和流畅度仍需对应文件的实体设备验收。
+- 本轮维护分支尚未推送；远程结果不能引用上一批 Quality 代替。
 
-- 真实跨夜验收仍暂停；浏览器时间模拟不能替代原页面真实跨夜恢复。
-- 当前小组件需实体 iPhone/iPad 核对设置读写和显示；测试替身只能验证逻辑。
-
-证据分为**自动测试**、**桌面浏览器实际观察**、**实体设备或真实跨夜**。一类通过不能代替另一类。
+自动测试证明规则、浏览器行为及布局断言；桌面实际观察证明本机操作现象；实体设备或真实跨夜只在实际完成后标记通过。三者不互相替代。
 
 ## 历史记录
 
-以下保留原地址与当时结果，不改写为本轮验收：
+以下保持原地址及当时结论，不写成当前交付结果。
 
 ### 发布与交付
 
-- 四文件验收：[09-16](acceptance/fourfile-20260916.md)、[09-22](acceptance/fourfile-20260922.md)、[09-24](acceptance/fourfile-20260924.md)。
-- 版本验收：[2.5.2](acceptance/v2.5.2.md)、[2.5.4-rc.2 启动](acceptance/v2.5.4-rc.2-startup.md)。
-- [各版本说明](releases/) · [总变更记录](../CHANGELOG.md)。
+- [10-05 设置交付](acceptance/settings-delivery-20261005.md)、[10-02 设置交付](acceptance/delivery-settings-20261002.md)、[10-01 四文件同步](acceptance/delivery-sync-20261001.md)。
+- [09-30 命名与整理](acceptance/naming-20260930.md)、[09-16](acceptance/fourfile-20260916.md)、[09-22](acceptance/fourfile-20260922.md)、[09-24](acceptance/fourfile-20260924.md)四文件验收。
+- [2.5.2](acceptance/v2.5.2.md)、[2.5.4-rc.2 启动](acceptance/v2.5.4-rc.2-startup.md)、[各版本说明](releases/)。
 
-### 恢复与读数
+### 恢复与资源
 
-- [前台恢复 09-09](acceptance/foreground-resume-20260909.md)、[前台进度 09-23](acceptance/foreground-progress-20260923.md)。
-- [读数同步 09-24](acceptance/readout-sync-20260924.md)、[跨日期月收入 09-24](acceptance/cross-date-month-20260924.md)、[恢复维护 09-27](acceptance/recovery-maintenance-20260927.md)。
-- [跨夜安排 09-15](acceptance/overnight-20260915.md)：保留当时的安排与边界，不作为真实跨夜已通过证明。
+- [前台恢复 09-09](acceptance/foreground-resume-20260909.md)、[前台进度 09-23](acceptance/foreground-progress-20260923.md)、[读数同步 09-24](acceptance/readout-sync-20260924.md)、[跨日期月收入 09-24](acceptance/cross-date-month-20260924.md)。
+- [恢复维护 09-27](acceptance/recovery-maintenance-20260927.md)、[背景静止 09-30](acceptance/grid-idle-20260930.md)、[背景恢复 09-30](acceptance/grid-recovery-20260930.md)。
+- [安装与生命周期 10-02](acceptance/lifecycle-install-20261002.md)、[保存可靠性与资源观察 10-03](acceptance/storage-runtime-20261003.md)、[原始资源报告](acceptance/runtime-observation-20261003.json)。
+- [跨夜安排 09-15](acceptance/overnight-20260915.md)：是安排，不是已通过证明。
 
 ### 动效与维护
 
-- [动效预览 09-22](acceptance/motion-preview-20260922.md)。
-- [第二轮维护 09-08](acceptance/maintenance-round2-20260908.md)、[维护 09-15](acceptance/maintenance-20260915.md)、[候选版维护](acceptance/v2.5.4-rc.2-maintenance.md)。
-- [全部验收记录](acceptance/) · [展示图片及来源](images/previews-manifest.json)：旧图不表示本次实机截图。
+- [动效预览 09-22](acceptance/motion-preview-20260922.md)、[维护 09-15](acceptance/maintenance-20260915.md)、[第二轮维护 09-08](acceptance/maintenance-round2-20260908.md)、[候选版维护](acceptance/v2.5.4-rc.2-maintenance.md)。
+- [全部原记录](acceptance/) · [旧图片及来源](images/previews-manifest.json) · [更新记录](../CHANGELOG.md)。
 
-历史 `v35`、`R44` 为内部基线或设计记录，不作对外标题。旧版本号保留其历史含义。
+历史内部代号与 rc 版本只保留历史含义。用途索引不承载每批过程记录；当前状态只维护在本页。

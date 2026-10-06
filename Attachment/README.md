@@ -6,4 +6,13 @@
 - [脚本索引](scripts-index.md)：日常检查、完整验收、专项排查与写入边界。
 - [测试索引](tests-index.md)：测试范围和证据边界。
 
-按角色阅读仍从 [首页](../README.md#维护入口) 进入；当前交付、待验收和历史记录仍由 [验收索引](../docs/README.md) 统一维护。
+## 从这里开始
+
+| 你要做什么 | 唯一入口 |
+| --- | --- |
+| 使用网页或小组件 | [首页快速使用](../README.md#快速使用)与[使用手册](../docs/Income-per-sed（说明文档）.docx) |
+| 修改与排查代码 | [三个检查入口](scripts-index.md#三个主要入口)与[五类测试](tests-index.md#五类覆盖矩阵) |
+| 核对本批是否通过 | [当前交付、待验收与历史](../docs/README.md) |
+| 维护日历、手册或发布 | [维护策略](../docs/REPOSITORY_POLICY.md)、[年度日历](../docs/calendar-maintenance.md)、[说明书维护](../docs/manual-maintenance.md) |
+
+原四份角色导航只重复链接，已合并到此表；四文件、历史证据、工具和截图路径不变。本目录只管如何找到资料，不复制版本状态或验收结论。
