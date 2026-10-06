@@ -94,7 +94,7 @@ test('saved readouts hand off only after closing without moving the card', async
 
 test('wheel edges fade without changing the income roller or wheel geometry', async ({ page }) => {
   await open(page, 'schedule');
-  const column = page.locator('.time-wheel-column').first();
+  const column = page.locator('.time-wheel-column:not(:focus-visible)').first();
   const mask = await column.evaluate(node => getComputedStyle(node).maskImage || getComputedStyle(node).webkitMaskImage);
   expect(mask).toContain('linear-gradient');
   expect(mask).toContain('14%');
