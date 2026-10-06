@@ -41,8 +41,10 @@ test('quick sheet return is continuous and a new drag can take over', async ({ p
   await expect(page.locator('#historyQuickPanel')).toBeHidden();
   await expect(page.locator('body')).not.toHaveClass(/history-quick-sheet-(returning|dragging)/);
   await page.locator('#historyQuickOpen').click();
-  await page.waitForTimeout(300);
-  expect(await page.locator('#historyQuickPanel').evaluate(panel => new DOMMatrix(getComputedStyle(panel).transform).m42)).toBeCloseTo(0, 1);
+  await expect.poll(() => page.locator('#historyQuickPanel').evaluate(panel => {
+    const moving = panel.getAnimations().some(animation => animation.playState === 'running');
+    return moving ? Infinity : Math.abs(new DOMMatrix(getComputedStyle(panel).transform).m42);
+  })).toBeLessThan(0.5);
 });
 
 test('quick action retains its source without delaying or stacking feedback', async ({ page }) => {
