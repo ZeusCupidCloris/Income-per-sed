@@ -1,5 +1,5 @@
 // Income-per-sed · Scriptable Widget
-// Product 2.5.8; widget 2.5.8; delivery 20261006.3. Metadata-only update.
+// Product 2.5.9; widget 2.5.9; delivery 20261006.4. Metadata-only update.
 // Place this file and Income-per-sed-Push.html in iCloud Drive/Scriptable.
 //
 // v2.5.3 (2026-09-29)
@@ -8,7 +8,7 @@
 // - Improve accessory widgets, zero-progress rendering, preview flow and calendar-expiry warning.
 
 const APP = {
-  version: "2.5.8",
+  version: "2.5.9",
   timeZone: "Asia/Shanghai",
   settingsFile: "IncomeWidget-settings.json",
   htmlCandidates: [
@@ -16,8 +16,8 @@ const APP = {
   ],
   settingsSchema: 3,
   transactionSchema: 2,
-  deliveryRevision: "20261006.3",
-  sourceBuild: "widget-20261006.3",
+  deliveryRevision: "20261006.4",
+  sourceBuild: "widget-20261006.4",
   refreshMinutes: {
     working: 1,
     transition: 3,

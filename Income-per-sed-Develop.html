@@ -8670,6 +8670,7 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 .settings-sheet.has-scroll-below .settings-actions{box-shadow:0 -5px 7px -6px color-mix(in srgb,var(--text-primary) 22%,transparent);}
 .settings-dialog.income-shared-active .settings-sheet-header,.settings-dialog.income-shared-active .settings-actions{box-shadow:none!important;}
 .time-wheel-column{-webkit-mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);}
+.time-wheel-column:focus-visible{-webkit-mask-image:none;mask-image:none;}
 .settings-dialog .settings-sheet-header,.settings-dialog .settings-panel:not([hidden]),.settings-dialog .settings-actions{opacity:var(--settings-layer-opacity,1) !important;transform:none !important;animation:none !important;transition:none!important;}
 .settings-dialog:not(.income-shared-active) .settings-sheet-header,.settings-dialog:not(.income-shared-active) .settings-actions{transition:box-shadow 140ms ease-out!important;}
 .settings-dialog.income-shared-active .settings-data-section{opacity:var(--settings-layer-opacity,1)!important;transition:none!important;}
@@ -9087,10 +9088,10 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 
     <script>
 const APP_RELEASE = Object.freeze({
-version: 'v38',
-productVersion: '2.5.8',
-sourceTag: 'v2.5.8',
-buildId: 'v38-20261006.3',
+version: 'v39',
+productVersion: '2.5.9',
+sourceTag: 'v2.5.9',
+buildId: 'v39-20261006.4',
 releaseDate: '2026-10-06',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
@@ -20353,7 +20354,7 @@ coordinator
 
 function runReleaseRegressionChecks() {
 const failures = [];
-if (APP_RELEASE.version !== 'v38') failures.push(`内部版本应为 v38，实际 ${APP_RELEASE.version}`);
+if (APP_RELEASE.version !== 'v39') failures.push(`内部版本应为 v39，实际 ${APP_RELEASE.version}`);
 if (APP_RELEASE.taskStopwatchSchema !== TaskStopwatch.schemaVersion) failures.push('内部版本与怀表 schema 不一致');
 if (APP_RELEASE.settingsSchema !== SettingsStore.schemaVersion) failures.push('内部版本与设置 schema 不一致');
 if (APP_RELEASE.transactionSchema !== 2) failures.push('事务存储 schema 异常');
