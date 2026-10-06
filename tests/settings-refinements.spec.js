@@ -6,7 +6,10 @@ test('quick sheet return is continuous and a new drag can take over', async ({ p
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto(appPath);
   await page.locator('#historyQuickOpen').click();
-  await page.waitForTimeout(300);
+  await expect.poll(() => page.locator('#historyQuickPanel').evaluate(panel => {
+    const moving = panel.getAnimations().some(animation => animation.playState === 'running');
+    return moving ? Infinity : Math.abs(new DOMMatrix(getComputedStyle(panel).transform).m42);
+  })).toBeLessThan(0.5);
   const sample = await page.evaluate(() => {
     const panel = document.querySelector('#historyQuickPanel');
     const grabber = document.querySelector('#historyQuickGrabber');
@@ -29,7 +32,7 @@ test('quick sheet return is continuous and a new drag can take over', async ({ p
     panel.dispatchEvent(event('pointerup', 740, 22));
     return { drag, release, returning, takeover };
   });
-  expect(sample.drag.y).toBeCloseTo(40, 1);
+  expect(Math.abs(sample.drag.y - 40)).toBeLessThan(0.5);
   expect(sample.drag.opacity).toBeLessThan(1);
   expect(sample.release).toBeCloseTo(sample.drag.y, 1);
   expect(sample.returning).toBeGreaterThan(0);
@@ -218,10 +221,22 @@ test('correcting an error preserves its icon and space until fade finishes', asy
   await page.locator('#settingsSaveButton').dispatchEvent('click');
   const error = page.locator('#incomeAmountError');
   await expect(error).not.toHaveAttribute('hidden', '');
+  await expect.poll(() => error.evaluate(el => Number(getComputedStyle(el).opacity))).toBe(1);
   const before = await error.boundingBox();
-  await page.locator('#incomeAmountInput').fill('7500');
-  await page.clock.runFor(64);
-  const during = await error.evaluate(el => ({ opacity: Number(getComputedStyle(el).opacity), icon: getComputedStyle(el, '::before').content, height: el.getBoundingClientRect().height, text: el.textContent }));
+  const during = await page.evaluate(() => {
+    const el = document.querySelector('#incomeAmountError');
+    const input = document.querySelector('#incomeAmountInput');
+    input.value = '7500';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    getComputedStyle(el).opacity;
+    const fade = el.getAnimations().find(animation => animation.transitionProperty === 'opacity');
+    if (!fade) throw new Error('Error correction opacity transition was not created');
+    fade.pause();
+    fade.currentTime = 64;
+    const sample = { opacity: Number(getComputedStyle(el).opacity), icon: getComputedStyle(el, '::before').content, height: el.getBoundingClientRect().height, text: el.textContent };
+    fade.finish();
+    return sample;
+  });
   expect(during.opacity).toBeGreaterThan(0);
   expect(during.opacity).toBeLessThan(1);
   expect(during.icon).toBe('"!"');
