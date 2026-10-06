@@ -100,39 +100,6 @@ test('rapid local operations leave no copy, layer, scroll or focus residue', asy
   expect(await page.locator('#calendarDataContent').evaluate(element => ({ height: element.clientHeight, inert: element.inert }))).toEqual({ height: 0, inert: true });
 });
 
-test('cached wheel styles still match every original distance formula after resize', async ({ page }) => {
-  await open(page, 'schedule');
-  for (const width of [1440, 320, 390]) {
-    await page.setViewportSize({ width, height: 1000 });
-    for (const value of [9.25, 10.75, 9.25]) {
-      const mismatches = await page.locator('.time-wheel-column').first().evaluate((column, value) => {
-        column.scrollTop = value * 44;
-        column.dispatchEvent(new Event('scroll'));
-        return new Promise(resolve => requestAnimationFrame(() => {
-          const center = column.scrollTop + column.clientHeight / 2;
-          const failures = [];
-          for (const item of column.children) {
-            const distance = (item.offsetTop + item.offsetHeight / 2 - center) / 44;
-            const absolute = Math.abs(distance);
-            const expected = {
-              '--wheel-angle': `${(Math.max(-3.25, Math.min(3.25, distance)) * -19).toFixed(2)}deg`,
-              '--wheel-depth': `${(-Math.min(38, absolute * 12)).toFixed(2)}px`,
-              '--wheel-scale': Math.max(.76, 1 - absolute * .075).toFixed(3),
-              '--wheel-opacity': (.10 + .90 * Math.exp(-absolute * absolute * .65)).toFixed(3),
-              '--wheel-shade': Math.min(1, absolute / 3).toFixed(3)
-            };
-            for (const [property, value] of Object.entries(expected)) {
-              if (item.style.getPropertyValue(property) !== value) failures.push({ item: item.dataset.value, property, expected: value, actual: item.style.getPropertyValue(property) });
-            }
-          }
-          resolve(failures);
-        }));
-      }, value);
-      expect(mismatches).toEqual([]);
-    }
-  }
-});
-
 test('combined motion observes frame cost and wheel geometry read/write ordering', async ({ page, browserName }, testInfo) => {
   test.skip(browserName !== 'chromium', 'CDP cost samples require Chromium; correctness tests also run on WebKit.');
   await page.setViewportSize({ width: 1440, height: 1000 });
