@@ -1,54 +1,35 @@
-# 测试索引
+# 测试用途索引
 
-这里是维护工具，不是运行网页必需的文件。结果只适用于被测提交；模拟后台、模拟时钟及 Scriptable 替身均不等于实体设备通过。
+只维护职责和覆盖边界，不保存每轮执行结果；结果见[验收索引](../docs/README.md)，命令参数见[脚本索引](scripts-index.md#三个主要入口)。
 
-## 执行分级
+## 五类覆盖矩阵
 
-- 日常只读检查：`npm run test:checks`。包含发布规则、小组件替身、首页和文档检查、Push 构建一致性及四文件校验，不重新生成交付。
-- 专项排查：按修改范围选择 `test:recovery`（恢复）、`test:layout`（金额边界与页面布局）或 `test:settings`（设置交互与存储）。这些是已有用例的筛选入口，不是新的一套重复测试。
-- 完整验收：依次运行 `npm test`、`npm run test:webkit`；发布前再执行日常检查。两个浏览器不要同时运行，它们共用测试端口。
-- 性能观察：`npm run test:observe`，仅采集本机帧和布局开销，不作为跨设备帧率评分。半小时资源观察仍为手动专项，不加入每次 PR。
+| 功能组 | 参数 | 主要职责 | 不是重复的边界 |
+| --- | --- | --- | --- |
+| 计算与存储 | `data` | 收入算式、小组件一致性、网页和组件异常设置 | Scriptable 替身不等于浏览器存储，也不等于实体 iPhone |
+| 恢复与回溯 | `recovery` | 后台交接、输入接管、跨日期、历史播放 | 轨道位置、读数同步、月收入算式及浏览器冻结是独立断言 |
+| 设置交互 | `settings` | 开合、滚动、焦点、手势、错误反馈与清理 | 动画路径、文字交接、滚动锚定与输入安全不能只留一个截图 |
+| 布局与视觉 | `layout` | 长金额、网格、页面截图、手机边界 | 几何断言与像素基线不是相同证据 |
+| 发布一致性 | `release` | 构建、命名、校验、工具约束、双版本行为 | 只测 Develop 不能证明生成 Push 一致 |
 
-`test:readme` 已包含 `test:docs`，运行前者后无需重复运行后者。`quality:local` 会生成 Push，不属于只读检查。专项入口之间可以交叉；已经完整验收时，不必再重复全部专项入口。
+唯一分组表为[config/test-groups.cjs](../config/test-groups.cjs)。每份可运行测试恰好属于一组，遗漏、重复或失效条目会被自动检查拒绝。按功能选择，不再按交付日期创建新测试套件。
 
-## 覆盖职责与收敛原则
+Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/playwright-webkit.config.js)。双浏览器专项不代表两者有完全相同的文件数量。基于 CDP 的冻结专项只在 Edge 执行。帧开销 `settings-frame-budget.spec.js`明确为手动观察，归设置组但不进入默认完整回归。
 
-全部测试按下表归属；没有发现可以不损失独立断言而直接删除的整份测试。相似场景区分以下职责，不将它们当作重复：
+## 初始化与断言收敛
 
-- 恢复：`foreground-resume` 看运动交接；`foreground-progress` 看两段轨道和拨钮；`readout-sync` 看读数同帧；`cross-date-month` 看跨月独立算式；`recovery-combinations` 看中途操作；`browser-lifecycle` 看真实浏览器冻结与缓存。
-- 设置：`motion-feedback` 看外壳路径和操作反馈；`settings-text-continuity` 看文字及最后一帧；`settings-local-motion` 看区域过渡；`settings-stability` 看滚动锚定与清理；`settings-input-safety` 看误触、手势与读屏；`storage-resilience` 看持久化失败和并发保存。
-- 发布：`release-behavior` 核对生成后的行为，不能用只测 Develop 替代；Edge 和 WebKit 检查不同引擎，不合并成单浏览器。
+三份设置测试共用 `helpers/settings-page.js`，只统一页面选择、动效模式和展开操作；原来的 520/550ms 等待与各自断言保留。使用暂停时钟、中间帧或特定视口的测试保留专用初始化，不强行套用共同函数。
 
-后续新增回归优先放入已有职责文件，复用合适的时钟辅助函数，不再按每轮交付新建测试文件。不得为了减少数量删掉浏览器、工资模式或中断状态的独立覆盖。当前 CI 完整关卡、重试次数和截图基线不变。
+未删除工资模式、两种网页版本、浅深主题、手机尺寸、输入反向、存储失败或最后一帧边界。相似测试只有在操作前提与断言完全等价时才合并，本轮没有发现可以安全删除的整份功能测试。
 
-## 偶发失败取证
-
-两项 CI 首次失败分别记录了恢复交接反向约 5.89 度、长金额过程横向越界 5px。本地原版三轮共 12 次检查均通过，不能据此认定故障已修复。
-
-恢复测试保留真实动画时钟检查，另补非整帧起点的固定推进用例；失败消息附交接前后帧。长金额采样附操作阶段、时间、视口和越界元素，停止时同时清理帧和延迟任务。原有边界断言未放宽。
-
-补充取证后的 Edge 五轮共 20 次检查通过，包括原有真实时钟、非整帧恢复起点及 1440px 浅色长金额组合。恢复完成处的整秒写入是待核实路径，不是已经确认的故障根因：当前代码会预先对齐名义结束时间，还需失败帧的业务时钟与动画时钟证据判断实际交接。未调整主表盘、金额缩放、缓动、时长或截图。
-
-WebKit 长金额运动四种尺寸/主题组合全部通过（390/1440px、浅/深主题）；只读发布检查通过。以上为本轮专项结果，不冒充完整 Edge/WebKit 全量复验；工作流取证改动仍未推送，尚待实际 CI 验证。
-
-工作流在未取消时上传浏览器诊断，因此首次失败、重试成功也能保留证据。报告中的 flaky 不能写成首次通过；先查看原始轨迹再决定改页面还是测试时序。模拟通过不代表实机通过。
-
-| 命令 | 用途 |
-| --- | --- |
-| npm run test:release | 构建、说明书、命名与工作流约束 |
-| npm run test:widget | 小组件配置异常逻辑，测试替身 |
-| npm test | Edge 业务、交互与截图对比 |
-| npm run test:webkit | WebKit 手机尺寸与恢复行为，不代表 iPhone 实机 |
-| npm run test:readme | 首页图片及来源完整性 |
-| npm run test:docs | 文件用途表、目录用途索引与内部链接有效性；不联网检查外部地址 |
-| npm run release:repeatability | 连续构建一致性，会写入交付 |
-
-`release-naming.test.mjs` 检查标题、组件版本与交付编号。`readout-sync.spec.js` 检查读数与统一运动时间；`foreground-progress.spec.js` 检查恢复进度和拨钮。截图基线位于 `visual.spec.js-snapshots/`，辅助工具位于 `helpers/`。
+## 全部测试用途
 
 | 范围 | 文件 | 边界 |
 | --- | --- | --- |
 | 启动与历史运动 | startup-history-playback.spec.js | 后台是模拟，不代表实机锁屏 |
 | 前台恢复 | foreground-resume.spec.js | 同日、跨日、上午开工及午休结束；模拟后台，不代表系统休眠 |
+| 恢复进度 | foreground-progress.spec.js | 两段工作轨道、拨钮位置及恢复交接的同帧边界 |
+| 读数同步 | readout-sync.spec.js | 主针、金额、工时、剩余时间及月收入共同使用统一显示时间 |
 | 跨日期月收入 | cross-date-month.spec.js | Develop/Push、三种工资模式、次日和工作日/休息日跨月；独立算式校验最终金额；Edge 与 WebKit |
 | 恢复组合 | recovery-combinations.spec.js | 恢复中再次隐藏、跨日恢复中回溯后返回实时；三种工资模式及双版本；模拟后台，不代表实机 |
 | 连续接管 | interaction-handoff.spec.js | 前台恢复、历史播放、返回实时途中滚轮接管与显示值连续性 |
@@ -72,19 +53,24 @@ WebKit 长金额运动四种尺寸/主题组合全部通过（390/1440px、浅/�
 | WebKit 冒烟 | webkit-mobile.spec.js | WebKit 专属基础启动和手机回溯面板边界；其余文件的浏览器范围以 config/playwright-webkit.config.js 中的 testMatch 为唯一来源，避免维护第二份容易遗漏的名单；默认发布与 Develop 预览范围不同，不等于真实 iPhone |
 | 发布与资源 | test_prepare_delivery.py、release-channel.test.mjs、readme-preview-validation.test.mjs | 构建与资源一致性 |
 | 文档有效性 | document-index-validation.test.mjs | 检查器的遗漏、重复、失效地址、章节及中文路径测试；不修改交付 |
-| 文件命名 | release-naming.test.mjs | 既定对外名称、版本与交付编号规则 |
+| 文件命名 | release-naming.test.mjs | 既定对外名称、版本、交付编号，以及验收索引当前版本一致性 |
 | 部署结构 | workflow-contract.test.mjs | 静态约束；仍需 GitHub 实际运行验收 |
 | 安装稳定性 | install-ci-dependencies.test.mjs | 成功不重试、失败最多两次、真实子进程超时终止 |
 | 浏览器生命周期 | browser-lifecycle.spec.js | Edge 实际 BFCache 冻结与返回、三轮计时器暂停证据、冻结结合模拟五小时墙钟差；不等于实体电脑休眠或真实跨夜 |
+| 检查入口与分组 | quality-entrypoints.test.mjs | 每份用例唯一归属、组内断言不遗漏、手动观察不混入完整回归、参数错误直接失败 |
 
-公共时钟辅助函数放在 helpers/business-clock.js，仅为内容稳定场景固定业务日期，不冻结动画时钟。启动与后台时间推进测试继续单独控制时钟，不强行统一。
+## 辅助工具
 
-`helpers/background-recovery.js` 仅供恢复专项使用：测试时钟按固定步长推进，避免 CI 操作耗时改变中断位置；业务结果由测试固定日期和独立算式计算，不调用页面收入引擎。
+- `helpers/business-clock.js`：为内容稳定场景固定业务日期，不冻结动画时钟。
+- `helpers/background-recovery.js`：恢复专项固定步长推进；最终业务值仍用独立算式计算。
+- `helpers/settings-page.js`：普通设置测试的共同初始化；不处理暂停时钟和中间帧采样。
 
-执行入口以 package.json 为准。失败不得通过减少断言、改截图或单纯增加重试掩盖。
+默认 Playwright 只收集 `*.spec.js`。Node `*.test.mjs`、小组件 `widget-settings.cjs`和 Python `test_prepare_delivery.py`由快速检查运行，避免在浏览器收集阶段重复执行或产生副作用。
 
-文件中文用途名统一查 [全文件索引](repository-map.md)，命名与发布约定以 [维护规则](../docs/REPOSITORY_POLICY.md) 为准。此页只维护测试用途、运行入口和证据边界，不另定义版本规则。
+## 失败处理
 
-仅验收 Develop 预览时，设置环境变量 `DEVELOP_PREVIEW=1` 再运行 `npm test` 和 `npm run test:webkit`。既有视觉及 WebKit 冒烟检查会指向 Develop，WebKit 同时运行局部动效测试。默认发布检查对恢复组合同时验证 Develop 和 Push，既有视觉及手机冒烟使用 Push，不更新截图。仅预览期间不要执行 `quality:local`，它会重新生成 Push。
+首次失败保存轨迹、交接帧、越界元素和页面错误；重试成功仍记为偶发，不写成首次通过。不得通过放宽断言、更新截图或增加重试掩盖问题。性能样本只用于同机定位，不以固定帧率评价所有设备。
 
-发布前运行 `npm run release:repeatability`：要求已有发布包在连续两次生成后，四文件、发布清单和校验清单全部保持一致。此命令会执行构建，应串行运行，不与其他生成操作并发。
+自动浏览器、模拟后台和 Scriptable 替身不等于实体设备、真实睡眠或跨夜。旧调查结果移出用途索引，不据此认定当前故障仍存在或已修复。
+
+[全文件用途](repository-map.md) · [当前验收状态](../docs/README.md) · [CI 评估](../docs/maintainer/workflow-review.md)

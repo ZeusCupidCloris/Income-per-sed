@@ -23,6 +23,9 @@ test('component and delivery identifiers agree with the manifest', () => {
   assert.equal(manifest.manualRevision, manifest.deliveryRevision);
   assert.match(read('README.md'), new RegExp(manifest.widgetVersion.replaceAll('.', '\\.')));
   assert.ok(read('README.md').includes(manifest.deliveryRevision));
+  const current = read('docs/README.md').split('## 当前交付')[1]?.split('## 待验收')[0] || '';
+  assert.ok(current.includes(`**${manifest.productVersion}**`), 'Acceptance index must identify the current product');
+  assert.ok(current.includes(`**${manifest.deliveryRevision}**`), 'Acceptance index must identify the current delivery');
   assert.equal(manifest.publicNames.manualTitle, 'Income-per-sed 使用手册');
 });
 

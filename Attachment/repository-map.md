@@ -35,6 +35,8 @@
 | [config/playwright-edge.config.js](../config/playwright-edge.config.js) | Edge 自动测试配置 | 维护 |
 | [config/playwright-webkit.config.js](../config/playwright-webkit.config.js) | WebKit 自动测试配置 | 维护 |
 | [config/readme-previews.json](../config/readme-previews.json) | 首页截图尺寸与场景配置 | 维护 |
+| [config/test-groups.cjs](../config/test-groups.cjs) | 五类测试的唯一归属与手动观察范围 | 维护 |
+| [scripts/run-quality.mjs](../scripts/run-quality.mjs) | 快速、专项、完整验收和手动观察统一入口 | 维护 |
 
 ## 文档与展示素材
 
@@ -42,12 +44,9 @@
 | --- | --- | --- |
 | [Attachment/README.md](README.md) | 集中索引入口与目录边界 | 用户与维护 |
 | [docs/maintainer/workflow-review.md](../docs/maintainer/workflow-review.md) | 工作流重复检查评估与待决策方案 | 维护 |
-| [docs/user/README.md](../docs/user/README.md) | 日常用户阅读入口 | 用户 |
-| [docs/developer/README.md](../docs/developer/README.md) | 源码与工具阅读入口 | 开发 |
-| [docs/verification/README.md](../docs/verification/README.md) | 当前、待验收与历史证据入口 | 验收 |
-| [docs/maintainer/README.md](../docs/maintainer/README.md) | 仓库、日历与发布维护入口 | 维护 |
 | [docs/Income-per-sed（说明文档）.docx](../docs/Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
 | [docs/README.md](../docs/README.md) | 当前交付与验收状态索引 | 维护 |
+| [docs/acceptance/maintenance-simplification-20261006.md](../docs/acceptance/maintenance-simplification-20261006.md) | 索引、测试入口与维护收敛验收记录 | 维护 |
 | [docs/REPOSITORY_POLICY.md](../docs/REPOSITORY_POLICY.md) | 命名及维护发布规则 | 维护 |
 | [Attachment/repository-map.md](repository-map.md) | 按阅读对象分类的仓库地图与全文件用途表 | 用户与维护 |
 | [docs/calendar-maintenance.md](../docs/calendar-maintenance.md) | 年度内置日历手动替换清单 | 维护 |
@@ -123,6 +122,8 @@
 | [tests/foreground-resume.spec.js](../tests/foreground-resume.spec.js) | 前台恢复与时间边界测试 | 维护 |
 | [tests/helpers/business-clock.js](../tests/helpers/business-clock.js) | 业务时钟测试辅助工具 | 维护 |
 | [tests/helpers/background-recovery.js](../tests/helpers/background-recovery.js) | 模拟后台恢复测试辅助工具 | 维护 |
+| [tests/helpers/settings-page.js](../tests/helpers/settings-page.js) | 普通设置测试的共同页面与展开初始化 | 维护 |
+| [tests/quality-entrypoints.test.mjs](../tests/quality-entrypoints.test.mjs) | 功能分组完整性与运行入口契约检查 | 维护 |
 | [tests/input-device-motion.spec.js](../tests/input-device-motion.spec.js) | 输入设备与刷新率验收测试 | 维护 |
 | [tests/interaction-handoff.spec.js](../tests/interaction-handoff.spec.js) | 连续操作接管测试 | 维护 |
 | [tests/motion-feedback.spec.js](../tests/motion-feedback.spec.js) | 保存面板与局部动效反馈测试 | 维护 |

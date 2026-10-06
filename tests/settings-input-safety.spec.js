@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const settingsPage = process.env.SETTINGS_RELEASE_CHANNEL === 'push' ? '/Income-per-sed-Push.html' : '/Income-per-sed-Develop.html';
+const { settingsPage, openSettings } = require('./helpers/settings-page');
 test.use({ viewport: { width: 390, height: 700 }, hasTouch: true });
 const pageErrors = new WeakMap();
 test.beforeEach(async ({ page }) => {
@@ -10,10 +10,7 @@ test.beforeEach(async ({ page }) => {
 test.afterEach(async ({ page }) => expect(pageErrors.get(page)).toEqual([]));
 
 async function open(page, kind = 'schedule') {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto(settingsPage);
-  await page.locator(`#${kind}SettingsCard`).dispatchEvent('click');
-  await page.waitForTimeout(550);
+  await openSettings(page, { kind });
 }
 
 test('keyboard focus on a wheel keeps its per-column outline unmasked', async ({ page }) => {
