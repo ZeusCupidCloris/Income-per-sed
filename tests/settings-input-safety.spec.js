@@ -16,6 +16,23 @@ async function open(page, kind = 'schedule') {
   await page.waitForTimeout(550);
 }
 
+test('keyboard focus on a wheel keeps its per-column outline unmasked', async ({ page }) => {
+  await open(page);
+  const columns = page.locator('.time-wheel-column');
+  await expect(page.locator('#settingsDialog')).not.toHaveClass(/income-shared-active/);
+  for (let index = 0; index < 15; index++) {
+    await page.keyboard.press('Tab');
+    if (await columns.first().evaluate(el => el === document.activeElement)) break;
+  }
+  const focused = await columns.first().evaluate(el => ({ visible: el.matches(':focus-visible'), mask: getComputedStyle(el).maskImage, outline: getComputedStyle(el).outlineStyle }));
+  expect(focused.visible).toBe(true);
+  expect(focused.mask).toBe('none');
+  expect(focused.outline).not.toBe('none');
+  await page.keyboard.press('Tab');
+  expect(await columns.first().evaluate(el => getComputedStyle(el).maskImage)).toContain('linear-gradient');
+  expect(await columns.nth(1).evaluate(el => getComputedStyle(el).maskImage)).toBe('none');
+});
+
 test('invisible opening fields and save cannot act; close stays immediately available', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.install();

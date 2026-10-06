@@ -128,6 +128,8 @@
 | [tests/motion-feedback.spec.js](../tests/motion-feedback.spec.js) | 保存面板与局部动效反馈测试 | 维护 |
 | [tests/settings-text-continuity.spec.js](../tests/settings-text-continuity.spec.js) | 设置卡片动画文字排版与显隐连续性测试 | 维护 |
 | [tests/settings-local-motion.spec.js](../tests/settings-local-motion.spec.js) | 设置分层显现、口径文字交接、日历展开和滚轮明度测试 | 维护 |
+| [tests/settings-scrollbar-handoff.spec.js](../tests/settings-scrollbar-handoff.spec.js) | 设置外壳交接期间的原生滚动条绘制与滚动空间检查 | 维护 |
+| [tests/settings-refinements.spec.js](../tests/settings-refinements.spec.js) | 设置及快速回溯的局部反馈、拖动接管与滚动边界检查 | 维护 |
 | [tests/settings-stability.spec.js](../tests/settings-stability.spec.js) | 设置滚动锚定、摘要布局、快速操作清理与读写耗时检查 | 维护 |
 | [tests/settings-input-safety.spec.js](../tests/settings-input-safety.spec.js) | 不可见控件防误触、触屏手势意图及停靠后摘要播报测试 | 维护 |
 | [tests/settings-frame-budget.spec.js](../tests/settings-frame-budget.spec.js) | 设置卡片实际帧间隔与样式计算开销观察 | 维护 |
