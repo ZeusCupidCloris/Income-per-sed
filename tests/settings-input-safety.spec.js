@@ -88,7 +88,10 @@ for (const scenario of [{ name: 'diagonal center gesture', band: 'center', dx: 5
 }
 
 test('summary changes visually immediately but has a single settled announcement', async ({ page }) => {
+  // Driver round trips must not turn a 30ms burst into separate 180ms idle periods.
+  await page.clock.install();
   await open(page);
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
   await expect(page.locator('#scheduleCalibrationSummary')).not.toHaveAttribute('aria-live', 'polite');
   await expect(page.locator('#scheduleCalibrationAnnouncement')).toHaveCount(1);
   await page.evaluate(() => {
@@ -98,15 +101,22 @@ test('summary changes visually immediately but has a single settled announcement
   const minute = page.locator('[data-time-key="morningEnd"] .time-wheel-column[data-unit="minute"]');
   for (let i = 0; i < 6; i++) {
     await minute.dispatchEvent('keydown', { key: 'ArrowDown' });
-    await page.waitForTimeout(30);
+    await page.clock.runFor(30);
   }
   await expect(page.locator('#scheduleMorningDuration')).toHaveText('2小时36分');
+  await page.clock.runFor(600);
   await expect(page.locator('#scheduleCalibrationAnnouncement')).toHaveText(/6小时36分/);
   expect(await page.evaluate(() => window.__summaryAnnouncements.filter(Boolean).length)).toBe(1);
   await minute.dispatchEvent('keydown', { key: 'ArrowDown' });
+  await page.clock.runFor(600);
+  await expect(page.locator('#scheduleCalibrationAnnouncement')).toHaveText(/6小时37分/);
+  expect(await page.evaluate(() => window.__summaryAnnouncements.filter(Boolean).length)).toBe(2);
+  await minute.dispatchEvent('keydown', { key: 'ArrowDown' });
   await page.keyboard.press('Escape');
+  await page.clock.runFor(600);
   await expect(page.locator('#settingsDialog')).toBeHidden();
   await expect(page.locator('#scheduleCalibrationAnnouncement')).toHaveText('');
+  expect(await page.evaluate(() => window.__summaryAnnouncements.filter(Boolean).length)).toBe(2);
 });
 
 for (const artifact of ['Develop', 'Push']) {

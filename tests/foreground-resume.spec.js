@@ -21,12 +21,13 @@ for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 864000
     await page.evaluate(() => {
       window.resumeFrames = [];
       const start = performance.now();
-      function sample() {
-        window.resumeFrames.push({ t: performance.now() - start, now: Date.now(),
+      // Match the animation's rAF clock; callback execution time includes host scheduling delay.
+      function sample(frameTime = performance.now()) {
+        window.resumeFrames.push({ t: frameTime - start, sampledAt: performance.now() - start, now: Date.now(),
           ...window.__incomeClockDiagnostics.getUnifiedMotionState().displayed,
           midnight: document.body.classList.contains('midnight-reset-active'),
           catchup: document.body.classList.contains('foreground-catchup-active') });
-        if (performance.now() - start < 5000) requestAnimationFrame(sample);
+        if (frameTime - start < 5000) requestAnimationFrame(sample);
       }
       sample();
       delete document.hidden;
