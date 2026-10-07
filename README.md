@@ -4,11 +4,11 @@
 
 用机械表盘与数字滚轮查看今日收入、已工作时间和剩余进度，也可以回看过去的时间点，为任务单独计时计价。
 
-**[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/)** · [获取四文件](#四文件入口) · [快速使用](#快速使用)
+**[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/)** · [查看四文件](#四文件入口) · [快速使用](#快速使用)
 
 ![浅色桌面界面：主收入表盘、数字滚轮、任务码表与今日工作进度](docs/images/preview-desktop.png)
 
-单文件网页，无需安装网页运行依赖；下载 Push 后可离线打开。支持浅色、深色主题，并配有 Scriptable iPhone、iPad 小组件。
+单文件网页，无需安装网页运行依赖；Push 支持离线打开。支持浅色、深色主题，并配有 Scriptable iPhone、iPad 小组件。下载与使用范围以许可证为准。
 
 <details><summary>查看深色桌面界面</summary>
 
@@ -26,11 +26,11 @@
 
 ## 四文件入口
 
-日常使用选择 **Push**；其余文件分别用于小组件、使用说明和开发维护。点击入口查看文件，在 GitHub 文件页使用下载按钮保存。
+以下是当前仓库四文件的查看入口，不代表下载或修改授权。访客请优先使用在线体验；离线评估仅下载[官方 Release 附件](https://github.com/ZeusCupidCloris/Income-per-sed/releases)，其余复制、修改与使用需取得版权所有者的事先书面授权，详见 [LICENSE](LICENSE)。
 
 | 入口 | 用途 |
 | --- | --- |
-| **[Push · 日常网页](Income-per-sed-Push.html)** | 下载 HTML 后打开即可使用 |
+| **[Push · 发布网页](Income-per-sed-Push.html)** | 查看当前网页文件；获准取得的 HTML 可离线打开 |
 | [Widget · 手机和平板小组件](IncomeWidget.js) | 在 Scriptable 中运行，配置方式见手册 |
 | [使用手册 · Word](docs/Income-per-sed（说明文档）.docx) | 功能、设置与故障排查 |
 | [Develop · 开发源文件](Income-per-sed-Develop.html) | 开发与诊断，网页唯一修改源 |
@@ -39,12 +39,12 @@
 
 ## 快速使用
 
-1. 想先看看效果，打开[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/)；离线使用则下载并打开 Push 文件。
+1. 打开[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/)；离线个人评估请从官方 Release 下载未修改的 Push 附件并打开。历史 Release 可能不同于当前在线版本。
 2. 点击“每小时收入”，设置收入方式和金额。
 3. 点击“今日工作进度”，设置上午、午休和下午时间。
 4. 使用顶部时间读数或快速回溯按钮回看；点击返回实时恢复当前时间。
 
-**小组件**：安装 Scriptable，将 Widget 与 Push 文件放在 iCloud Drive 的 Scriptable 目录，按[使用手册](docs/Income-per-sed（说明文档）.docx)完成配置。
+**小组件**：取得官方 Release 附件或事先书面授权后，安装 Scriptable，将 Widget 与 Push 文件放在 iCloud Drive 的 Scriptable 目录，按同批次使用手册完成配置。仓库中的[手册查看入口](docs/Income-per-sed（说明文档）.docx)用于了解功能。
 
 **设置与日历**：网页设置保存在当前浏览器本地，清除站点数据会删除设置；小组件配置与网页设置读回方式见手册。内置年度日历每年手动替换，使用前请核对覆盖年份。
 
