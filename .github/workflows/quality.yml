@@ -92,7 +92,7 @@ jobs:
           python-version: '3.13'
       - run: node scripts/install-ci-dependencies.mjs npm
         timeout-minutes: 11
-        if: ${{ !contains(fromJSON('["widget","docs","metadata"]'), needs.scope.outputs.scope) }}
+        if: ${{ !contains(fromJSON('["docs","metadata"]'), needs.scope.outputs.scope) }}
       - run: node scripts/quality-scope.mjs run edge ${{ needs.scope.outputs.scope }}
       - name: Upload visual diagnostics
         if: ${{ !cancelled() }}

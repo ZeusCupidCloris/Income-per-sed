@@ -133,7 +133,9 @@ export function classifyChanges(changes) {
 
 export function browserArgs(scope, browser) {
   if (!scopes.includes(scope) || !['edge', 'webkit'].includes(browser)) throw new Error('Invalid scope or browser');
-  if (['widget', 'docs', 'metadata'].includes(scope)) return [];
+  if (scope === 'widget') return browser === 'edge'
+    ? ['test', '--config=config/playwright-edge.config.js', 'tests/widget-parity.spec.js'] : [];
+  if (['docs', 'metadata'].includes(scope)) return [];
   return ['test', `--config=config/playwright-${browser}.config.js`,
     ...(scope === 'full' ? [] : groups[scope].files.filter(file => file.endsWith('.spec.js')).map(file => `tests/${file}`))];
 }

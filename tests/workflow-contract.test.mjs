@@ -53,7 +53,8 @@ test('widget plus four-file metadata selects widget, not HTML full coverage', ()
     change('docs/releases/v2.6.1.md', 'New guidance', null), change('SHA256SUMS.txt', 'new hashes', 'old hashes')];
   assert.equal(classifyChanges(changes).scope, 'widget');
   assert.equal(normalizeHtml(html), normalizeHtml(metadataUpdate));
-  assert.deepEqual(browserArgs('widget', 'edge'), []);
+  assert.deepEqual(browserArgs('widget', 'edge'), ['test', '--config=config/playwright-edge.config.js', 'tests/widget-parity.spec.js']);
+  assert.deepEqual(browserArgs('widget', 'webkit'), []);
   assert.deepEqual(browserArgs('docs', 'webkit'), []);
 });
 
