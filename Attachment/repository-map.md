@@ -84,6 +84,7 @@
 | [docs/releases/v2.5.0.md](../docs/releases/v2.5.0.md) | 2.5.0 发布说明 | 维护与历史 |
 | [docs/releases/v2.5.1.md](../docs/releases/v2.5.1.md) | 2.5.1 发布说明 | 维护与历史 |
 | [docs/releases/v2.5.2.md](../docs/releases/v2.5.2.md) | 2.5.2 发布说明 | 维护与历史 |
+| [docs/releases/v2.6.0.md](../docs/releases/v2.6.0.md) | 2.6.0 四文件同步与验证范围 | 用户与维护 |
 | [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本
