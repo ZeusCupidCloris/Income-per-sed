@@ -122,6 +122,11 @@ test('all widget families constrain long text and extraLarge has a dedicated lay
     }
   }
   assert.notDeepEqual(roots[1].padding,roots[3].padding);
+  const mediumHero=roots[1].children.find(node=>node.children[0]?.imageSize?.width===82);
+  const mediumWidth=mediumHero.children[0].imageSize.width+mediumHero.children[1].spacer+mediumHero.children[2].size.width;
+  for(const width of [329,342,400]) {
+    assert.ok(mediumWidth<=width-roots[1].padding[1]-roots[1].padding[3],`medium hero overflows ${width}pt container`);
+  }
   assert.ok(all(roots[3]).some(i=>i.imageSize && i.imageSize.width===124));
   const frame=roots[2].children[1];
   assert.equal(frame.children[0].spacer,'flex');

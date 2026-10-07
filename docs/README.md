@@ -4,18 +4,18 @@
 
 ## 当前交付
 
-产品与小组件统一为 **2.6.0**，交付 **20261007.1**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。
+产品与小组件统一为 **2.6.1**，交付 **20261008.1**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。合并与部署结果以本批最新远程记录为准。
 
 | 事项 | 当前证据 |
 | --- | --- |
 | 本地发布检查 | 四文件版本、语法、手册校验位置和校验清单通过；连续两次构建字节一致 |
-| 小组件专项 | 13 项配置与布局检查、84 组与已确认 rc.13 预览的布局对照通过；正式设置与计算入口保留 |
+| 小组件专项 | 13 项配置与布局检查通过；84 组中号窄屏模拟无越界，56 组小号、大号布局与 2.6.0 一致；业务函数保留 |
 | 网页改动范围 | Develop 仅更新发布元数据，Push 由本次 Develop 重新生成；未修改网页动效 |
-| 桌面浏览器专项 | Edge、WebKit 各 7 项发布行为检查通过，覆盖设置展开、持久化、回溯恢复与 Develop/Push 计算一致性；本批未重跑完整双浏览器套件 |
-| GitHub 与 Pages | 本批通过 PR 同步；合并与部署结果以[本批 PR](../docs/releases/v2.6.0.md#远程验证)及 Actions 记录为准，不沿用旧批次结果 |
-| 实体设备 | 用户已确认预览版小、中、大号零金额显示；其他金额、状态和进度端点尚待实机验收 |
+| 网页验收范围 | 本批仅验证网页元数据之外字节不变、发布构建及图片来源；未运行 HTML 完整浏览器套件，不沿用旧套件结果 |
+| GitHub 与 Pages | 本批使用 PR #53，同步 2.6.1 后重新检查；旧 2.6.0 结果不复用，详情见[远程状态](releases/v2.6.1.md#远程状态) |
+| 实体设备 | 用户已确认此前预览版三尺寸零金额；本次 329pt 窄屏修复仍待实体设备确认 |
 
-本批整合已确认的小组件预览并统一四文件版本，不扩大网页改动。本地通过不代表已经推送或合并；上一轮维护另见[维护记录](acceptance/maintenance-simplification-20261006.md)。
+本批仅修复中号窄屏宽度并统一四文件版本，不扩大网页改动。本地通过不代表已经推送或合并；上一轮维护另见[维护记录](acceptance/maintenance-simplification-20261006.md)。
 
 ## 待验收
 
@@ -30,6 +30,8 @@
 以下保持原地址及当时结论，不写成当前交付结果。
 
 ### 发布与交付
+
+- [2.6.0 四文件交付](releases/v2.6.0.md)：旧 PR #53 检查通过，后续审查发现中号窄屏越界，未合并，不属于线上发布。
 
 - 2.5.9 / 20261006.4：[PR #46](https://github.com/ZeusCupidCloris/Income-per-sed/pull/46)，main 提交 `61e0f31`；[合并前 Quality](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/37403208552)与[main Quality / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/37404721637)通过。2026-10-06 记录首页与 Push 的 SHA-256 为 `d3e9026ba57cd78e5a4b5f20610db790416cf182dd468c96eaa71752dd61ff11`，与该批本地 Push 一致；本次未重新验证该旧线上版本。
 - [10-05 设置交付](acceptance/settings-delivery-20261005.md)、[10-02 设置交付](acceptance/delivery-settings-20261002.md)、[10-01 四文件同步](acceptance/delivery-sync-20261001.md)。
