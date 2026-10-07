@@ -102,6 +102,13 @@ test('summary refuses missing, skipped, cancelled or failed jobs and invalid pla
     assert.throws(() => checkGate({...valid, [name]:{result}}));
   }
   assert.throws(() => checkGate({...valid, scope:{result:'success',outputs:{scope:'unknown'}}}));
+  for (const name of ['visual-regression', 'webkit-smoke']) {
+    const job = quality.split(`  ${name}:`)[1].split(/\r?\n {2}\S/)[0];
+    assert.match(job, /needs: \[scope\]/);
+  }
+  assert.match(quality, /fetch-depth: 0/);
+  assert.match(quality, /quality-scope\.mjs run edge \$\{\{ needs\.scope\.outputs\.scope \}\}/);
+  assert.match(quality, /quality-scope\.mjs run webkit \$\{\{ needs\.scope\.outputs\.scope \}\}/);
 });
 
 test('Pages cannot bypass Quality with a direct trigger or drift to another SHA', () => {
