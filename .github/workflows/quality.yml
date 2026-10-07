@@ -14,9 +14,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  scope:
+    name: Select validation scope
+    runs-on: ubuntu-latest
+    outputs:
+      scope: ${{ steps.plan.outputs.scope }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: node scripts/install-ci-dependencies.mjs npm
+        timeout-minutes: 11
+      - id: plan
+        run: node scripts/quality-scope.mjs plan
+
+  quality-gate:
+    name: Quality Gate
+    needs: [scope, release-validation, visual-regression, webkit-smoke]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - run: node scripts/quality-scope.mjs gate
+        env:
+          QUALITY_NEEDS: ${{ toJSON(needs) }}
+
   pages:
     name: Publish verified main
-    needs: [release-validation, visual-regression, webkit-smoke]
+    needs: [quality-gate]
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     permissions:
       contents: read
@@ -26,6 +58,7 @@ jobs:
 
   release-validation:
     name: Release validation
+    needs: [scope]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -46,6 +79,7 @@ jobs:
 
   visual-regression:
     name: Windows Edge visual regression
+    needs: [scope]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -58,7 +92,8 @@ jobs:
           python-version: '3.13'
       - run: node scripts/install-ci-dependencies.mjs npm
         timeout-minutes: 11
-      - run: npm test
+        if: ${{ !contains(fromJSON('["widget","docs","metadata"]'), needs.scope.outputs.scope) }}
+      - run: node scripts/quality-scope.mjs run edge ${{ needs.scope.outputs.scope }}
       - name: Upload visual diagnostics
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -72,6 +107,7 @@ jobs:
 
   webkit-smoke:
     name: WebKit smoke
+    needs: [scope]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -84,9 +120,11 @@ jobs:
           python-version: '3.13'
       - run: node scripts/install-ci-dependencies.mjs npm
         timeout-minutes: 11
+        if: ${{ !contains(fromJSON('["widget","docs","metadata"]'), needs.scope.outputs.scope) }}
       - run: node scripts/install-ci-dependencies.mjs webkit
         timeout-minutes: 15
-      - run: npm run test:webkit
+        if: ${{ !contains(fromJSON('["widget","docs","metadata"]'), needs.scope.outputs.scope) }}
+      - run: node scripts/quality-scope.mjs run webkit ${{ needs.scope.outputs.scope }}
       - name: Upload WebKit diagnostics
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7

@@ -31,6 +31,7 @@ Windows PowerShell 运行带参数的功能专项时使用 `npm.cmd run check:fo
 | 文件 | 用途 | 写入行为 |
 | --- | --- | --- |
 | run-quality.mjs | 三个主要检查入口、五组专项及手动观察；顺序执行并遇错停止 | 测试报告，不生成交付 |
+| quality-scope.mjs | CI 比较本次改动，选择原有专项；不能可靠识别时全测，汇总检查拒绝失败或缺失 | CI 摘要与测试报告，不改交付 |
 | install-ci-dependencies.mjs | CI 安装有限重试与超时终止 | 依赖目录 |
 | build-release-html.mjs | Develop 生成压缩 Push；--check 核对是否可复现 | --write 写 Push |
 | prepare_delivery.py | 生成 Push，同步手册书签和校验清单 | 修改交付 |
