@@ -1,5 +1,6 @@
 // Income-per-sed · Scriptable Widget
-// Product 2.5.9; widget 2.5.9; delivery 20261006.4. Metadata-only update.
+// Product 2.6.1; widget 2.6.1; delivery 20261008.1.
+// Header time is the income snapshot time, not a live clock.
 // Place this file and Income-per-sed-Push.html in iCloud Drive/Scriptable.
 //
 // v2.5.3 (2026-09-29)
@@ -8,7 +9,7 @@
 // - Improve accessory widgets, zero-progress rendering, preview flow and calendar-expiry warning.
 
 const APP = {
-  version: "2.5.9",
+  version: "2.6.1",
   timeZone: "Asia/Shanghai",
   settingsFile: "IncomeWidget-settings.json",
   htmlCandidates: [
@@ -16,8 +17,8 @@ const APP = {
   ],
   settingsSchema: 3,
   transactionSchema: 2,
-  deliveryRevision: "20261006.4",
-  sourceBuild: "widget-20261006.4",
+  deliveryRevision: "20261008.1",
+  sourceBuild: "widget-20261008.1",
   refreshMinutes: {
     working: 1,
     transition: 3,
@@ -28,7 +29,7 @@ const APP = {
     end: "2026-12-31",
     version: "cn-mainland-2026-v1"
   },
-  design: "size-specific-income-hierarchy-r8"
+  design: "intrinsic-readout-spacing"
 }
 
 const DEFAULTS = {
@@ -78,17 +79,23 @@ const C = {
 
 const LAYOUT = {
   small: {
-    progressWidth: 126
+    progressWidth: 126,
+    readoutWidth: 127
   },
   medium: {
-    dialSize: 82
+    dialSize: 82,
+    // 329pt container minus 32pt padding, 82pt dial and 16pt gap.
+    readoutWidth: 199
   },
   large: {
-    dialSize: 104,
+    dialSize: 96,
+    readoutWidth: 184,
     contentWidth: 298,
     metricWidth: 92
   }
 }
+
+const READOUT = { number: 32, currency: 22, unit: 20, height: 40 }
 
 async function main() {
   const action = (args.queryParameters && args.queryParameters.action) || ""
@@ -620,19 +627,53 @@ function addStatusHeader(widget, data, options = {}) {
   const row = widget.addStack()
   row.centerAlignContent()
 
-  const dot = row.addText("●")
-  dot.font = Font.systemFont(compact ? 7 : 8)
-  dot.textColor = statusColor(data.statusKey)
+  if (options.refined) {
+    const appearance = {
+      working: { name: "circle.fill", width: 7, height: 7 },
+      break: { name: "pause.fill", width: 8, height: 9 },
+      ended: { name: "checkmark", width: 11, height: 10 },
+      "not-started": { name: "circle", width: 9, height: 9 },
+      "day-off": { name: "circle", width: 9, height: 9 }
+    }[data.statusKey] || { name: "circle", width: 9, height: 9 }
+    const slot = row.addStack()
+    slot.size = new Size(12, 12)
+    slot.centerAlignContent()
+    slot.addSpacer()
+    const symbol = SFSymbol.named(appearance.name)
+    if (symbol) {
+      symbol.applySemiboldWeight()
+      const icon = slot.addImage(symbol.image)
+      icon.imageSize = new Size(appearance.width, appearance.height)
+      icon.tintColor = data.statusKey === "ended" ? C.green : statusColor(data.statusKey)
+    } else {
+      const dot = slot.addText("●")
+      dot.font = Font.systemFont(9)
+      dot.textColor = statusColor(data.statusKey)
+    }
+    slot.addSpacer()
+  } else {
+    const dot = row.addText("●")
+    dot.font = Font.systemFont(compact ? 7 : 8)
+    dot.textColor = statusColor(data.statusKey)
+  }
 
   row.addSpacer(6)
   const status = row.addText(data.status)
-  status.font = Font.mediumSystemFont(compact ? 10 : 11)
-  status.textColor = C.secondary
+  status.font = options.refined ? Font.systemFont(options.statusSize || 11) : Font.mediumSystemFont(compact ? 10 : 11)
+  status.textColor = options.refined ? C.muted : C.secondary
   status.lineLimit = 1
   status.minimumScaleFactor = 0.72
 
   row.addSpacer()
   const calendarWarning = !data.calendarCovered
+  if (options.refined) {
+    const time = row.addText(data.clock)
+    time.font = Font.mediumMonospacedSystemFont(10)
+    time.textColor = C.muted
+    time.lineLimit = 1
+    time.rightAlignText()
+    return row
+  }
   const metaText = calendarWarning
     ? "日历待更新"
     : (showUpdated ? data.updatedLabel : `${Math.round(effectiveWidgetProgress(data) * 100)}%`)
@@ -688,31 +729,105 @@ function primaryPresentation(data) {
   }
 }
 
+function addDurationReadout(parent, seconds, size, unifiedWidth = 0) {
+  const minutes = Math.max(0, Math.floor(seconds / 60))
+  const hours = Math.floor(minutes / 60)
+  const row = parent.addStack()
+  row.bottomAlignContent()
+  row.size = new Size(unifiedWidth, unifiedWidth ? READOUT.height : Math.ceil(size * 1.2))
+  const parts = hours > 0 ? [[hours, "h"], [minutes % 60, "m"]] : [[minutes, "m"]]
+  parts.forEach(([value, suffix], index) => {
+    if (index > 0) row.addSpacer(8)
+    const number = row.addText(String(value))
+    number.font = unifiedWidth ? Font.mediumRoundedSystemFont(size) : Font.semiboldRoundedSystemFont(size)
+    number.textColor = C.primary
+    number.lineLimit = 1
+    const unitColumn = row.addStack()
+    unitColumn.setPadding(0, 0, 3, 0)
+    const unit = unitColumn.addText(suffix)
+    unit.font = Font.regularRoundedSystemFont(unifiedWidth ? READOUT.unit : Math.round(size * 0.6))
+    unit.textColor = C.secondary
+    unit.lineLimit = 1
+  })
+  return row
+}
+
+function addUnifiedAmount(parent, presentation, width) {
+  const available = width - 20
+  let text = formatCurrency(presentation.value).replace(/^¥/, "")
+  // Fit content before rendering so ordinary values keep the same native size.
+  if (text.length * READOUT.number * 0.64 > available) {
+    text = formatCompactCurrency(presentation.value).replace(/^¥/, "")
+  }
+  const size = Math.min(READOUT.number, Math.floor(available / (text.length * 0.64)))
+  const row = parent.addStack()
+  row.bottomAlignContent()
+  row.size = new Size(width, READOUT.height)
+  const currencyColumn = row.addStack()
+  currencyColumn.setPadding(0, 0, 3, 0)
+  const currency = currencyColumn.addText("¥")
+  currency.font = Font.regularRoundedSystemFont(Math.round(size * READOUT.currency / READOUT.number))
+  currency.textColor = C.secondary
+  currency.lineLimit = 1
+  row.addSpacer(2)
+  const number = row.addText(text)
+  number.font = Font.mediumRoundedSystemFont(size)
+  number.textColor = C.primary
+  number.minimumScaleFactor = 1
+  number.lineLimit = 1
+  // Keep both glyph runs intrinsic; only the trailing spacer expands.
+  row.addSpacer()
+}
+
 function addPrimaryAmount(parent, data, size, options = {}) {
-  const presentation = primaryPresentation(data)
+  const presentation = options.presentation || primaryPresentation(data)
   const showDetail = options.showDetail !== false
   const compactAmount = Boolean(options.compactAmount)
   const centered = Boolean(options.centered)
 
   const label = parent.addText(presentation.label)
-  label.font = Font.mediumSystemFont(options.labelSize || 10)
+  label.font = options.quietLabel ? Font.systemFont(options.labelSize || 10) : Font.mediumSystemFont(options.labelSize || 10)
   label.textColor = C.muted
   label.lineLimit = 1
   if (centered) label.centerAlignText()
 
   parent.addSpacer(2)
-  const amount = parent.addText(compactAmount || formatCurrency(presentation.value).length > 14
-    ? formatCompactCurrency(presentation.value)
-    : formatCurrency(presentation.value))
-  amount.font = Font.semiboldRoundedSystemFont(size)
-  amount.textColor = C.primary
-  amount.minimumScaleFactor = 0.68
-  amount.lineLimit = 1
-  if (centered) amount.centerAlignText()
+  if (presentation.durationSeconds !== undefined) {
+    addDurationReadout(parent, presentation.durationSeconds, size, options.readoutWidth || 0)
+  } else if (options.readoutWidth) {
+    addUnifiedAmount(parent, presentation, options.readoutWidth)
+  } else {
+    const formatted = presentation.displayValue || (compactAmount || formatCurrency(presentation.value).length > 14
+      ? formatCompactCurrency(presentation.value)
+      : formatCurrency(presentation.value))
+    let holder = parent
+    if (options.lightCurrency) {
+      holder = parent.addStack()
+      holder.bottomAlignContent()
+      const currencyColumn = holder.addStack()
+      currencyColumn.setPadding(0, 0, 3, 0)
+      const currency = currencyColumn.addText("¥")
+      currency.font = Font.regularRoundedSystemFont(Math.round(size * 0.76))
+      currency.textColor = C.primary
+      currency.lineLimit = 1
+      holder.addSpacer(2)
+    }
+    const amount = holder.addText(options.lightCurrency ? formatted.replace(/^¥/, "") : formatted)
+    amount.font = Font.semiboldRoundedSystemFont(size)
+    amount.textColor = C.primary
+    amount.minimumScaleFactor = 0.68
+    amount.lineLimit = 1
+    if (centered) amount.centerAlignText()
+  }
 
   if (showDetail) {
     parent.addSpacer(3)
-    const detail = parent.addText(presentation.detail)
+    const detailText = options.detailOverride ?? presentation.detail
+    if (!detailText) {
+      parent.addSpacer(12)
+      return
+    }
+    const detail = parent.addText(detailText)
     detail.font = data.statusKey === "working"
       ? Font.mediumMonospacedSystemFont(10)
       : Font.mediumSystemFont(10)
@@ -723,19 +838,50 @@ function addPrimaryAmount(parent, data, size, options = {}) {
   }
 }
 
-function addContextFooter(parent, data) {
-  const row = parent.addStack()
-  row.centerAlignContent()
+function mediumNextLabel(data) {
+  const clock = value => value.replace(/^0(?=\d:)/, "")
+  if (data.statusKey === "not-started") return `${clock(data.schedule.morningStart)} 上班`
+  if (data.statusKey === "break") return `${clock(data.schedule.afternoonStart)} 工作`
+  if (data.statusKey === "working") {
+    return data.secondsOfDay < clockToSeconds(data.schedule.morningEnd)
+      ? `${clock(data.schedule.morningEnd)} 午休`
+      : `${clock(data.schedule.afternoonEnd)} 下班`
+  }
+  const next = nextWorkday(data.year, data.month, data.day)
+  if (!next) return "上班时间待确认"
+  const dateLabel = shortWorkdayLabel(next, data).replace(/^(\d+)\/(\d+)$/, "$1月$2日")
+  return `${dateLabel} ${clock(data.schedule.morningStart)} 上班`
+}
 
-  const nextColumn = row.addStack()
-  nextColumn.layoutVertically()
-  const nextLabel = nextColumn.addText("下一节点")
-  nextLabel.font = Font.mediumSystemFont(9)
-  nextLabel.textColor = C.muted
-  nextLabel.lineLimit = 1
-  nextColumn.addSpacer(2)
-  const nextValue = nextColumn.addText(`${data.nextAction.value} ${data.nextAction.label}`)
-  nextValue.font = Font.semiboldSystemFont(11)
+function mediumPresentation(data) {
+  const presentation = primaryPresentation(data)
+  if (data.statusKey === "not-started") {
+    presentation.label = "计划工时"
+    presentation.durationSeconds = Math.round(data.workHours * 3600)
+    presentation.detail = data.schedule.morningEnd === data.schedule.afternoonStart
+      ? "无午休间隔"
+      : `午休 ${data.schedule.morningEnd} 至 ${data.schedule.afternoonStart}`
+  } else if (data.statusKey === "break") {
+    presentation.detail = `已工作 ${formatElapsed(data.elapsed)}`
+  } else if (data.statusKey === "ended") {
+    presentation.label = "今日收入"
+    const month = formatLayoutCurrency(data.monthEarned)
+    presentation.detail = month === formatLayoutCurrency(data.todayIncome)
+      ? `本月预计 ${formatLayoutCurrency(data.monthProjection)}`
+      : `本月累计 ${month}`
+  } else if (data.statusKey === "day-off") {
+    presentation.detail = `本月预计 ${formatLayoutCurrency(data.monthProjection)}`
+  }
+  if (!data.calendarCovered) presentation.detail = "日历待更新"
+  return presentation
+}
+
+function addContextFooter(parent, data, options = {}) {
+  const row = parent.addStack()
+  row.bottomAlignContent()
+
+  const nextValue = row.addText(mediumNextLabel(data))
+  nextValue.font = options.quiet ? Font.mediumRoundedSystemFont(11) : Font.semiboldMonospacedSystemFont(11)
   nextValue.textColor = C.secondary
   nextValue.minimumScaleFactor = 0.72
   nextValue.lineLimit = 1
@@ -744,17 +890,24 @@ function addContextFooter(parent, data) {
 
   const goalColumn = row.addStack()
   goalColumn.layoutVertically()
-  const goalLabel = goalColumn.addText(data.goalLabel)
-  goalLabel.font = Font.mediumSystemFont(9)
+  goalColumn.size = new Size(104, 0)
+  const ended = data.statusKey === "ended"
+  // Text alignment methods do not affect text inside Scriptable stacks.
+  const labelRow = goalColumn.addStack()
+  labelRow.size = new Size(104, 0)
+  labelRow.addSpacer()
+  const goalLabel = labelRow.addText(ended ? "已工作" : "日金")
+  goalLabel.font = options.quiet ? Font.systemFont(9) : Font.mediumSystemFont(9)
   goalLabel.textColor = C.muted
-  goalLabel.rightAlignText()
   goalLabel.lineLimit = 1
   goalColumn.addSpacer(2)
-  const goalValue = goalColumn.addText(formatLayoutCurrency(data.daily))
-  goalValue.font = Font.semiboldMonospacedSystemFont(11)
+  const valueRow = goalColumn.addStack()
+  valueRow.size = new Size(104, 0)
+  valueRow.addSpacer()
+  const goalValue = valueRow.addText(ended ? formatElapsed(data.elapsed) : formatLayoutCurrency(data.daily))
+  goalValue.font = options.quiet ? Font.mediumRoundedSystemFont(11) : Font.semiboldMonospacedSystemFont(11)
   goalValue.textColor = C.secondary
   goalValue.minimumScaleFactor = 0.72
-  goalValue.rightAlignText()
   goalValue.lineLimit = 1
 }
 
@@ -820,37 +973,54 @@ function addLargeMetrics(parent, data) {
 
 function smallWidget(data) {
   const widget = baseWidget()
-  widget.setPadding(15, 15, 14, 15)
-  addStatusHeader(widget, data, { compact: true, showUpdated: false })
-  widget.addSpacer(11)
+  widget.setPadding(13, 14, 12, 14)
+  addStatusHeader(widget, data, { refined: true, statusSize: 10 })
+  widget.addSpacer(14)
 
   const value = widget.addStack()
   value.layoutVertically()
-  value.centerAlignContent()
-  addPrimaryAmount(value, data, 31, {
+  value.size = new Size(LAYOUT.small.readoutWidth, 0)
+  const presentation = mediumPresentation(data)
+  addPrimaryAmount(value, data, READOUT.number, {
+    readoutWidth: LAYOUT.small.readoutWidth,
     showDetail: false,
-    compactAmount: true,
-    centered: true,
-    labelSize: 10
+    lightCurrency: true,
+    quietLabel: true,
+    labelSize: 10,
+    presentation
   })
 
-  widget.addSpacer(10)
-  addProgress(widget, effectiveWidgetProgress(data), LAYOUT.small.progressWidth, 3, statusColor(data.statusKey))
   widget.addSpacer()
 
-  const next = widget.addText(`${data.nextAction.value} · ${data.nextAction.label}`)
-  next.font = Font.semiboldSystemFont(10)
+  const next = widget.addText(data.calendarCovered ? mediumNextLabel(data) : "日历待更新")
+  next.font = Font.mediumSystemFont(10)
   next.textColor = C.secondary
   next.minimumScaleFactor = 0.72
   next.lineLimit = 1
-  next.centerAlignText()
+  widget.addSpacer(6)
+  const goal = widget.addStack()
+  goal.bottomAlignContent()
+  const ended = data.statusKey === "ended"
+  const label = goal.addText(ended ? "已工作" : "日金")
+  label.font = Font.systemFont(9)
+  label.textColor = C.muted
+  label.lineLimit = 1
+  goal.addSpacer()
+  const amount = goal.addText(ended ? formatElapsed(data.elapsed) : formatLayoutCurrency(data.daily))
+  amount.font = Font.mediumRoundedSystemFont(10)
+  amount.textColor = C.secondary
+  amount.minimumScaleFactor = 0.72
+  amount.lineLimit = 1
+  if (!data.calendarCovered) {
+    next.textColor = C.rose
+  }
   return widget
 }
 
 function mediumWidget(data) {
   const widget = baseWidget()
   widget.setPadding(15, 16, 14, 16)
-  addStatusHeader(widget, data)
+  addStatusHeader(widget, data, { refined: true, statusSize: 10 })
   widget.addSpacer(8)
 
   const hero = widget.addStack()
@@ -862,25 +1032,32 @@ function mediumWidget(data) {
   hero.addSpacer(16)
   const value = hero.addStack()
   value.layoutVertically()
-  addPrimaryAmount(value, data, 34, { showDetail: true })
+  value.size = new Size(LAYOUT.medium.readoutWidth, 0)
+  addPrimaryAmount(value, data, READOUT.number, {
+    readoutWidth: LAYOUT.medium.readoutWidth,
+    quietLabel: true,
+    showDetail: true,
+    presentation: mediumPresentation(data)
+  })
 
-  widget.addSpacer(8)
-  addContextFooter(widget, data)
+  widget.addSpacer()
+  addContextFooter(widget, data, { quiet: true })
   return widget
 }
 
 function largeWidget(data) {
   const widget = baseWidget()
-  widget.setPadding(17, 17, 16, 17)
+  widget.setPadding(23, 22, 23, 22)
   // Preserve phone proportions while centering the fixed-width body on iPad.
+  widget.addSpacer()
   const frame = widget.addStack()
   frame.addSpacer()
   const content = frame.addStack()
   content.layoutVertically()
   content.size = new Size(LAYOUT.large.contentWidth, 0)
   frame.addSpacer()
-  addStatusHeader(content, data)
-  content.addSpacer(12)
+  addStatusHeader(content, data, { refined: true, statusSize: 10 })
+  content.addSpacer(22)
 
   const hero = content.addStack()
   hero.centerAlignContent()
@@ -888,39 +1065,91 @@ function largeWidget(data) {
   const dial = hero.addImage(drawDial(data.progress, data.statusKey, 232))
   dial.imageSize = new Size(LAYOUT.large.dialSize, LAYOUT.large.dialSize)
 
-  hero.addSpacer(20)
+  hero.addSpacer(18)
   const value = hero.addStack()
   value.layoutVertically()
-  addPrimaryAmount(value, data, 40, { showDetail: true })
+  value.size = new Size(LAYOUT.large.readoutWidth, 0)
+  const presentation = mediumPresentation(data)
+  addPrimaryAmount(value, data, READOUT.number, {
+    readoutWidth: LAYOUT.large.readoutWidth,
+    presentation,
+    lightCurrency: true,
+    quietLabel: true,
+    showDetail: !["ended", "day-off"].includes(data.statusKey) || !data.calendarCovered,
+    detailOverride: !data.calendarCovered ? "日历待更新" :
+      (data.statusKey === "working" ? `已工作 ${formatElapsed(data.elapsed)}` : undefined)
+  })
 
-  content.addSpacer(12)
-  addLargeMetrics(content, data)
-  content.addSpacer(10)
-  addDivider(content, LAYOUT.large.contentWidth)
-  content.addSpacer(8)
-
-  const monthSummary = content.addStack()
-  monthSummary.centerAlignContent()
-  const monthText = monthSummary.addText(`本月累计 ${formatLayoutCurrency(data.monthEarned)}`)
-  monthText.font = Font.semiboldRoundedSystemFont(14)
-  monthText.textColor = C.secondary
-  monthText.minimumScaleFactor = 0.72
-  monthText.lineLimit = 1
-  monthSummary.addSpacer()
-  const monthPct = monthSummary.addText(`${Math.round(data.monthProgress * 100)}%`)
-  monthPct.font = Font.semiboldRoundedSystemFont(12)
-  monthPct.textColor = C.muted
-  monthPct.lineLimit = 1
-
-  content.addSpacer(6)
-  addProgress(content, data.monthProgress, LAYOUT.large.contentWidth, 3, C.warm)
-  content.addSpacer(6)
-
-  const workdayText = content.addText(`第 ${currentMonthWorkday(data)} / ${data.workdays} 个工作日`)
-  workdayText.font = Font.mediumSystemFont(9)
-  workdayText.textColor = C.muted
-  workdayText.lineLimit = 1
+  content.addSpacer(20)
+  addContextFooter(content, data, { quiet: true })
+  content.addSpacer(25)
+  const showProjection = data.statusKey === "day-off" ||
+    (data.statusKey === "ended" && formatLayoutCurrency(data.monthEarned) === formatLayoutCurrency(data.todayIncome))
+  const monthly = content.addStack()
+  const metrics = showProjection
+    ? [["本月预计", formatLayoutCurrency(data.monthProjection)], ["计薪方式", data.modeLabel]]
+    : [["本月累计", formatLayoutCurrency(data.monthEarned)], ["本月预计", formatLayoutCurrency(data.monthProjection)]]
+  metrics.forEach(([title, text], index) => {
+    const column = monthly.addStack()
+    column.layoutVertically()
+    column.size = new Size(index === 0 ? 150 : 130, 0)
+    const label = column.addText(title)
+    label.font = Font.systemFont(10)
+    label.textColor = C.muted
+    label.lineLimit = 1
+    column.addSpacer(6)
+    const amount = column.addText(text)
+    amount.font = index === 0 ? Font.mediumRoundedSystemFont(18) : Font.regularRoundedSystemFont(showProjection ? 12 : 14)
+    amount.textColor = index === 0 ? C.primary : C.secondary
+    amount.lineLimit = 1
+    amount.minimumScaleFactor = 0.68
+    if (index === 0) monthly.addSpacer(18)
+  })
+  content.addSpacer(15)
+  const progressHeader = content.addStack()
+  progressHeader.bottomAlignContent()
+  const progressLabel = progressHeader.addText("本月进度")
+  progressLabel.font = Font.systemFont(9)
+  progressLabel.textColor = C.muted
+  progressLabel.lineLimit = 1
+  progressHeader.addSpacer()
+  const percent = progressHeader.addText(`${Math.round(clamp(data.monthProgress, 0, 1) * 100)}%`)
+  percent.font = Font.mediumSystemFont(10)
+  percent.textColor = C.secondary
+  percent.lineLimit = 1
+  content.addSpacer(5)
+  const track = content.addImage(drawGraduatedProgress(data.monthProgress, LAYOUT.large.contentWidth))
+  track.imageSize = new Size(LAYOUT.large.contentWidth, 8)
+  track.tintColor = C.warm
+  widget.addSpacer()
   return widget
+}
+
+function drawGraduatedProgress(progress, width) {
+  // A template image keeps native dynamic tinting available inside widgets.
+  const ctx = new DrawContext()
+  ctx.size = new Size(width, 8)
+  ctx.opaque = false
+  ctx.respectScreenScale = true
+  const railWidth = width - 2
+  const rail = new Path()
+  rail.addRoundedRect(new Rect(1, 2, railWidth, 4), 2, 2)
+  ctx.addPath(rail)
+  ctx.setFillColor(new Color("#FFFFFF", 0.17))
+  ctx.fillPath()
+  const normalized = clamp(progress, 0, 1)
+  if (normalized > 0) {
+    const fill = new Path()
+    const length = railWidth * normalized
+    const radius = Math.min(2, length / 2)
+    fill.addRoundedRect(new Rect(1, 2, length, 4), radius, radius)
+    ctx.addPath(fill)
+    ctx.setFillColor(new Color("#FFFFFF"))
+    ctx.fillPath()
+  }
+  ctx.setFillColor(new Color("#FFFFFF", 0.24))
+  for (let i = 0; i <= 4; i++) ctx.fillRect(new Rect(1 + (railWidth - 1) * i / 4, 0, 1, 8))
+  return ctx.getImage()
 }
 
 function extraLargeWidget(data) {

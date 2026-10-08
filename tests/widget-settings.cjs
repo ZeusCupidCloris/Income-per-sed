@@ -9,7 +9,8 @@ function load(raw, readFails = false, extras = {}) {
     fileExists: p => files.has(p), readString: p => { if(readFails) throw Error('unavailable'); return files.get(p); },
     writeString: () => { throw Error('Unexpected write'); } };
   class Color { static dynamic(a) { return a; } }
-  const context = vm.createContext({Color, Date, console, FileManager: { local: () => fm }, ...extras});
+  const context = vm.createContext({Color, Date, console, FileManager: { local: () => fm },
+    SFSymbol: {named:name=>({applySemiboldWeight(){},image:{symbolName:name}})}, ...extras});
   const source = fs.readFileSync(path.join(__dirname, '../IncomeWidget.js'), 'utf8');
   vm.runInContext(source.replace(/await main\(\)\s*$/, '') + '\nthis.api={readSettingsResult,saveSettings,createWidget,previewWidget,findLatestHtmlPath,nextRefreshDate,defaults:DEFAULTS,main,editSettings,openFullPage};', context);
   return {api:context.api,files};
@@ -90,7 +91,7 @@ test('all widget families constrain long text and extraLarge has a dedicated lay
     addText(text){const item=new Item(text);this.children.push(item);return item;}
     addImage(){const item=new Item();this.children.push(item);return item;}
     addSpacer(length){this.children.push(new Item());this.children.at(-1).spacer=length===undefined?'flex':length;} setPadding(...values){this.padding=values;}
-    centerAlignContent(){} layoutVertically(){} centerAlignText(){} rightAlignText(){}
+    centerAlignContent(){} bottomAlignContent(){} layoutVertically(){} centerAlignText(){} rightAlignText(){}
   }
   class ListWidget extends Item { constructor(){super();roots.push(this);} }
   class Size {constructor(width,height){this.width=width;this.height=height;}}
@@ -100,25 +101,38 @@ test('all widget families constrain long text and extraLarge has a dedicated lay
   const data={statusKey:'working',status:'工作中',calendarCovered:true,updatedLabel:'截至 23:59',progress:1,monthProgress:1,
     todayIncome:12000000000,daily:12000000000,secondly:512820.5128,monthEarned:264000000000,
     nextAction:{value:'明日 09:00',label:'下次上班时间将在下一个工作日开始'},goalLabel:'今日目标',elapsed:23400,
-    workdays:22,year:2026,month:9,day:7,workday:true};
+    workdays:22,year:2026,month:9,day:7,workday:true,clock:'23:59',secondsOfDay:36000,
+    schedule:load().api.defaults.schedule,workHours:6.5,monthProjection:264000000000,modeLabel:'固定月薪'};
   function all(node){return [node,...node.children.flatMap(all)];}
   for(const family of ['small','medium','large','extraLarge']){
     const tree=api.createWidget(data,family);
     const items=all(tree);
     for(const item of items.filter(i=>i.text && i.text!=='●')) assert.equal(item.lineLimit,1,`${family}: ${item.text}`);
     assert.ok(items.some(i=>i.text && /亿/.test(i.text)),family);
-    for (const item of items.filter(i=>i.text && (i.text.startsWith('¥') || i.text.startsWith('本月累计 ¥')))) {
+    for (const item of items.filter(i=>i.text && i.text!=='¥' && (i.text.startsWith('¥') || i.text.startsWith('本月累计 ¥')))) {
       assert.ok(item.text.length<=19,`${family}: ${item.text}`);
       assert.ok(item.minimumScaleFactor>=0.68);
     }
+    for(const row of items.filter(i=>i.size?.height===40&&i.children?.[0]?.children?.[0]?.text==='¥')) {
+      assert.equal(row.children[1].spacer,2);
+      assert.equal(row.children.at(-1).spacer,'flex');
+      assert.equal(row.children[2].minimumScaleFactor,1);
+      assert.ok(row.children[2].font.size<=32);
+      assert.equal(row.children[0].children[0].font.size,Math.round(row.children[2].font.size*22/32));
+    }
   }
   assert.notDeepEqual(roots[1].padding,roots[3].padding);
+  const mediumHero=roots[1].children.find(node=>node.children[0]?.imageSize?.width===82);
+  const mediumWidth=mediumHero.children[0].imageSize.width+mediumHero.children[1].spacer+mediumHero.children[2].size.width;
+  for(const width of [329,342,400]) {
+    assert.ok(mediumWidth<=width-roots[1].padding[1]-roots[1].padding[3],`medium hero overflows ${width}pt container`);
+  }
   assert.ok(all(roots[3]).some(i=>i.imageSize && i.imageSize.width===124));
-  const frame=roots[2].children[0];
+  const frame=roots[2].children[1];
   assert.equal(frame.children[0].spacer,'flex');
   assert.equal(frame.children.at(-1).spacer,'flex');
   assert.equal(frame.children[1].size.width,298);
-  assert.ok(all(frame.children[1]).some(i=>i.imageSize && i.imageSize.width===104));
+  assert.ok(all(frame.children[1]).some(i=>i.imageSize && i.imageSize.width===96));
   for (const statusKey of ['not-started','break','ended','day-off']) {
     for (const family of ['small','medium','large','extraLarge']) {
       const items=all(api.createWidget({...data,statusKey},family));
@@ -136,7 +150,7 @@ test('preview menu exposes only small, medium and large on phones and iPads', as
     const alerts=[];let previews=0;
     class Item {
       addStack(){return new Item();} addText(){return new Item();} addImage(){return {};}
-      addSpacer(){} setPadding(){} centerAlignContent(){} layoutVertically(){}
+      addSpacer(){} setPadding(){} centerAlignContent(){} bottomAlignContent(){} layoutVertically(){}
       centerAlignText(){} rightAlignText(){}
     }
     class ListWidget extends Item {

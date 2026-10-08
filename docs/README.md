@@ -4,17 +4,18 @@
 
 ## 当前交付
 
-产品与小组件统一为 **2.5.9**，交付 **20261006.4**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。
+产品与小组件统一为 **2.6.1**，交付 **20261008.1**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。合并与部署结果以本批最新远程记录为准。
 
 | 事项 | 当前证据 |
 | --- | --- |
-| PR 合并 | [PR #46](https://github.com/ZeusCupidCloris/Income-per-sed/pull/46)，main 提交 `61e0f31` |
-| 合并前自动检查 | [Quality](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/37403208552)：发布校验、Edge、WebKit 全部通过 |
-| main 复验与部署 | [Quality 与 Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/37404721637)：全部通过 |
-| 线上内容 | 2026-10-06 下载首页及 Push，SHA-256 均为 `d3e9026ba57cd78e5a4b5f20610db790416cf182dd468c96eaa71752dd61ff11`，与该批本地 Push 一致 |
-| 实体设备 | 本批未新增 iPhone/iPad 或 VoiceOver 实机验收 |
+| 本地发布检查 | 四文件版本、语法、手册校验位置和校验清单通过；连续两次构建字节一致 |
+| 小组件专项 | 13 项配置与布局检查通过；84 组中号窄屏模拟无越界，56 组小号、大号布局与 2.6.0 一致；业务函数保留 |
+| 网页改动范围 | Develop 仅更新发布元数据，Push 由本次 Develop 重新生成；未修改网页动效 |
+| 网页验收范围 | 本批仅验证网页元数据之外字节不变、发布构建及图片来源；未运行 HTML 完整浏览器套件，不沿用旧套件结果 |
+| GitHub 与 Pages | 本批使用 PR #53，同步 2.6.1 后重新检查；旧 2.6.0 结果不复用，详情见[远程状态](releases/v2.6.1.md#远程状态) |
+| 实体设备 | 用户已确认此前预览版三尺寸零金额；本次 329pt 窄屏修复仍待实体设备确认 |
 
-本轮仓库维护未改四文件，产品交付仍为上表版本；维护检查单独记录在[本次维护记录](acceptance/maintenance-simplification-20261006.md)。本地维护通过不代表已经推送或合并。
+本批仅修复中号窄屏宽度并统一四文件版本，不扩大网页改动。本地通过不代表已经推送或合并；上一轮维护另见[维护记录](acceptance/maintenance-simplification-20261006.md)。
 
 ## 待验收
 
@@ -30,6 +31,9 @@
 
 ### 发布与交付
 
+- [2.6.0 四文件交付](releases/v2.6.0.md)：旧 PR #53 检查通过，后续审查发现中号窄屏越界，未合并，不属于线上发布。
+
+- 2.5.9 / 20261006.4：[PR #46](https://github.com/ZeusCupidCloris/Income-per-sed/pull/46)，main 提交 `61e0f31`；[合并前 Quality](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/37403208552)与[main Quality / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/37404721637)通过。2026-10-06 记录首页与 Push 的 SHA-256 为 `d3e9026ba57cd78e5a4b5f20610db790416cf182dd468c96eaa71752dd61ff11`，与该批本地 Push 一致；本次未重新验证该旧线上版本。
 - [10-05 设置交付](acceptance/settings-delivery-20261005.md)、[10-02 设置交付](acceptance/delivery-settings-20261002.md)、[10-01 四文件同步](acceptance/delivery-sync-20261001.md)。
 - [09-30 命名与整理](acceptance/naming-20260930.md)、[09-16](acceptance/fourfile-20260916.md)、[09-22](acceptance/fourfile-20260922.md)、[09-24](acceptance/fourfile-20260924.md)四文件验收。
 - [2.5.2](acceptance/v2.5.2.md)、[2.5.4-rc.2 启动](acceptance/v2.5.4-rc.2-startup.md)、[各版本说明](releases/)。
