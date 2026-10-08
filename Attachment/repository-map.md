@@ -37,6 +37,7 @@
 | [config/readme-previews.json](../config/readme-previews.json) | 首页截图尺寸与场景配置 | 维护 |
 | [config/test-groups.cjs](../config/test-groups.cjs) | 五类测试的唯一归属与手动观察范围 | 维护 |
 | [scripts/run-quality.mjs](../scripts/run-quality.mjs) | 快速、专项、完整验收和手动观察统一入口 | 维护 |
+| [scripts/quality-scope.mjs](../scripts/quality-scope.mjs) | 改动分流、浏览器专项选择及失败关闭的汇总关卡 | 维护 |
 
 ## 文档与展示素材
 

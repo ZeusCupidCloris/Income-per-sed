@@ -55,6 +55,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 文档有效性 | document-index-validation.test.mjs | 检查器的遗漏、重复、失效地址、章节及中文路径测试；不修改交付 |
 | 文件命名 | release-naming.test.mjs | 既定对外名称、版本、交付编号，以及验收索引当前版本一致性 |
 | 部署结构 | workflow-contract.test.mjs | 静态约束；仍需 GitHub 实际运行验收 |
+| 改动分流 | workflow-contract.test.mjs | 版本字段排除、真实网页改动、未知路径、失败与缺失关卡的反例检查；不另建重复套件 |
 | 安装稳定性 | install-ci-dependencies.test.mjs | 成功不重试、失败最多两次、真实子进程超时终止 |
 | 浏览器生命周期 | browser-lifecycle.spec.js | Edge 实际 BFCache 冻结与返回、三轮计时器暂停证据、冻结结合模拟五小时墙钟差；不等于实体电脑休眠或真实跨夜 |
 | 检查入口与分组 | quality-entrypoints.test.mjs | 每份用例唯一归属、组内断言不遗漏、手动观察不混入完整回归、参数错误直接失败 |
