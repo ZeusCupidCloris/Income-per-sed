@@ -5,7 +5,7 @@
 - `main` 始终代表可正常打开、可通过自动检查的当前基线，可以是候选版；不等同于 GitHub 最新正式 Release。
 - 所有修改先进入独立分支，再通过 Pull Request 合并。
 - `main` 禁止直接推送、强制覆盖和删除。
-- Pull Request 必须通过 `Release validation`、`Windows Edge visual regression` 和 `WebKit smoke`。
+- Pull Request 必须通过 `Release validation`、`Windows Edge visual regression`、`WebKit smoke` 及 `Quality Gate`。原三个结果保留，实际浏览器范围由经过验证的改动分流选择；不需要运行套件时明确记录，不冒称浏览器通过。
 - 合并后的临时分支可按仓库设置清理；长期分支 `BlBl` 保留，不纳入临时分支清理。
 
 ## 单一源文件
@@ -101,7 +101,7 @@ npm run quality:local
 1. 仅修改 Develop 源文件或 Widget，使用 `npm run release:prepare` 生成 Push 并同步手册校验值。
 2. 若 Push 改变，执行 `npm run preview:capture`，检查三张截图后再执行 `npm run test:readme`；截图清单必须对应当前 Push。
 3. 手册内容或校验页有变化时，检查 Word 渲染结果。三个源文件各使用唯一的命名书签定位校验值；缺失、重复或无效标记必须先修复，不能退回按段落顺序猜测。规则见 [说明书校验维护](manual-maintenance.md)。
-4. 执行 `npm run quality:local`。视觉基线只在设计确实改变且人工确认后更新，不通过覆盖截图来掩盖回归。
+4. 根据[改动分流规则](maintainer/workflow-review.md#2026-年-10-月-8-日改动分流)执行快速检查、对应专项或完整验收。`quality:local` 保留为可主动选择的完整交付流程，不要求小组件改动重复全套 HTML 浏览器测试。无法确定范围时使用完整验收。视觉基线只在设计确实改变且人工确认后更新，不通过覆盖截图来掩盖回归。
 5. 将源码、生成产物、手册、校验清单和必要截图一起提交；在验收记录中分别写明已验证和未验证的部分。
 
 文档入口见 [文档索引](README.md)。本轮只维护仓库与诊断，不改变页面样式、动画或内置日历维护方式。
