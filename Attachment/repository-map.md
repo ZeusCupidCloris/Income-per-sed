@@ -51,7 +51,7 @@
 | [docs/REPOSITORY_POLICY.md](../docs/REPOSITORY_POLICY.md) | 命名及维护发布规则 | 维护 |
 | [Attachment/repository-map.md](repository-map.md) | 按阅读对象分类的仓库地图与全文件用途表 | 用户与维护 |
 | [docs/calendar-maintenance.md](../docs/calendar-maintenance.md) | 年度内置日历手动替换清单 | 维护 |
-| [docs/manual-maintenance.md](../docs/manual-maintenance.md) | 使用手册校验书签维护规则 | 维护 |
+| [docs/manual-maintenance.md](../docs/manual-maintenance.md) | 使用手册内容、图片同步与校验书签维护规则 | 维护 |
 | [docs/images/preview-dark.png](../docs/images/preview-dark.png) | 首页深色模式展示图 | 用户与维护 |
 | [docs/images/preview-desktop.png](../docs/images/preview-desktop.png) | 首页桌面展示图 | 用户与维护 |
 | [docs/images/preview-mobile.png](../docs/images/preview-mobile.png) | 首页手机展示图 | 用户与维护 |
