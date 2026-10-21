@@ -395,24 +395,31 @@ test('ten interrupted settings opens do not execute an obsolete hide', async ({ 
 
 test('quick panel reversals and cumulative forward/reverse steps retain the latest target', async ({ page }) => {
   await open(page);
+  // Compare the handoff itself, not two frames separated by driver latency.
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
   await page.setViewportSize({ width: 390, height: 844 });
   for (let i = 0; i < 10; i++) await page.locator('#historyQuickOpen').dispatchEvent('click');
   await page.locator('#historyQuickOpen').dispatchEvent('click');
-  await page.waitForTimeout(300);
+  await page.clock.runFor(300);
   await expect(page.locator('#historyQuickPanel')).toBeVisible();
   await page.locator('[data-history-seconds="-3600"]').dispatchEvent('click');
   const first = (await seek(page)).targetTimeMs;
-  await page.waitForTimeout(40);
+  await page.clock.runFor(40);
   await page.locator('[data-history-seconds="-3600"]').dispatchEvent('click');
   await page.locator('[data-history-seconds="-3600"]').dispatchEvent('click');
   expect((await seek(page)).targetTimeMs).toBe(first - 7200000);
-  await page.waitForTimeout(40);
+  await page.clock.runFor(40);
   const before = await seek(page);
   await page.locator('[data-history-seconds="3600"]').dispatchEvent('click');
   const after = await seek(page);
   expect(after.targetTimeMs).toBe(first - 3600000);
   expect(after.timeVelocity * before.timeVelocity).toBeGreaterThanOrEqual(0);
+  await page.clock.runFor(1200);
+  const settled = await seek(page);
+  expect(settled.displayedTimeMs).toBe(after.targetTimeMs);
+  expect(settled.timeVelocity).toBe(0);
   await page.keyboard.press('Escape');
+  await page.clock.runFor(600);
   await expect(page.locator('#historyQuickPanel')).toBeHidden();
 });
 
