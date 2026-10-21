@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const { discardSettings } = require('./helpers/display-state');
 const { prepareRecovery, resumeAt, setHidden, readRecovery, sampleRecovery, expectedMonth } = require('./helpers/background-recovery');
 
 for (const channel of process.env.DEVELOP_PREVIEW === '1' ? ['Develop'] : ['Develop', 'Push']) {
@@ -148,7 +149,7 @@ for (const channel of process.env.DEVELOP_PREVIEW === '1' ? ['Develop'] : ['Deve
       if(action==='settings open'){
         await expect(page.locator('#settingsDialog')).toBeVisible();
         await expect(page.locator('#incomeAmountInput')).toHaveValue('456.78');
-        await page.keyboard.press('Escape');await page.clock.runFor(520);
+        await discardSettings(page, { paused: true });
         await expect(page.locator('#settingsDialog')).toBeHidden();
         await expect(page.locator('#incomeSettingsCard')).toBeFocused();
       } else if(action==='task running'){

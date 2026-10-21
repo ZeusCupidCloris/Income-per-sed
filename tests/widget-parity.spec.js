@@ -1,3 +1,4 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -44,6 +45,7 @@ test.beforeEach(async ({ page }) => {
     contentType: 'text/html', body: source.replace(marker, hook + marker)
   }));
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
 });
 
 test('builtin calendars agree for every holiday and adjusted workday', async ({ page }) => {

@@ -1,8 +1,10 @@
+const { fullDisplay, discardSettings, selectTheme } = require('./helpers/display-state');
 const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{
   await page.clock.install({time:new Date('2026-09-07T06:30:00Z')});
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.waitForTimeout(1600);
 });
 test('settings cancel and theme changes do not interrupt foreground ownership',async({page})=>{
@@ -16,9 +18,9 @@ test('settings cancel and theme changes do not interrupt foreground ownership',a
   await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});
   await page.locator('#incomeSettingsCard').click();
   await page.locator('#incomeAmountInput').fill('12345');
-  await page.keyboard.press('Escape');
-  await page.locator('[data-theme-mode="dark"]').click();
-  await page.locator('[data-theme-mode="light"]').click();
+  await discardSettings(page);
+  await selectTheme(page, 'dark');
+  await selectTheme(page, 'light');
   await expect.poll(()=>page.evaluate(()=>window.__incomeClockDiagnostics.getTimelineState())).toBe('LIVE');
   expect(await page.evaluate(()=>localStorage.getItem('income-per-sed-settings'))).toBe(settings);
   expect(await page.evaluate(()=>window.__incomeClockDiagnostics.getUnifiedMotionState().displayed.income)).toBeGreaterThan(0);

@@ -1,10 +1,12 @@
 const { test, expect } = require('@playwright/test');
+const { fullDisplay, discardSettings } = require('./helpers/display-state');
 const appPath = process.env.SETTINGS_RELEASE_CHANNEL === 'push' ? '/Income-per-sed-Push.html' : '/Income-per-sed-Develop.html';
 
-test('quick sheet return is continuous and a new drag can take over', async ({ page }) => {
+test('centered quick history stays anchored during touch and closes explicitly', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto(appPath);
+  await fullDisplay(page);
   await page.locator('#historyQuickOpen').click();
   await expect.poll(() => page.locator('#historyQuickPanel').evaluate(panel => {
     const moving = panel.getAnimations().some(animation => animation.playState === 'running');
@@ -13,31 +15,20 @@ test('quick sheet return is continuous and a new drag can take over', async ({ p
   const sample = await page.evaluate(() => {
     const panel = document.querySelector('#historyQuickPanel');
     const grabber = document.querySelector('#historyQuickGrabber');
-    const backdrop = document.querySelector('#historyQuickBackdrop');
+    const before = panel.getBoundingClientRect().toJSON();
     const event = (type, y, id = 21) => new PointerEvent(type, { pointerId: id, pointerType: 'touch', button: 0, clientX: 180, clientY: y, bubbles: true });
     grabber.dispatchEvent(event('pointerdown', 500));
     panel.dispatchEvent(event('pointermove', 540));
-    const drag = { y: new DOMMatrix(getComputedStyle(panel).transform).m42, opacity: Number(getComputedStyle(backdrop).opacity) };
     panel.dispatchEvent(event('pointercancel', 540));
-    const animation = panel.getAnimations().find(candidate => candidate.id === 'income-history-quick-return-panel');
-    if (!animation) throw new Error('Quick-history return animation was not created');
-    animation.pause(); animation.currentTime = 0;
-    backdrop.getAnimations()[0].pause(); backdrop.getAnimations()[0].currentTime = 0;
-    const release = new DOMMatrix(getComputedStyle(panel).transform).m42;
-    animation.currentTime = 64;
-    const returning = new DOMMatrix(getComputedStyle(panel).transform).m42;
     grabber.dispatchEvent(event('pointerdown', 540, 22));
-    const takeover = new DOMMatrix(getComputedStyle(panel).transform).m42;
     panel.dispatchEvent(event('pointermove', 740, 22));
     panel.dispatchEvent(event('pointerup', 740, 22));
-    return { drag, release, returning, takeover };
+    return { before, after: panel.getBoundingClientRect().toJSON(), centered: panel.hasAttribute('data-entry-centered') };
   });
-  expect(Math.abs(sample.drag.y - 40)).toBeLessThan(0.5);
-  expect(sample.drag.opacity).toBeLessThan(1);
-  expect(sample.release).toBeCloseTo(sample.drag.y, 1);
-  expect(sample.returning).toBeGreaterThan(0);
-  expect(sample.returning).toBeLessThan(sample.release);
-  expect(sample.takeover).toBeCloseTo(sample.returning, 1);
+  expect(sample.centered).toBe(true);
+  for (const key of ['x', 'y', 'width', 'height']) expect(Math.abs(sample.after[key] - sample.before[key])).toBeLessThan(0.5);
+  await expect(page.locator('#historyQuickPanel')).toBeVisible();
+  await page.locator('#historyQuickClose').click();
   await expect(page.locator('#historyQuickPanel')).toBeHidden();
   await expect(page.locator('body')).not.toHaveClass(/history-quick-sheet-(returning|dragging)/);
   await page.locator('#historyQuickOpen').click();
@@ -52,7 +43,7 @@ test('quick action retains its source without delaying or stacking feedback', as
   await page.keyboard.press('Escape');
   await page.clock.runFor(600);
   await page.locator('#historyQuickOpen').dispatchEvent('click');
-  await page.clock.runFor(300);
+  await page.clock.runFor(600);
   const back = page.locator('[data-history-seconds="-900"]');
   await back.dispatchEvent('click');
   await expect(back).toHaveClass(/is-recent-source/);
@@ -103,16 +94,17 @@ test('wheel edges fade without changing the income roller or wheel geometry', as
   await expect(column).toHaveAttribute('role', 'spinbutton');
 });
 
-test('scroll edge hints disappear at the boundary and after closing', async ({ page }) => {
+test('complete schedule stays inside its panel without scroll edge hints', async ({ page }) => {
   await open(page, 'schedule');
   const sheet = page.locator('.settings-sheet');
   await sheet.evaluate(node => { node.scrollTop = 0; node.dispatchEvent(new Event('scroll')); });
   await page.clock.runFor(32);
   await expect(sheet).not.toHaveClass(/has-scroll-above/);
-  await expect(sheet).toHaveClass(/has-scroll-below/);
+  await expect(sheet).not.toHaveClass(/has-scroll-below/);
+  expect(await sheet.evaluate(node => node.scrollHeight - node.clientHeight)).toBeLessThanOrEqual(1);
   await sheet.evaluate(node => { node.scrollTop = node.scrollHeight; node.dispatchEvent(new Event('scroll')); });
   await page.clock.runFor(32);
-  await expect(sheet).toHaveClass(/has-scroll-above/);
+  await expect(sheet).not.toHaveClass(/has-scroll-above/);
   await expect(sheet).not.toHaveClass(/has-scroll-below/);
   await page.keyboard.press('Escape');
   await page.clock.runFor(600);
@@ -124,36 +116,30 @@ async function open(page, kind) {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.install({ time: new Date('2026-10-05T06:00:00Z') });
   await page.goto(appPath);
-  await page.waitForTimeout(1200);
+  await fullDisplay(page);
   await page.locator(`#${kind}SettingsCard`).focus();
   await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
   await page.locator(`#${kind}SettingsCard`).dispatchEvent('click');
   await page.clock.runFor(600);
 }
 
-test('scrollbar reveal runs after handoff without changing the gutter', async ({ page }) => {
+test('schedule keeps all controls visible after shell handoff without a gutter', async ({ page }) => {
   await open(page, 'schedule');
   await page.keyboard.press('Escape');
   await page.clock.runFor(600);
   await page.locator('#scheduleSettingsCard').dispatchEvent('click');
   await page.clock.runFor(300);
-  const read = () => page.locator('.settings-sheet').evaluate(sheet => ({ reveal: Number(getComputedStyle(sheet).getPropertyValue('--settings-scrollbar-reveal')), width: sheet.clientWidth }));
+  const read = () => page.locator('.settings-sheet').evaluate(sheet => ({ width: sheet.clientWidth, overflow: sheet.scrollHeight - sheet.clientHeight, scrollbar: getComputedStyle(sheet).scrollbarWidth }));
   const early = await read();
-  expect(early.reveal).toBe(0);
-  await page.clock.runFor(80);
-  await page.locator('.settings-sheet').evaluate(sheet => {
-    const animation = sheet.getAnimations().find(item => item.transitionProperty === '--settings-scrollbar-reveal');
-    if (!animation) throw new Error('Scrollbar reveal transition missing');
-    animation.pause();
-    animation.currentTime = 64;
-  });
-  const middle = await read();
-  expect(middle.reveal).toBeGreaterThan(0);
-  expect(middle.reveal).toBeLessThan(1);
-  await page.locator('.settings-sheet').evaluate(sheet => sheet.getAnimations().forEach(animation => animation.finish()));
+  expect(early.overflow).toBeLessThanOrEqual(1);
+  expect(early.scrollbar).toBe('none');
+  await page.clock.runFor(400);
   const end = await read();
-  expect(end.reveal).toBe(1);
+  expect(end.overflow).toBeLessThanOrEqual(1);
+  expect(end.scrollbar).toBe('none');
   expect(end.width).toBe(early.width);
+  await expect(page.locator('#settingsSaveButton')).toBeInViewport();
+  await expect(page.locator('#calendarDataSection')).toBeInViewport();
 });
 
 test('income selection reverses from the current position and keeps editor geometry', async ({ page }) => {
@@ -180,41 +166,24 @@ test('income selection reverses from the current position and keeps editor geome
   expect(await page.locator('.income-mode-indicator').evaluate(el => el.getAnimations().length)).toBe(0);
 });
 
-test('calendar height, opacity and arrow use one reversible progress', async ({ page }) => {
+test('inline calendar tools stay exposed without an arrow or height transition', async ({ page }) => {
   await open(page, 'schedule');
-  const toggle = page.locator('#calendarDataToggle');
-  await toggle.dispatchEvent('click');
-  await page.locator('#calendarDataSection').evaluate(el => { const animation = el.getAnimations()[0]; animation.pause(); animation.currentTime = 64; });
   const read = () => page.locator('#calendarDataSection').evaluate(section => {
-    const content = section.querySelector('.settings-data-content');
-    const arrow = section.querySelector('.settings-data-chevron');
-    return { progress: Number(getComputedStyle(section).getPropertyValue('--calendar-reveal')), opacity: Number(getComputedStyle(content).opacity), height: content.getBoundingClientRect().height, full: content.firstElementChild.getBoundingClientRect().height, angle: Math.atan2(new DOMMatrix(getComputedStyle(arrow).transform).b, new DOMMatrix(getComputedStyle(arrow).transform).a) * 180 / Math.PI };
+    const content = section.querySelector('#calendarDataContent');
+    return { height: content.getBoundingClientRect().height, full: content.firstElementChild.getBoundingClientRect().height, top: section.getBoundingClientRect().top, transform: getComputedStyle(content.firstElementChild).transform, inert: content.inert };
   });
   const before = await read();
-  expect(before.progress).toBeGreaterThan(0);
-  expect(before.progress).toBeLessThan(1);
-  expect(before.opacity).toBeCloseTo(before.progress, 3);
-  expect(before.height / before.full).toBeCloseTo(before.progress, 2);
-  const angle = ((before.angle - 45 + 360) % 360) / 180;
-  expect(angle).toBeCloseTo(before.progress, 2);
-  await page.evaluate(() => {
-    document.querySelector('#calendarDataToggle').click();
-    const animation = document.querySelector('#calendarDataSection').getAnimations()[0];
-    animation.pause();
-    animation.currentTime = 0;
-  });
-  const reversed = await read();
-  expect(reversed.progress).toBeCloseTo(before.progress, 3);
-  await page.locator('#calendarDataSection').evaluate(el => el.getAnimations().forEach(animation => animation.finish()));
-  await page.clock.runFor(400);
-  expect((await read()).progress).toBe(0);
-  await expect(page.locator('#calendarDataContent')).toHaveAttribute('aria-hidden', 'true');
-  await toggle.dispatchEvent('click');
-  await page.locator('#calendarDataSection').evaluate(el => el.getAnimations().forEach(animation => animation.finish()));
-  await page.clock.runFor(400);
-  expect((await read()).progress).toBe(1);
-  const settled = await read();
-  expect(Math.abs(settled.height - settled.full)).toBeLessThan(1);
+  await expect(page.locator('#calendarDataToggle, .settings-data-chevron')).toHaveCount(0);
+  for (const id of ['calendarExportButton', 'calendarImportButton', 'calendarResetButton']) {
+    await page.locator(`#${id}`).focus();
+    await expect(page.locator(`#${id}`)).toBeInViewport();
+    await page.clock.runFor(64);
+    const during = await read();
+    expect(during.inert).toBe(false);
+    expect(during.transform).toBe('none');
+    expect(Math.abs(during.top - before.top)).toBeLessThan(1);
+    expect(Math.abs(during.height - during.full)).toBeLessThan(1);
+  }
 });
 
 test('correcting an error preserves its icon and space until fade finishes', async ({ page }) => {

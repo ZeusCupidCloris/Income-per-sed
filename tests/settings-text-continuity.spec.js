@@ -1,3 +1,4 @@
+const { fullDisplay, discardSettings } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
 async function assertSettledSheet(page, clockPaused = false) {
@@ -44,6 +45,7 @@ for (const artifact of ['Develop', 'Push']) {
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.clock.install({ time: new Date('2026-09-07T06:30:00Z') });
       await page.goto(`/Income-per-sed-${artifact}.html`);
+      await fullDisplay(page);
       await page.waitForTimeout(1200);
       await page.locator(`#${kind}SettingsCard`).focus();
       await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
@@ -82,9 +84,11 @@ for (const artifact of ['Develop', 'Push']) {
     page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`/Income-per-sed-${artifact}.html`);
+    await fullDisplay(page);
     await page.locator('#incomeSettingsCard').dispatchEvent('click');
     await expect(page.locator('#incomeSettingsPanel')).not.toHaveAttribute('data-settings-unready');
     await expect(page.locator('.income-shared-shell')).toHaveCount(0);
+    await page.locator('[data-income-mode="annual-average"]').click();
     await page.locator('#annualWorkDaysInput').fill('277');
     await page.evaluate(() => {
       Object.defineProperty(window.visualViewport, 'height', { configurable: true, get: () => 320 });
@@ -120,8 +124,7 @@ for (const artifact of ['Develop', 'Push']) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(200);
     await assertSettledSheet(page);
-    await page.keyboard.press('Escape');
-    await expect(page.locator('#settingsDialog')).toBeHidden();
+    await discardSettings(page);
     expect(errors).toEqual([]);
   });
 }
@@ -130,8 +133,10 @@ test('height-only keyboard resize keeps the focused control above the sticky act
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.locator('#incomeSettingsCard').dispatchEvent('click');
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(500);
+  await page.locator('[data-income-mode="annual-average"]').click();
   await page.evaluate(() => {
     document.querySelector('#annualWorkDaysInput').focus({ preventScroll: true });
     Object.defineProperty(window.visualViewport, 'height', { configurable: true, get: () => 320 });
@@ -151,24 +156,26 @@ test('height-only keyboard resize keeps the focused control above the sticky act
   });
   await page.waitForTimeout(200);
   expect(await page.evaluate(() => window.scrollY)).toBe(bounds.rootScroll);
-  await page.keyboard.press('Escape');
-  await expect(page.locator('#settingsDialog')).toBeHidden();
+  await discardSettings(page);
 });
 
-test('a fully reopened settings panel starts at the top rather than its old scroll position', async ({ page }) => {
+test('a fully reopened settings panel resets its content viewport without outer page scrolling', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 420 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   for (const kind of ['schedule', 'income']) {
     await page.locator(`#${kind}SettingsCard`).dispatchEvent('click');
     await page.waitForTimeout(300);
-    await page.locator('.settings-sheet').evaluate(sheet => { sheet.scrollTop = sheet.scrollHeight; });
-    expect(await page.locator('.settings-sheet').evaluate(sheet => sheet.scrollTop)).toBeGreaterThan(0);
+    const scroller = page.locator(kind === 'income' ? '#incomeConfigView' : '#scheduleSettingsPanel');
+    const state = await scroller.evaluate(element => { element.scrollTop = element.scrollHeight; return { top: element.scrollTop, max: element.scrollHeight - element.clientHeight }; });
+    expect(Math.abs(state.top - state.max)).toBeLessThanOrEqual(1);
     await page.keyboard.press('Escape');
     await expect(page.locator('#settingsDialog')).toBeHidden();
     await page.locator(`#${kind}SettingsCard`).dispatchEvent('click');
     await page.waitForTimeout(300);
-    expect(await page.locator('.settings-sheet').evaluate(sheet => sheet.scrollTop)).toBeLessThan(2);
+    expect(await scroller.evaluate(element => element.scrollTop)).toBeLessThan(2);
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
     await page.keyboard.press('Escape');
     await expect(page.locator('#settingsDialog')).toBeHidden();
   }
@@ -179,17 +186,20 @@ test('reversing a close retains the editor scroll position after the final frame
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.install({ time: new Date('2026-09-07T06:30:00Z') });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.waitForTimeout(1200);
   await page.locator('#incomeSettingsCard').dispatchEvent('click');
   await page.waitForTimeout(600);
-  await page.locator('.settings-sheet').evaluate(sheet => { sheet.scrollTop = 180; });
-  const before = await page.locator('.settings-sheet').evaluate(sheet => sheet.scrollTop);
+  const scroller = page.locator('#incomeConfigView');
+  await scroller.evaluate(element => { element.scrollTop = 180; });
+  const before = await scroller.evaluate(element => element.scrollTop);
+  expect(before).toBeGreaterThan(0);
   await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
   await page.keyboard.press('Escape');
   await page.clock.runFor(80);
   await page.locator('#incomeSettingsCard').dispatchEvent('click');
   await page.clock.runFor(600);
-  expect(await page.locator('.settings-sheet').evaluate(sheet => sheet.scrollTop)).toBe(before);
+  expect(await scroller.evaluate(element => element.scrollTop)).toBe(before);
   await expect(page.locator('#settingsDialog')).toBeVisible();
 });
 
@@ -197,6 +207,7 @@ test('long error text remains scrollable without covering the save controls', as
   await page.setViewportSize({ width: 390, height: 420 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.locator('#incomeSettingsCard').dispatchEvent('click');
   await page.waitForTimeout(300);
   const bounds = await page.evaluate(() => {
@@ -217,6 +228,7 @@ test('opening cleanup preserves sheet transform, clip and viewport geometry', as
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.install({ time: new Date('2026-09-07T06:30:00Z') });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.waitForTimeout(1200);
   await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 1000)));
   for (const kind of ['income', 'schedule']) {
@@ -246,6 +258,7 @@ test('settings fit a smaller visible viewport independently of layout breakpoint
   for (const width of [402, 980]) {
     await page.setViewportSize({ width, height: 874 });
     await page.goto('/Income-per-sed-Develop.html');
+    await fullDisplay(page);
     await page.waitForTimeout(1200);
     await page.evaluate(() => {
       for (const [key, value] of Object.entries({ width: 344, height: 620, offsetTop: 100, offsetLeft: 0 })) {
@@ -279,6 +292,7 @@ test('settings text retains layout when the shared shell returns to its card', a
   await page.clock.install({ time: new Date('2026-09-07T06:30:00Z') });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.waitForTimeout(1600);
   await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()+1000)));
   const records=[];
@@ -325,6 +339,7 @@ test('settings panel text fades at fixed coordinates without a moving glyph clip
   await page.clock.install({ time: new Date('2026-09-07T06:30:00Z') });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.waitForTimeout(1600);
   await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()+1000)));
   for(const kind of ['income','schedule']) {

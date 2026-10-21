@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const { fullDisplay } = require('./helpers/display-state');
 
 for (const boundary of ['08:59:59.750', '13:29:59.750']) {
   test(`non-working startup stays stationary before ${boundary}`, async ({ page }) => {
@@ -94,7 +95,8 @@ test('startup joins live income without a catch-up plateau or fractional dial st
 });
 
 async function quickSeek(page, seconds) {
-  // Quick presets are a mobile-only UI; use the visible control, not a forced click.
+  await fullDisplay(page);
+  // Exercise the visible quick preset rather than a hidden or forced control.
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('#historyQuickOpen').click();
   await page.locator(`[data-history-seconds="${seconds}"]`).click();

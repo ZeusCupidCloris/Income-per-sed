@@ -1,5 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { openSettings } = require('./helpers/settings-page');
+const { fullDisplay, discardSettings } = require('./helpers/display-state');
 
 async function open(page, kind = 'income', motion = 'no-preference') {
   await openSettings(page, { kind, motion, settleMs: motion === 'reduce' ? 50 : 520, verifyShell: true });
@@ -24,26 +25,23 @@ for (const theme of ['light', 'dark']) {
     }
     await expect(page.locator('.income-mode-previous')).toHaveCount(0);
     await expect(page.locator('#incomeModeHelp')).not.toHaveText('');
-    await page.keyboard.press('Escape');
-    await expect(page.locator('#settingsDialog')).toBeHidden();
+    await discardSettings(page);
     await expect(page.locator('.income-mode-previous, .income-shared-shell')).toHaveCount(0);
   });
 }
 
-test('calendar reverses in place and retains full content after settling', async ({ page }) => {
+test('calendar tools stay fully exposed and anchored without a disclosure', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await open(page, 'schedule');
-  const toggle = page.locator('#calendarDataToggle');
-  await toggle.scrollIntoViewIfNeeded();
-  const before = await toggle.boundingBox();
-  await toggle.dispatchEvent('click');
-  await page.waitForTimeout(70);
-  await toggle.dispatchEvent('click');
-  await page.waitForTimeout(50);
-  await toggle.dispatchEvent('click');
+  const section = page.locator('#calendarDataSection');
+  const before = await section.boundingBox();
+  await expect(page.locator('#calendarDataToggle')).toHaveCount(0);
+  for (const id of ['calendarExportButton', 'calendarImportButton', 'calendarResetButton']) {
+    await expect(page.locator(`#${id}`)).toBeInViewport();
+    await page.locator(`#${id}`).focus();
+  }
   await expect.poll(() => page.locator('.settings-data-content-inner').evaluate(element => getComputedStyle(element).transform), { timeout: 1000 }).toBe('none');
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  const after = await toggle.boundingBox();
+  const after = await section.boundingBox();
   expect(Math.abs(after.y - before.y)).toBeLessThan(1);
   const content = await page.locator('#calendarDataContent').evaluate(element => ({ height: element.clientHeight, full: element.scrollHeight, inert: element.inert, transform: getComputedStyle(element.firstElementChild).transform }));
   expect(content.height).toBeGreaterThanOrEqual(content.full - 1);
@@ -55,7 +53,7 @@ test('content stages share shell timing and clean up after interrupted closing',
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.install();
   await page.goto('/Income-per-sed-Develop.html');
-  await page.waitForTimeout(1200);
+  await fullDisplay(page);
   await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
   for (const kind of ['income', 'schedule']) {
     await page.locator(`#${kind}SettingsCard`).dispatchEvent('click');
@@ -95,7 +93,10 @@ test('wheel emphasis and cached styles retain physical position formulas after r
   expect(values[0].opacity).toBeGreaterThan(values[1].opacity);
   expect(values[1].opacity).toBeGreaterThan(values[2].opacity);
   expect(values[0].size).toBe(values[1].size);
-  expect(values[0].weight).toBe(values[1].weight);
+  for (const value of values) {
+    expect(Number(value.weight)).toBeGreaterThanOrEqual(400);
+    expect(Number(value.weight)).toBeLessThanOrEqual(700);
+  }
   await page.waitForTimeout(30);
   for (const width of [1440, 320, 390]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -135,30 +136,19 @@ test('reduced motion leaves no staged or copy animation', async ({ page }) => {
   expect(await page.locator('#incomeAmountLabel').evaluate(element => element.getAnimations().length)).toBe(0);
 });
 
-test('rapid income mode reversal retains the currently visible text blend', async ({ page }) => {
+test('rapid income mode reversal updates its label without duplicate text or layout movement', async ({ page }) => {
   await open(page);
   await page.locator('[data-income-mode="fixed-daily"]').dispatchEvent('click');
   await page.waitForTimeout(60);
   const result = await page.evaluate(() => {
     const element = document.querySelector('#incomeAmountLabel');
-    const read = () => {
-      const values = {};
-      for (const child of element.children) {
-        const opacity = Number(getComputedStyle(child).opacity);
-        if (child.classList.contains('income-mode-previous')) {
-          for (const part of child.children) values[part.textContent] = (values[part.textContent] || 0) + opacity * Number(getComputedStyle(part).opacity);
-        } else values[child.textContent] = (values[child.textContent] || 0) + opacity;
-      }
-      return values;
-    };
-    const before = read();
+    const before = element.getBoundingClientRect().toJSON();
     document.querySelector('[data-income-mode="annual-average"]').click();
-    return { before, after: read(), hidden: element.querySelector('.income-mode-previous')?.getAttribute('aria-hidden') };
+    return { before, after: element.getBoundingClientRect().toJSON(), label: element.textContent, animations: element.getAnimations().length };
   });
-  for (const text of new Set([...Object.keys(result.before), ...Object.keys(result.after)])) {
-    expect(Math.abs((result.before[text] || 0) - (result.after[text] || 0))).toBeLessThan(.02);
-  }
-  expect(result.hidden).toBe('true');
+  for (const key of ['x', 'y', 'height']) expect(Math.abs(result.before[key] - result.after[key])).toBeLessThan(1);
+  expect(result.label).toBe('月薪到手');
+  expect(result.animations).toBe(0);
   await expect(page.locator('.income-mode-previous')).toHaveCount(0);
 });
 

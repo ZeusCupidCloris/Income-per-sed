@@ -1,3 +1,4 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
 for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 86400000], ['next-afternoon', 100800000], ['morning-start', 86400000, '2026-09-08T00:59:59.500Z'], ['afternoon-start', 86400000, '2026-09-08T05:29:59.500Z'], ['afternoon-fractional', 86400000, '2026-09-08T05:29:59.517Z']]) {
@@ -9,6 +10,7 @@ for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 864000
     const deterministic = label === 'afternoon-fractional';
     if (deterministic) await page.clock.pauseAt(new Date('2026-09-07T02:30:01Z'));
     await page.goto('/Income-per-sed-Develop.html');
+    await fullDisplay(page);
     if (deterministic) await page.clock.runFor(1500);
     else await page.waitForTimeout(1500);
     await page.evaluate(() => {

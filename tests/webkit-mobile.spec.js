@@ -1,3 +1,4 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 const { setWorkingTime } = require('./helpers/business-clock');
 
@@ -10,6 +11,7 @@ test('WebKit opens the dashboard without runtime errors', async ({ page }) => {
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(APP_PATH, { waitUntil: 'load' });
+  await fullDisplay(page);
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('#incomeMainCard')).toBeVisible();
   await expect(page.locator('#incomeSettingsCard')).toBeVisible();
@@ -19,6 +21,7 @@ test('WebKit opens the dashboard without runtime errors', async ({ page }) => {
 test('WebKit keeps the mobile history panel inside the viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(APP_PATH, { waitUntil: 'load' });
+  await fullDisplay(page);
   await page.locator('#historyQuickOpen').click();
   const panel = page.locator('#historyQuickPanel');
   await expect(panel).toBeVisible();

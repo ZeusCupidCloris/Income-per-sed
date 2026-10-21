@@ -9375,6 +9375,13 @@ html:root #historyQuickPanel[data-entry-centered].entry-card-active{transform:no
 .income-view-tabs button:focus-visible{outline:2px solid var(--accent-warm);outline-offset:2px;}
 .income-view{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:2px 2px 12px;scrollbar-width:none;}
 .income-view::-webkit-scrollbar{display:none;}
+html:root[data-settings-compact-viewport] #settingsDialog:not([data-backup-preview]) .settings-sheet{height:100%;max-height:100%;overflow:hidden;}
+html:root[data-settings-compact-viewport] #settingsDialog .settings-sheet-header{padding:4px 12px;}
+html:root[data-settings-compact-viewport] #settingsDialog[data-settings-panel="schedule"] #scheduleSettingsPanel{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:6px 12px 0;}
+html:root[data-settings-compact-viewport] #scheduleSettingsPanel::-webkit-scrollbar{display:none;}
+html:root[data-settings-compact-viewport] #settingsDialog[data-settings-panel="income"] #incomeSettingsPanel{padding:4px 12px 8px;}
+html:root[data-settings-compact-viewport] #settingsDialog[data-settings-panel="income"]:has(input:focus) .income-view-tabs{display:none;}
+html:root[data-settings-compact-viewport] #settingsDialog .settings-actions{flex:none;position:static;padding:6px 12px;}
 #incomeConfigView .settings-field-row{grid-template-columns:minmax(0,1.7fr) minmax(96px,1fr);gap:14px;}
 #incomeConfigView .settings-field-row>.settings-field:first-child{grid-column:1;grid-row:1;}
 #annualWorkDaysField,#monthlyWorkDaysField{grid-column:2;grid-row:1;}
@@ -10117,7 +10124,7 @@ const APP_RELEASE = Object.freeze({
 version: 'v39',
 productVersion: '2.7.0',
 sourceTag: 'v2.7.0',
-buildId: 'v39-20261021.3',
+buildId: 'v39-20261021.4',
 releaseDate: '2026-10-21',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
@@ -14594,6 +14601,7 @@ style.setProperty('--app-viewport-width', `${next.width}px`);
 style.setProperty('--app-viewport-offset-top', `${next.offsetTop}px`);
 style.setProperty('--app-viewport-offset-left', `${next.offsetLeft}px`);
 style.setProperty('--app-viewport-scale', String(next.scale));
+document.documentElement.toggleAttribute('data-settings-compact-viewport', next.height < 440);
 return Object.freeze({ ...next, previous, changed: true });
 }
 function settleFocusedSettingControl() {
@@ -19876,7 +19884,7 @@ const originBox = sharedBox(origin, 0);
 const originStyle = getComputedStyle(origin);
 const mirror = origin.cloneNode(true);
 // Preserve the existing card typography when its parent selectors no longer apply.
-const properties = ['display', 'box-sizing', 'flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'align-content', 'align-self', 'flex-grow', 'flex-shrink', 'flex-basis', 'grid-template-columns', 'grid-template-rows', 'grid-column', 'grid-row', 'column-gap', 'row-gap', 'font-family', 'font-size', 'font-weight', 'font-style', 'font-variant-numeric', 'line-height', 'letter-spacing', 'text-align', 'white-space', 'word-break', 'overflow-wrap', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-style'];
+const properties = ['display', 'box-sizing', 'position', 'top', 'right', 'bottom', 'left', 'z-index', 'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height', 'vertical-align', 'color', 'flex-direction', 'flex-wrap', 'justify-content', 'align-items', 'align-content', 'align-self', 'flex-grow', 'flex-shrink', 'flex-basis', 'grid-template-columns', 'grid-template-rows', 'grid-column', 'grid-row', 'column-gap', 'row-gap', 'font-family', 'font-size', 'font-weight', 'font-style', 'font-variant-numeric', 'line-height', 'letter-spacing', 'text-align', 'white-space', 'word-break', 'overflow-wrap', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'border-style'];
 const originals = [origin, ...origin.querySelectorAll('*')];
 const copies = [mirror, ...mirror.querySelectorAll('*')];
 originals.forEach((element, index) => {
@@ -20378,7 +20386,11 @@ setIncomeView('config');
 buildScheduleWheels();
 }
 dom.settingsDialog.querySelector('.settings-sheet').focus({ preventScroll: true });
-if (resetScroll) getDialogSheet().scrollTop = 0;
+if (resetScroll) {
+getDialogSheet().scrollTop = 0;
+dom.scheduleSettingsPanel.scrollTop = 0;
+for (const view of dom.incomeSettingsPanel.querySelectorAll('.income-view')) view.scrollTop = 0;
+}
 requestSettingsScrollEdges();
 const sharedPreview = animateIncomeSharedSurface(true);
 dom.scheduleSettingsCard.classList.toggle('settings-expanded-origin', !income);

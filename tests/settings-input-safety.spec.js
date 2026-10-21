@@ -1,3 +1,4 @@
+const { fullDisplay, discardSettings } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 const { settingsPage, openSettings } = require('./helpers/settings-page');
 test.use({ viewport: { width: 390, height: 700 }, hasTouch: true });
@@ -15,9 +16,9 @@ async function open(page, kind = 'schedule') {
 
 test('keyboard focus on a wheel keeps its per-column outline unmasked', async ({ page }) => {
   await open(page);
-  const columns = page.locator('.time-wheel-column');
+  const columns = page.locator('#scheduleSettingsPanel .time-wheel-column');
   await expect(page.locator('#settingsDialog')).not.toHaveClass(/income-shared-active/);
-  for (let index = 0; index < 15; index++) {
+  for (let index = 0; index < 40; index++) {
     await page.keyboard.press('Tab');
     if (await columns.first().evaluate(el => el === document.activeElement)) break;
   }
@@ -34,6 +35,7 @@ test('invisible opening fields and save cannot act; close stays immediately avai
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.install();
   await page.goto(settingsPage);
+  await fullDisplay(page);
   await page.waitForTimeout(1000);
   await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
   await page.locator('#incomeSettingsCard').dispatchEvent('click');
@@ -76,14 +78,15 @@ async function touch(page, locator, startBand, dx, dy, cancel = false) {
 }
 
 for (const scenario of [{ name: 'diagonal center gesture', band: 'center', dx: 50, dy: -35 }, { name: 'vertical faded-row gesture', band: 'edge', dx: 0, dy: -50 }]) {
-  test(`${scenario.name} scrolls the panel rather than changing time`, async ({ page, browserName }) => {
+  test(`${scenario.name} does not edit time or shift the complete panel`, async ({ page, browserName }) => {
     test.skip(browserName !== 'chromium', 'Native touch injection uses Chromium CDP; simulated touch cases also cover WebKit.');
     await open(page);
     const wheel = page.locator('.time-wheel-column').first();
     const before = await wheel.getAttribute('aria-valuenow');
     await touch(page, wheel, scenario.band, scenario.dx, scenario.dy);
     await expect(wheel).toHaveAttribute('aria-valuenow', before);
-    expect(await page.locator('.settings-sheet').evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+    expect(await page.locator('.settings-sheet').evaluate(element => element.scrollTop)).toBe(0);
+    await expect(page.locator('#settingsSaveButton')).toBeInViewport();
   });
 }
 
@@ -112,8 +115,7 @@ test('summary changes visually immediately but has a single settled announcement
   await expect(page.locator('#scheduleCalibrationAnnouncement')).toHaveText(/6小时37分/);
   expect(await page.evaluate(() => window.__summaryAnnouncements.filter(Boolean).length)).toBe(2);
   await minute.dispatchEvent('keydown', { key: 'ArrowDown' });
-  await page.keyboard.press('Escape');
-  await page.clock.runFor(600);
+  await discardSettings(page, { paused: true });
   await expect(page.locator('#settingsDialog')).toBeHidden();
   await expect(page.locator('#scheduleCalibrationAnnouncement')).toHaveText('');
   expect(await page.evaluate(() => window.__summaryAnnouncements.filter(Boolean).length)).toBe(2);
@@ -123,6 +125,7 @@ for (const artifact of ['Develop', 'Push']) {
   test(`${artifact}: invalid draft clears stale speech and identical recovery announces again`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto(`/Income-per-sed-${artifact}.html`);
+    await fullDisplay(page);
     await page.locator('#scheduleSettingsCard').dispatchEvent('click');
     await expect(page.locator('#scheduleSettingsPanel')).not.toHaveAttribute('data-settings-unready');
     const announcement = page.locator('#scheduleCalibrationAnnouncement');
@@ -153,6 +156,7 @@ for (const artifact of ['Develop', 'Push']) {
 test('reduced motion has no invisible interaction gate', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(settingsPage);
+  await fullDisplay(page);
   await page.locator('#incomeSettingsCard').dispatchEvent('click');
   await page.locator('#incomeAmountInput').fill('7000');
   await expect(page.locator('#incomeAmountInput')).toHaveValue('7000');
@@ -185,8 +189,7 @@ for (const scenario of [
     else if (scenario.exact) await expect(wheel).toHaveAttribute('aria-valuenow', scenario.exact);
     else expect(Number(await wheel.getAttribute('aria-valuenow'))).toBeGreaterThan(9);
     expect(await wheel.evaluate(element => element.classList.contains('dragging'))).toBe(false);
-    await page.keyboard.press('Escape');
-    await expect(page.locator('#settingsDialog')).toBeHidden();
+    await discardSettings(page);
     await expect(page.locator('#scheduleCalibrationAnnouncement')).toHaveText('');
   });
 }
@@ -211,7 +214,7 @@ test('settled announcement never replaces timely submitted error feedback', asyn
   const end = page.locator('[data-time-key="morningEnd"] .time-wheel-column[data-unit="hour"]');
   for (let i = 0; i < 3; i++) await end.dispatchEvent('keydown', { key: 'ArrowUp' });
   await page.locator('#settingsSaveButton').dispatchEvent('click');
-  await expect(page.locator('#scheduleSettingsError')).toHaveText(/请修正/);
+  await expect(page.locator('#scheduleSettingsError')).toHaveText('上午结束必须晚于上午开始。');
   await expect(page.locator('#settingsSaveButton')).toBeDisabled();
   await page.waitForTimeout(500);
   await expect(page.locator('#scheduleCalibrationAnnouncement')).toHaveText('');

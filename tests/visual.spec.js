@@ -1,3 +1,4 @@
+const { fullDisplay, selectTheme } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
 const APP_PATH = process.env.DEVELOP_PREVIEW === '1' ? '/Income-per-sed-Develop.html' : '/Income-per-sed-Push.html';
@@ -10,6 +11,7 @@ async function openApp(page, theme = 'light') {
     localStorage.setItem('income-per-sed-theme-v1', selectedTheme);
   }, theme);
   await page.goto(APP_PATH, { waitUntil: 'load' });
+  await fullDisplay(page);
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('#incomeMainCard')).toBeVisible();
   await page.clock.pauseAt(FIXED_TIME);
@@ -76,8 +78,9 @@ test('latest theme selection wins during an interrupted diagonal transition', as
     });
   });
   await page.goto(APP_PATH, { waitUntil: 'load' });
-  await page.locator('#themeControl [data-theme-mode="dark"]').click();
-  await page.locator('#themeControl [data-theme-mode="light"]').click();
+  await fullDisplay(page);
+  await selectTheme(page, 'dark');
+  await selectTheme(page, 'light');
   await page.waitForTimeout(150);
 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');

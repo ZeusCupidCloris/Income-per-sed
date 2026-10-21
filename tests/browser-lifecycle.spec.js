@@ -1,3 +1,4 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
 // Playwright normally disables BFCache. Restore the browser's real cache behavior.
@@ -30,6 +31,7 @@ async function prepare(page, channel, sleepGap = 0) {
     window.addEventListener('pageshow', (event) => window.__lifecycleProbe.events.push(`pageshow:${event.persisted}`));
   }, { sleepGap });
   await page.goto(`/Income-per-sed-${channel}.html`);
+  await fullDisplay(page);
   await page.waitForTimeout(2200);
   return errors;
 }

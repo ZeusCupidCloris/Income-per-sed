@@ -18,7 +18,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 
 ## 初始化与断言收敛
 
-三份设置测试共用 `helpers/settings-page.js`，只统一页面选择、动效模式和展开操作；原来的 520/550ms 等待与各自断言保留。使用暂停时钟、中间帧或特定视口的测试保留专用初始化，不强行套用共同函数。
+三份设置测试共用 `helpers/settings-page.js`，统一页面选择、真实显示控件、动效模式、展开操作及交接就绪等待。使用暂停时钟、中间帧或特定视口的测试保留专用初始化，不强行套用共同函数。启动本身的测试不提前切换显示状态。
 
 未删除工资模式、两种网页版本、浅深主题、手机尺寸、输入反向、存储失败或最后一帧边界。滚轮物理明度与缓存样式公式共用一次展开初始化，全部公式和 1440/320/390px 检查保留在 settings-local-motion.spec.js；不删除整份功能测试。
 
@@ -35,10 +35,10 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 连续接管 | interaction-handoff.spec.js | 前台恢复、历史播放、返回实时途中滚轮接管与显示值连续性 |
 | 局部动效预览 | motion-feedback.spec.js | 保存结果、反向开合、错误占位、码表暂停、连续回溯、默认关闭的吸附实验及多窗口；Develop 两种设置展开覆盖完整开合时长一致、遮罩同步、浅深主题、桌面手机、纵向先行、窗口调整、保存收回、错误修正、后台中断和清理；短视口与后台模拟不代表手机键盘或实机验收 |
 | 设置文字连续性 | settings-text-continuity.spec.js | Develop 动画副本与原卡片的文字排版一致性、面板文字固定坐标和透明度连续性；桌面浏览器自动检查，不替代实机流畅度验收 |
-| 设置局部动效 | settings-local-motion.spec.js | 分层显现、日历反向展开、收入口径文字交接、滚轮物理明度与跨尺寸缓存样式公式；设置 SETTINGS_RELEASE_CHANNEL=push 可验证生成的 Push |
-| 设置滚动条交接 | settings-scrollbar-handoff.spec.js | Develop 展开及关闭期间隐藏滚动条绘制，保留滚动空间；桌面、手机宽度、中途反向和减少动态效果 |
-| 设置细节精修 | settings-refinements.spec.js | 滚动条淡入、口径底板与日历反向接管、错误占位、快速回溯拖动归位及来源反馈、保存后读数交接、时间滚轮渐隐和滚动边界；原生动画时钟中间帧检查，SETTINGS_RELEASE_CHANNEL=push 验证生成版 |
-| 设置稳定性 | settings-stability.spec.js | 日历及错误滚动锚定、摘要固定读数、高频操作清理和同帧几何读写；性能采样仅用于定位本机耗时 |
+| 设置局部动效 | settings-local-motion.spec.js | 分层显现、常驻日历工具、收入口径原位更新、滚轮物理明度与跨尺寸缓存样式公式；设置 SETTINGS_RELEASE_CHANNEL=push 可验证生成的 Push |
+| 设置滚动条交接 | settings-scrollbar-handoff.spec.js | 完整面板在展开、关闭与反向交接中无内容溢出或滚动条；桌面、手机宽度、操作区可见性和减少动态效果 |
+| 设置细节精修 | settings-refinements.spec.js | 无滚动条面板、口径底板反向接管、常驻日历、错误占位、居中回溯面板触摸锚定及来源反馈、保存后读数交接和时间滚轮渐隐；原生动画时钟中间帧检查，SETTINGS_RELEASE_CHANNEL=push 验证生成版 |
+| 设置稳定性 | settings-stability.spec.js | 日历及错误锚定、右对齐摘要读数、高频操作清理和同帧几何读写；性能采样仅用于定位本机耗时 |
 | 设置输入安全 | settings-input-safety.spec.js | 展开早期防误触、关闭接管、触屏意图及停靠后摘要播报；可用 SETTINGS_RELEASE_CHANNEL=push 检查 Push；模拟不替代 iPhone 和 VoiceOver 实机验收 |
 | 设置帧开销观察 | settings-frame-budget.spec.js | Edge 中实际采样两种设置卡片的帧间隔与布局、样式计算开销；用于同机对比，不用固定帧率阈值判断所有设备 |
 | 交叉操作 | recovery-cross-actions.spec.js | 恢复过程中设置与主题切换、历史播放保存设置、码表跨零点；模拟时间 |
@@ -65,6 +65,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 - `helpers/business-clock.js`：为内容稳定场景固定业务日期，不冻结动画时钟。
 - `helpers/background-recovery.js`：恢复专项固定步长推进；最终业务值仍用独立算式计算。
 - `helpers/settings-page.js`：普通设置测试的共同初始化；不处理暂停时钟和中间帧采样。
+- `helpers/display-state.js`：通过真实专注及隐私按钮准备完整显示，等待设置交接；需要丢弃草稿时明确操作放弃确认，不绕过产品状态。
 
 默认 Playwright 只收集 `*.spec.js`。Node `*.test.mjs`、小组件 `widget-settings.cjs`和 Python `test_prepare_delivery.py`由快速检查运行，避免在浏览器收集阶段重复执行或产生副作用。
 
