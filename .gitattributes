@@ -1,8 +1,14 @@
 * text=auto
 
+# Keep repository rules and source files consistent across Windows and CI.
+.editorconfig text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+LICENSE text eol=lf
 *.html text eol=lf
 *.js text eol=lf
 *.mjs text eol=lf
+*.cjs text eol=lf
 *.json text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
@@ -10,6 +16,7 @@
 *.txt text eol=lf
 *.py text eol=lf
 
+# Never apply text normalization or line-based merges to binary deliverables.
 *.docx binary
 *.png binary
 *.jpg binary
