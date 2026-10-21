@@ -57,14 +57,15 @@ async function buildPush() {
       compress: {
         passes: 3,
         pure_funcs: ['initializeMotionDebug', 'recordDiagnosticEvent'],
-        toplevel: true,
+        // Inline scripts share a browser global scope but are minified separately.
+        toplevel: false,
       },
       format: {
         ascii_only: false,
         comments: false,
       },
       mangle: {
-        toplevel: true,
+        toplevel: false,
       },
     },
     minifyURLs: false,
@@ -84,7 +85,7 @@ async function buildPush() {
   if (!output.includes('name="income-per-sed-channel" content="push"')) {
     throw new Error('Generated Push file is missing the push channel marker.');
   }
-  if (output.includes('__incomeClockDiagnostics') || output.includes('运行诊断')) {
+  if (output.includes('__incomeClockDiagnostics') || output.includes('运行诊断') || output.includes('MotionQualityMonitor')) {
     throw new Error('Develop-only diagnostics leaked into the Push build.');
   }
   return `${output}\n`;

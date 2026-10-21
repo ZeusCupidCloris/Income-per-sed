@@ -1,5 +1,5 @@
 // Income-per-sed · Scriptable Widget
-// Product 2.6.1; widget 2.6.1; delivery 20261008.1.
+// Product 2.6.2-rc.47; widget 2.6.2-rc.47; delivery 20261021.2.
 // Header time is the income snapshot time, not a live clock.
 // Place this file and Income-per-sed-Push.html in iCloud Drive/Scriptable.
 //
@@ -9,7 +9,7 @@
 // - Improve accessory widgets, zero-progress rendering, preview flow and calendar-expiry warning.
 
 const APP = {
-  version: "2.6.1",
+  version: "2.6.2-rc.47",
   timeZone: "Asia/Shanghai",
   settingsFile: "IncomeWidget-settings.json",
   htmlCandidates: [
@@ -17,8 +17,8 @@ const APP = {
   ],
   settingsSchema: 3,
   transactionSchema: 2,
-  deliveryRevision: "20261008.1",
-  sourceBuild: "widget-20261008.1",
+  deliveryRevision: "20261021.2",
+  sourceBuild: "widget-20261021.2",
   refreshMinutes: {
     working: 1,
     transition: 3,

@@ -1,6 +1,6 @@
 {
   "name": "income-per-sed-quality",
-  "version": "2.6.1",
+  "version": "2.6.2-rc.47",
   "private": true,
   "description": "Release validation and visual regression for Income-per-sed.",
   "scripts": {

@@ -67,6 +67,7 @@
 | [docs/acceptance/fourfile-20260916.md](../docs/acceptance/fourfile-20260916.md) | 09-16 四文件交付验收证据 | 维护与历史 |
 | [docs/acceptance/fourfile-20260922.md](../docs/acceptance/fourfile-20260922.md) | 09-22 四文件交付验收证据 | 维护与历史 |
 | [docs/acceptance/fourfile-20260924.md](../docs/acceptance/fourfile-20260924.md) | 09-24 四文件交付验收证据 | 维护与历史 |
+| [docs/acceptance/fourfile-20261021.md](../docs/acceptance/fourfile-20261021.md) | RC47 四文件同步与产品使用手册核对 | 维护与验收 |
 | [docs/acceptance/grid-idle-20260930.md](../docs/acceptance/grid-idle-20260930.md) | 09-30 背景空闲重绘修复证据 | 维护与历史 |
 | [docs/acceptance/grid-recovery-20260930.md](../docs/acceptance/grid-recovery-20260930.md) | 09-30 模拟后台绘制循环检查证据 | 维护与历史 |
 | [docs/acceptance/maintenance-20260915.md](../docs/acceptance/maintenance-20260915.md) | 09-15 仓库维护验收证据 | 维护与历史 |
@@ -87,6 +88,7 @@
 | [docs/releases/v2.5.2.md](../docs/releases/v2.5.2.md) | 2.5.2 发布说明 | 维护与历史 |
 | [docs/releases/v2.6.0.md](../docs/releases/v2.6.0.md) | 2.6.0 四文件同步与验证范围 | 用户与维护 |
 | [docs/releases/v2.6.1.md](../docs/releases/v2.6.1.md) | 中号小组件窄屏修复与四文件同步 | 用户与维护 |
+| [docs/releases/v2.6.2-rc.47.md](../docs/releases/v2.6.2-rc.47.md) | RC47 用户交互与手册同步说明 | 用户与维护 |
 | [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本

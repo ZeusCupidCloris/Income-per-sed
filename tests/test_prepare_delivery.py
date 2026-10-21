@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from prepare_delivery import DOCUMENT_XML, sync_manual_hashes
 from manual_checksum_bookmarks import MARKERS, WORD_NS, read_manual_hashes, replace_manual_hashes
+from validate_delivery import REQUIRED_IDS, validate_html
 
 
 def marked_document(order=None, split=False):
@@ -30,6 +31,21 @@ def marked_document(order=None, split=False):
 
 
 class PrepareReleaseTests(unittest.TestCase):
+    def test_push_excludes_removed_diagnostic_monitor_references(self) -> None:
+        push = (ROOT / 'Income-per-sed-Push.html').read_text(encoding='utf-8')
+        self.assertNotIn('MotionQualityMonitor', push)
+
+    def test_classic_scripts_reject_cross_script_name_collision(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            page = Path(temp_dir) / "Develop.html"
+            prefix = '<html lang="zh-CN"><meta name="viewport" content="width=device-width">'
+            elements = ''.join(f'<div id="{value}"></div>' for value in REQUIRED_IDS)
+            page.write_text(prefix + elements + '<script>var sharedName;</script><script>const sharedName = 1;</script></html>', encoding='utf-8')
+            with self.assertRaisesRegex(RuntimeError, 'shared classic-script scope'):
+                validate_html(page)
+            page.write_text(prefix + elements + '<script>(function(){var sharedName;})();</script><script>const sharedName = 1;</script></html>', encoding='utf-8')
+            validate_html(page)
+
     def test_delivery_revision_matches_manual_and_widget(self) -> None:
         manifest = json.loads((ROOT / 'release-manifest.json').read_text(encoding='utf-8'))
         revision = manifest['deliveryRevision']
