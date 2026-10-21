@@ -59,7 +59,7 @@
 
 2.7.0 将工资、工时和回溯整理为完整面板，保留机械读数与原有字体。任务计价显示计时状态并支持归零撤销；设置草稿可确认恢复，完整备份支持导入前比较。九页手册按使用场景介绍操作与设计细节；小组件既有布局、设置和计算逻辑保留。
 
-本批通过[PR #56](https://github.com/ZeusCupidCloris/Income-per-sed/pull/56)审核，合并及 Pages 状态见[当前交付](docs/README.md#当前交付)，不创建 Release 或标签。历史 Release 附件不会因此自动变成 2.7.0。
+本批已通过[PR #56](https://github.com/ZeusCupidCloris/Income-per-sed/pull/56)合并至 `main`，[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/)已同步为 2.7.0，首页与 Push 文件均已核验。检查与上线记录见[当前交付](docs/README.md#当前交付)。本次不创建 Release 或标签，历史 Release 附件不会因此自动变成 2.7.0。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 
