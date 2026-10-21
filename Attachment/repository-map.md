@@ -88,7 +88,7 @@
 | [docs/releases/v2.5.2.md](../docs/releases/v2.5.2.md) | 2.5.2 发布说明 | 维护与历史 |
 | [docs/releases/v2.6.0.md](../docs/releases/v2.6.0.md) | 2.6.0 四文件同步与验证范围 | 用户与维护 |
 | [docs/releases/v2.6.1.md](../docs/releases/v2.6.1.md) | 中号小组件窄屏修复与四文件同步 | 用户与维护 |
-| [docs/releases/v2.6.2-rc.47.md](../docs/releases/v2.6.2-rc.47.md) | RC47 用户交互与手册同步说明 | 用户与维护 |
+| [docs/releases/v2.7.0.md](../docs/releases/v2.7.0.md) | 2.7.0 用户交互与手册同步说明 | 用户与维护 |
 | [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本

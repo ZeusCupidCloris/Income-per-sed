@@ -1,12 +1,12 @@
 {
-  "productVersion": "2.6.2-rc.47",
-  "releaseTag": "v2.6.2-rc.47",
+  "productVersion": "2.7.0",
+  "releaseTag": "v2.7.0",
   "internalVersion": "v39",
-  "buildId": "v39-20261021.2",
+  "buildId": "v39-20261021.3",
   "releaseDate": "2026-10-21",
-  "deliveryRevision": "20261021.2",
-  "manualRevision": "20261021.2",
-  "widgetVersion": "2.6.2-rc.47",
+  "deliveryRevision": "20261021.3",
+  "manualRevision": "20261021.3",
+  "widgetVersion": "2.7.0",
   "canonicalSource": "Income-per-sed-Develop.html",
   "derivedArtifacts": [
     "Income-per-sed-Push.html"

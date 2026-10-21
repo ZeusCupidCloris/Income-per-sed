@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "source": "Income-per-sed-Push.html",
-  "sourceSha256": "d16efdcef524a4c662b37162cfd83128a242480eb8f9421775f2659ded723590",
+  "sourceSha256": "a11de50cc2c2eead42d74135afa52a9ea3bbfc5ab56107b537c2d170d1393a6b",
   "fixedTime": "2026-09-04T02:30:00.000Z",
   "previews": [
     {
@@ -10,7 +10,7 @@
       "width": 1440,
       "height": 1000,
       "colorScheme": "light",
-      "sha256": "3e606c861c1e1f76ba40c7356fb2c8357d159561ea59d172c5386262f42658b9"
+      "sha256": "a25bc801cb2a3bce834bf171f92f24fcc86c73b1687ca2221a754f9fc6dabd65"
     },
     {
       "file": "preview-mobile.png",
