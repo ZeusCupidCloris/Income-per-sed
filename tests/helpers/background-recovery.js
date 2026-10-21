@@ -2,6 +2,7 @@ const settings = {
   monthlyIncome: 6600, dailyIncome: 300, annualWorkDays: 264,
   schedule: { morningStart: '09:00', morningEnd: '11:30', afternoonStart: '13:30', afternoonEnd: '17:30' },
 };
+const { fullDisplay } = require('./display-state');
 
 async function prepareRecovery(page, channel, incomeMode, start) {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -10,6 +11,7 @@ async function prepareRecovery(page, channel, incomeMode, start) {
   await page.clock.pauseAt(new Date(new Date(start).getTime() + 1000));
   await page.goto(`/Income-per-sed-${channel}.html`);
   await page.clock.runFor(2200);
+  await fullDisplay(page, { paused: true });
 }
 
 async function setHidden(page, hidden) {

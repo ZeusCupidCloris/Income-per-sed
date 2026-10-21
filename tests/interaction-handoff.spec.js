@@ -1,3 +1,4 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
 for (const scenario of ['foreground', 'playback', 'return']) {
@@ -8,6 +9,7 @@ for (const scenario of ['foreground', 'playback', 'return']) {
     await page.clock.install({ time: new Date('2026-09-07T06:30:00Z') });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/Income-per-sed-Develop.html');
+    await fullDisplay(page);
     await page.waitForTimeout(1800);
     if (scenario === 'foreground') {
       await page.evaluate(() => {

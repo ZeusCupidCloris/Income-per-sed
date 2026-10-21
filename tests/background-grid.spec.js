@@ -1,8 +1,18 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const APP_PATH = '/Income-per-sed-Push.html';
+
+async function leaveAndSettleGrid(page, counter) {
+  await page.mouse.move(-1, -1);
+  await expect.poll(async () => {
+    const before = await page.evaluate(name => window[name], counter);
+    await page.waitForTimeout(400);
+    return await page.evaluate(name => window[name], counter) - before;
+  }, { timeout: 20000 }).toBe(0);
+}
 
 test('release source keeps the elastic grid without a center particle motif', () => {
   const source = fs.readFileSync(path.resolve(__dirname, '..', 'Income-per-sed-Develop.html'), 'utf8');
@@ -33,6 +43,7 @@ test.describe('Harness-inspired elastic square grid', () => {
       };
     });
     await page.goto(APP_PATH, { waitUntil: 'load' });
+    await fullDisplay(page);
     await page.evaluate(() => document.fonts.ready);
 
     const gridCanvas = page.locator('#ambientGridBackdrop');
@@ -40,7 +51,7 @@ test.describe('Harness-inspired elastic square grid', () => {
     await expect(gridCanvas).toBeVisible();
     await expect(hero).toBeVisible();
     await expect(page.locator('#ambientFishBackdrop')).toHaveCount(0);
-    await page.waitForTimeout(600);
+    await leaveAndSettleGrid(page, '__ambientGridClearCount');
 
     const idleDrawCount = await page.evaluate(() => window.__ambientGridClearCount);
     await page.waitForTimeout(800);
@@ -85,6 +96,7 @@ test.describe('Harness-inspired elastic square grid', () => {
 
   test('yields to critical performance mode', async ({ page }) => {
     await page.goto(APP_PATH, { waitUntil: 'load' });
+    await fullDisplay(page);
     const gridCanvas = page.locator('#ambientGridBackdrop');
     await expect(gridCanvas).toBeVisible();
     await page.evaluate(() => document.body.classList.add('performance-critical'));
@@ -103,7 +115,8 @@ test.describe('Harness-inspired elastic square grid', () => {
       };
     });
     await page.goto(APP_PATH);
-    await page.waitForTimeout(1400);
+    await fullDisplay(page);
+    await leaveAndSettleGrid(page, '__idleDraws');
     const before = await page.evaluate(() => window.__idleDraws);
     // Canvas screenshots include the changing dashboard underneath its transparency.
     const pixelsBefore = await page.locator('#ambientGridBackdrop').evaluate(canvas => canvas.toDataURL());
@@ -164,6 +177,7 @@ test.describe('Harness-inspired elastic square grid', () => {
       });
     });
     await page.goto(appPath);
+    await fullDisplay(page);
     await expect.poll(() => page.evaluate(() => window.__gridLoopProbe().draws)).toBeGreaterThan(0);
     for (let cycle = 0; cycle < 10; cycle++) {
       await page.mouse.move(1000 + cycle * 8, 820, { steps: 3 });

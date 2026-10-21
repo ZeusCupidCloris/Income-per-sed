@@ -1,3 +1,4 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 const { setWorkingTime } = require('./helpers/business-clock');
 
@@ -11,6 +12,7 @@ async function openDevelop(page, viewport) {
     localStorage.setItem('income-per-sed-theme-v1', 'light');
   });
   await page.goto(DEVELOP_PATH, { waitUntil: 'load' });
+  await fullDisplay(page);
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('#currentTime')).toBeVisible();
 }

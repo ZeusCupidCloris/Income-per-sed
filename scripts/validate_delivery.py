@@ -174,7 +174,7 @@ def validate_html(path: Path) -> None:
     if path.name.endswith("Push.html"):
         if 'name="income-per-sed-channel" content="push"' not in text:
             fail(f"{path.name}: missing push channel metadata")
-        for marker in ("__incomeClockDiagnostics", "运行诊断", "DEVELOP REGRESSION EXPORT"):
+        for marker in ("__incomeClockDiagnostics", "运行诊断", "DEVELOP REGRESSION EXPORT", "MotionQualityMonitor"):
             if marker in text:
                 fail(f"{path.name}: Develop-only marker leaked into Push: {marker}")
 
@@ -182,6 +182,19 @@ def validate_html(path: Path) -> None:
     parser.feed(text)
     if not parser.scripts:
         fail(f"{path.name}: no inline JavaScript found")
+
+    classic_scripts = [script for kind, script in parser.scripts if kind == "classic"]
+    if classic_scripts:
+        combined = subprocess.run(
+            ["node", "--check", "-"],
+            input="\n;\n".join(classic_scripts),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        if combined.returncode:
+            fail(f"{path.name}: shared classic-script scope failed syntax validation\n{combined.stderr.strip()}")
 
     for index, (kind, script) in enumerate(parser.scripts, start=1):
         command = ["node", "--check"]

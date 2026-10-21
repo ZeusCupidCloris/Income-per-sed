@@ -26,11 +26,21 @@ async function capture(name, viewport, colorScheme = 'light') {
     timezoneId: 'Asia/Shanghai',
   });
   const page = await context.newPage();
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
   await page.clock.setFixedTime(new Date(fixedTime));
   await page.goto(appUrl, { waitUntil: 'load' });
   await page.evaluate(() => document.fonts.ready);
   await page.locator('#incomeMainCard').waitFor({ state: 'visible' });
+  await page.waitForFunction(() => !document.body.classList.contains('startup-presentation-active') && document.getElementById('currentTime').textContent !== '--:--:--');
+  if (await page.locator('#focusToggle').getAttribute('aria-pressed') === 'true') await page.locator('#focusToggle').click();
+  if (await page.locator('#privacyToggle').getAttribute('aria-pressed') === 'true') {
+    await page.locator('#privacyToggle').click();
+    await page.locator('#privacyKeepVisible').click();
+  }
+  await page.waitForFunction(() => !document.documentElement.hasAttribute('data-focus-restoring'));
   await page.waitForTimeout(1800);
+  if (pageErrors.length) throw new Error(`Preview page failed: ${pageErrors.join('; ')}`);
   const session = await context.newCDPSession(page);
   await session.send('Page.setWebLifecycleState', { state: 'frozen' });
   await session.detach();

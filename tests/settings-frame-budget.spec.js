@@ -1,8 +1,10 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
 test('settings motion samples real frame intervals and layout cost', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.waitForTimeout(1800);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send('Performance.enable');

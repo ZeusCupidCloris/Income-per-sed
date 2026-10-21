@@ -1,3 +1,4 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 const { writeFile } = require('node:fs/promises');
 
@@ -16,6 +17,7 @@ for (const [label, startTime, hours, width, theme] of [
     await page.emulateMedia({ reducedMotion: 'no-preference', colorScheme: theme });
     await page.clock.install({ time: new Date(`2026-09-07T${startTime}Z`) });
     await page.goto(`/Income-per-sed-${channel}.html`);
+    await fullDisplay(page);
     await page.waitForTimeout(1800);
     await page.evaluate(() => {
       Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
@@ -34,6 +36,7 @@ for (const [label, startTime, hours, width, theme] of [
         const marker = track.querySelector('.timeline-handoff-marker').getBoundingClientRect();
         window.progressFrames.push({
           t: performance.now() - start,
+          second: ((Date.now() / 1000 + 8 * 3600) % 86400 + 86400) % 86400,
           active: document.body.classList.contains('foreground-catchup-active'),
           ratios: fills.map(el => new DOMMatrixReadOnly(getComputedStyle(el).transform).a),
           cursor: marker.x + marker.width / 2,
@@ -63,7 +66,11 @@ for (const [label, startTime, hours, width, theme] of [
     expect(Math.max(...offsets)).toBeLessThan(2.5);
     expect(frames.at(-1).active).toBe(false);
     const last = frames.at(-1);
-    expect(Math.abs(last.cursor - last.ends[last.ratios[1] > .001 ? 1 : 0])).toBeLessThan(2.5);
+    const lunch = last.ratios[0] > .999 && last.ratios[1] < .001 && last.second >= 11.5 * 3600 && last.second <= 13.5 * 3600;
+    const endpoint = lunch
+      ? last.gapStart + (last.gapEnd - last.gapStart) * (last.second - 11.5 * 3600) / 7200
+      : last.ends[last.ratios[1] > .001 ? 1 : 0];
+    expect(Math.abs(last.cursor - endpoint)).toBeLessThan(2.5);
     expect(errors).toEqual([]);
   });
 }

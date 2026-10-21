@@ -1,9 +1,11 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
 const APP_PATH = '/Income-per-sed-Push.html';
 
 async function expectUsablePage(page, pageErrors) {
   await page.goto(APP_PATH, { waitUntil: 'load' });
+  await fullDisplay(page);
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('#incomeMainCard')).toBeVisible();
   await expect(page.locator('#incomeSettingsCard')).toBeVisible();
@@ -49,6 +51,7 @@ const TEMP_KEY = 'income-per-sed-settings-transaction-temp';
 const stored = page => page.evaluate(key => JSON.parse(localStorage.getItem(key)), SETTINGS_KEY);
 
 async function openIncome(page, amount) {
+  if (await page.locator('#settingsDialog').isHidden()) await fullDisplay(page);
   await page.locator('#incomeSettingsCard').dispatchEvent('click');
   await expect(page.locator('#incomeSettingsPanel')).toBeVisible();
   await expect(page.locator('#incomeSettingsPanel')).not.toHaveAttribute('data-settings-unready');
@@ -62,6 +65,7 @@ for (const artifact of ['Develop', 'Push']) {
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(`/Income-per-sed-${artifact}.html`);
+      await fullDisplay(page);
       await openIncome(page, 8123);
       await page.locator('#settingsSaveButton').dispatchEvent('click');
       await expect(page.locator('#settingsDialog')).toBeHidden();
@@ -99,6 +103,7 @@ for (const artifact of ['Develop', 'Push']) {
         page.on('pageerror', error => errors.push(error.message));
         await page.emulateMedia({ reducedMotion: 'no-preference' });
         await page.goto(`/Income-per-sed-${artifact}.html`);
+        await fullDisplay(page);
         if (kind === 'income') await openIncome(page, 12345);
         else {
           await page.locator('#scheduleSettingsCard').dispatchEvent('click');
@@ -139,8 +144,10 @@ for (const artifact of ['Develop', 'Push']) {
 
   test(`${artifact}: simultaneous income and schedule saves preserve both fields`, async ({ page, context }) => {
     await page.goto(`/Income-per-sed-${artifact}.html`);
+    await fullDisplay(page);
     const other = await context.newPage();
     await other.goto(`/Income-per-sed-${artifact}.html`);
+    await fullDisplay(other);
     await page.waitForTimeout(800);
     await openIncome(page, 24680);
     await other.locator('#scheduleSettingsCard').dispatchEvent('click');

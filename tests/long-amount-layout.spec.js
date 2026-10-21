@@ -1,3 +1,4 @@
+const { fullDisplay, selectTheme } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
 test('progress rendering refreshes geometry when resize notifications are delayed', async ({ page }) => {
@@ -15,6 +16,7 @@ test('progress rendering refreshes geometry when resize notifications are delaye
     window.addEventListener('resize', event => event.stopImmediatePropagation());
   });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.waitForTimeout(2400);
   await page.setViewportSize({ width: 900, height: 1000 });
   await page.locator('[data-history-seconds="-14400"]').dispatchEvent('click');
@@ -53,6 +55,7 @@ for (const channel of ['Develop', 'Push']) {
         await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' });
         await page.clock.setFixedTime(new Date('2026-09-07T10:00:00Z'));
         await page.goto(`/Income-per-sed-${channel}.html`);
+        await fullDisplay(page);
         for (const sample of [
           { mode: 'fixed-daily', amount: '10000000', expected: '10,000,000.00' },
           { mode: 'fixed-daily', amount: '100000000', expected: '100,000,000.00' },
@@ -103,6 +106,7 @@ for (const width of [390, 1440]) {
       // Freeze business time, but retain native animation frames and ResizeObserver delivery.
       await page.clock.setFixedTime(new Date('2026-09-07T09:30:00Z'));
       await page.goto('/Income-per-sed-Develop.html');
+      await fullDisplay(page);
       await page.waitForTimeout(2400);
       await page.evaluate(() => {
         window.__amountMotionFrames=[];
@@ -138,7 +142,7 @@ for (const width of [390, 1440]) {
         await page.locator('#currentTime').dispatchEvent('wheel',{deltaY,bubbles:true,cancelable:true});
         await page.waitForTimeout(32);
       }
-      await page.locator(`.theme-option[data-theme-mode="${theme==='light'?'dark':'light'}"]`).dispatchEvent('click');
+      await selectTheme(page, theme === 'light' ? 'dark' : 'light');
       await page.evaluate(()=>window.__amountPhase='theme-resize');
       await page.setViewportSize({width:width===390?768:900,height:1000});
       await page.waitForTimeout(700);

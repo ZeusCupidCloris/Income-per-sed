@@ -1,4 +1,27 @@
 const { test, expect } = require('@playwright/test');
+const fs = require('node:fs');
+async function fullDisplay(page) {
+  await expect(page.locator('#currentTime')).not.toHaveText('--:--:--');
+  if (await page.locator('#focusToggle').getAttribute('aria-pressed') === 'true') await page.locator('#focusToggle').click();
+  if (await page.locator('#privacyToggle').getAttribute('aria-pressed') === 'true') {
+    await page.locator('#privacyToggle').click();
+    await page.locator('#privacyKeepVisible').click();
+  }
+  await page.waitForFunction(() => !document.documentElement.hasAttribute('data-focus-restoring'));
+}
+async function settingsReady(page) {
+  await page.waitForFunction(() => !document.getElementById('settingsDialog').hidden && !document.querySelector('[data-settings-unready],.income-shared-shell'));
+}
+function stable(value) {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
+  return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`;
+}
+function backupChecksum(value) {
+  let hash = 2166136261;
+  for (const character of stable(value)) { hash ^= character.charCodeAt(0); hash = Math.imul(hash, 16777619); }
+  return (hash >>> 0).toString(16).padStart(8, '0');
+}
 async function hidden(page, value) {
   await page.evaluate(value => {
     if (value) {
@@ -9,6 +32,31 @@ async function hidden(page, value) {
   }, value);
 }
 for (const version of ['Develop','Push']) {
+  test(`${version}: completes startup without script errors`, async ({ page }) => {
+    const errors = []; page.on('pageerror', error => errors.push(error.message));
+    await page.clock.setFixedTime(new Date('2026-10-20T07:44:10Z'));
+    await page.goto(`/Income-per-sed-${version}.html`);
+    await expect(page.locator('#currentTime')).toHaveText('15:44:10');
+    await expect(page.locator('body')).not.toHaveClass(/startup-presentation-active/);
+    await expect(page.locator('#workedTime')).toHaveText('4时44分10秒');
+    expect(errors).toEqual([]);
+  });
+  test(`${version}: valid preset and date seeks work without development hooks`, async ({ page }) => {
+    const errors = []; page.on('pageerror', error => errors.push(error.message));
+    await page.clock.setFixedTime(new Date('2026-10-20T07:44:10Z'));
+    await page.goto(`/Income-per-sed-${version}.html`); await fullDisplay(page);
+    await page.locator('#historyQuickOpen').click();
+    await page.locator('[data-history-seconds="-900"]').click();
+    await expect(page.locator('#historyQuickClock')).toHaveText('15:29:10');
+    await page.evaluate(() => {
+      document.getElementById('historySeekDateInput').value = '2026-10-19';
+      document.getElementById('historySeekTimeInput').value = '10:30';
+      document.getElementById('historySeekForm').requestSubmit();
+    });
+    await expect(page.locator('#historyQuickClock')).toHaveText('10:30:00');
+    await expect(page.locator('#historySeekError')).toBeHidden();
+    expect(errors).toEqual([]);
+  });
   test(`${version}: both shared settings trajectories survive release generation`, async ({page}) => {
     const errors=[]; page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize({width:390,height:844});
@@ -16,6 +64,7 @@ for (const version of ['Develop','Push']) {
     await page.clock.install({time:new Date('2026-09-07T06:30:00Z')});
     await page.goto(`/Income-per-sed-${version}.html`);
     await page.waitForTimeout(1600);
+    await fullDisplay(page);
     await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()+1000)));
     for (const kind of ['income','schedule']) {
       const card=page.locator(`#${kind}SettingsCard`);
@@ -43,14 +92,18 @@ for (const version of ['Develop','Push']) {
     const errors=[]; page.on('pageerror',e=>errors.push(e.message));
     await page.clock.setFixedTime(new Date('2026-09-07T06:30:00Z'));
     await page.goto(`/Income-per-sed-${version}.html`);
+    await fullDisplay(page);
     for(const mode of ['fixed-monthly','annual-average','fixed-daily']) {
       await page.locator('#incomeSettingsCard').click();
+      await settingsReady(page);
       await page.locator(`[data-income-mode="${mode}"]`).click();
       await page.locator('#incomeAmountInput').fill('2600');
       await page.locator('#settingsSaveButton').click();
       await expect(page.locator('#settingsDialog')).toBeHidden();
       await page.reload();
+      await fullDisplay(page);
       await page.locator('#incomeSettingsCard').click();
+      await settingsReady(page);
       await expect(page.locator('#incomeAmountInput')).toHaveValue('2600.00');
       await page.keyboard.press('Escape');
       expect(Number(await page.locator('#progressTrack').getAttribute('aria-valuenow'))).toBeGreaterThan(0);
@@ -62,6 +115,7 @@ for (const version of ['Develop','Push']) {
     await page.setViewportSize({width:390,height:844});
     await page.clock.install({time:new Date('2026-09-07T06:30:00Z')});
     await page.goto(`/Income-per-sed-${version}.html`);
+    await fullDisplay(page);
     await page.locator('#historyQuickOpen').click();
     const box=await page.locator('#historyQuickPanel').boundingBox();
     expect(box.y).toBeGreaterThanOrEqual(0); expect(box.y+box.height).toBeLessThanOrEqual(845);
@@ -73,12 +127,61 @@ for (const version of ['Develop','Push']) {
     await hidden(page,true); await page.clock.fastForward(60000); await hidden(page,false);
     await page.waitForTimeout(1600);
     expect(await page.locator('#currentTime').textContent()).not.toBe(past);
-    await page.locator('#liveAnchor').click();
+    await page.locator('#historyQuickOpen').click();
+    await page.locator('#historyQuickPanel [data-history-action="live"]').click();
+    await page.locator('#historyQuickClose').click();
     await page.waitForTimeout(2000);
     for(let i=0;i<10;i++){await hidden(page,true);await page.clock.fastForward(1000);await hidden(page,false);}
     await page.waitForTimeout(2000);
     await expect(page.locator('#currentTime')).toContainText('14:31');
     expect(errors).toEqual([]);
+  });
+  test(`${version}: a delayed backup cannot overwrite a newly entered draft`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-10-20T07:44:10Z'));
+    await page.goto(`/Income-per-sed-${version}.html`);
+    await fullDisplay(page);
+    await page.locator('#incomeSettingsCard').click(); await settingsReady(page);
+    const before = await page.evaluate(() => localStorage.getItem('income-per-sed-settings'));
+    await page.locator('#settingsBackupExport').click();
+    const downloading = page.waitForEvent('download');
+    await page.locator('#settingsSafetyAccept').click();
+    const download = await downloading;
+    const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
+    backup.payload.settings.monthlyIncome = 8800;
+    backup.checksum = backupChecksum(backup.payload);
+    await page.evaluate(() => {
+      const original = File.prototype.text;
+      File.prototype.text = async function () {
+        const text = await original.call(this);
+        return new Promise(resolve => { window.releaseBackupRead = () => resolve(text); });
+      };
+    });
+    await page.locator('#settingsBackupFile').setInputFiles({ name: 'synthetic-backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+    await page.waitForFunction(() => typeof window.releaseBackupRead === 'function');
+    await page.locator('#incomeAmountInput').fill('9100');
+    await page.evaluate(() => window.releaseBackupRead());
+    await expect(page.locator('#settingsSafetyTitle')).toHaveText('未导入设置');
+    await expect(page.locator('#settingsSafetyText')).toContainText('草稿');
+    await page.locator('#settingsSafetyAccept').click();
+    await expect(page.locator('#incomeAmountInput')).toHaveValue('9100');
+    expect(await page.evaluate(() => localStorage.getItem('income-per-sed-settings'))).toBe(before);
+  });
+  test(`${version}: reopening history clears an obsolete date error`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-10-20T07:44:10Z'));
+    await page.goto(`/Income-per-sed-${version}.html`);
+    await fullDisplay(page);
+    await page.locator('#historyQuickOpen').click();
+    await page.waitForFunction(() => !document.getElementById('historyQuickPanel').dataset.entryAnimating);
+    await page.evaluate(() => {
+      document.getElementById('historySeekDateInput').value = '2026-10-21';
+      document.getElementById('historySeekForm').requestSubmit();
+    });
+    await expect(page.locator('#historySeekWheels')).toHaveAttribute('aria-invalid', 'true');
+    await page.locator('#historyQuickClose').click();
+    await expect(page.locator('#historyQuickPanel')).toBeHidden();
+    await page.locator('#historyQuickOpen').click();
+    await expect(page.locator('#historySeekError')).toBeHidden();
+    await expect(page.locator('#historySeekWheels')).not.toHaveAttribute('aria-invalid', 'true');
   });
 }
 test('Develop and Push expose equal calculation results for work and rest dates',async({browser})=>{
@@ -91,8 +194,10 @@ test('Develop and Push expose equal calculation results for work and rest dates'
       for(const date of ['2026-09-07T06:30:00Z','2026-10-01T06:30:00Z']){
         await page.clock.setFixedTime(new Date(date));
         await page.goto(`http://127.0.0.1:4173/Income-per-sed-${version}.html`);
+        await fullDisplay(page);
         for(const mode of ['fixed-monthly','annual-average','fixed-daily']){
           await page.locator('#incomeSettingsCard').click();
+          await settingsReady(page);
           await page.locator(`[data-income-mode="${mode}"]`).click();
           await page.locator('#incomeAmountInput').fill('2600');
           await page.locator('#settingsSaveButton').click();

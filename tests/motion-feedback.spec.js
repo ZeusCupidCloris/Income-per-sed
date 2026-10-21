@@ -1,9 +1,11 @@
+const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
 async function open(page, date = '2026-09-07T06:30:00Z') {
   await page.clock.install({ time: new Date(date) });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/Income-per-sed-Develop.html');
+  await fullDisplay(page);
   await page.waitForTimeout(1600);
 }
 const seek = page => page.evaluate(() => window.__incomeClockDiagnostics.getHistoricalSeekState());
@@ -446,6 +448,7 @@ test('editable hover is delayed, leaves cleanly, and focus stays immediate', asy
   await expect(card).toHaveClass(/is-hovered/);
   await page.mouse.move(0, 0);
   await expect(card).not.toHaveClass(/is-hovered/);
+  await page.keyboard.press('Tab');
   await card.focus();
   expect(await card.evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none');
 });
@@ -533,7 +536,7 @@ test('follower save reports submitted rather than saved', async ({ page, context
   await other.close();
 });
 
-test('mobile sheet drag closes without stale focus or out-of-bounds content', async ({ page }) => {
+test('mobile centered history closes explicitly without stale focus or out-of-bounds content', async ({ page }) => {
   await open(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('#historyQuickOpen').click();
@@ -543,7 +546,10 @@ test('mobile sheet drag closes without stale focus or out-of-bounds content', as
   await grabber.dispatchEvent('pointerdown', pointer);
   await page.locator('#historyQuickPanel').dispatchEvent('pointermove', { ...pointer, clientY: 700 });
   await page.locator('#historyQuickPanel').dispatchEvent('pointerup', { ...pointer, clientY: 700 });
+  await expect(page.locator('#historyQuickPanel')).toBeVisible();
+  await page.locator('#historyQuickClose').click();
   await expect(page.locator('#historyQuickPanel')).toBeHidden();
+  await expect(page.locator('#historyQuickOpen')).toBeFocused();
   await page.locator('#historyQuickOpen').click();
   await page.waitForTimeout(260);
   const bounds = await page.locator('#historyQuickPanel').boundingBox();

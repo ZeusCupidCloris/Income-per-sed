@@ -67,6 +67,7 @@
 | [docs/acceptance/fourfile-20260916.md](../docs/acceptance/fourfile-20260916.md) | 09-16 四文件交付验收证据 | 维护与历史 |
 | [docs/acceptance/fourfile-20260922.md](../docs/acceptance/fourfile-20260922.md) | 09-22 四文件交付验收证据 | 维护与历史 |
 | [docs/acceptance/fourfile-20260924.md](../docs/acceptance/fourfile-20260924.md) | 09-24 四文件交付验收证据 | 维护与历史 |
+| [docs/acceptance/fourfile-20261021.md](../docs/acceptance/fourfile-20261021.md) | RC47 四文件同步与产品使用手册核对 | 维护与验收 |
 | [docs/acceptance/grid-idle-20260930.md](../docs/acceptance/grid-idle-20260930.md) | 09-30 背景空闲重绘修复证据 | 维护与历史 |
 | [docs/acceptance/grid-recovery-20260930.md](../docs/acceptance/grid-recovery-20260930.md) | 09-30 模拟后台绘制循环检查证据 | 维护与历史 |
 | [docs/acceptance/maintenance-20260915.md](../docs/acceptance/maintenance-20260915.md) | 09-15 仓库维护验收证据 | 维护与历史 |
@@ -87,6 +88,7 @@
 | [docs/releases/v2.5.2.md](../docs/releases/v2.5.2.md) | 2.5.2 发布说明 | 维护与历史 |
 | [docs/releases/v2.6.0.md](../docs/releases/v2.6.0.md) | 2.6.0 四文件同步与验证范围 | 用户与维护 |
 | [docs/releases/v2.6.1.md](../docs/releases/v2.6.1.md) | 中号小组件窄屏修复与四文件同步 | 用户与维护 |
+| [docs/releases/v2.7.0.md](../docs/releases/v2.7.0.md) | 2.7.0 用户交互与手册同步说明 | 用户与维护 |
 | [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本
@@ -126,6 +128,7 @@
 | [tests/helpers/business-clock.js](../tests/helpers/business-clock.js) | 业务时钟测试辅助工具 | 维护 |
 | [tests/helpers/background-recovery.js](../tests/helpers/background-recovery.js) | 模拟后台恢复测试辅助工具 | 维护 |
 | [tests/helpers/settings-page.js](../tests/helpers/settings-page.js) | 普通设置测试的共同页面与展开初始化 | 维护 |
+| [tests/helpers/display-state.js](../tests/helpers/display-state.js) | 通过真实显示控件准备测试，等待设置交接及确认放弃草稿 | 维护 |
 | [tests/quality-entrypoints.test.mjs](../tests/quality-entrypoints.test.mjs) | 功能分组完整性与运行入口契约检查 | 维护 |
 | [tests/input-device-motion.spec.js](../tests/input-device-motion.spec.js) | 输入设备与刷新率验收测试 | 维护 |
 | [tests/interaction-handoff.spec.js](../tests/interaction-handoff.spec.js) | 连续操作接管测试 | 维护 |

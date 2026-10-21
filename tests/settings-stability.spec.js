@@ -1,19 +1,20 @@
 const { test, expect } = require('@playwright/test');
 const { openSettings } = require('./helpers/settings-page');
+const { discardSettings } = require('./helpers/display-state');
 
 async function open(page, kind) {
   await openSettings(page, { kind, channel: 'develop' });
 }
 
-test('calendar disclosure preserves its entry and editor scroll position', async ({ page }) => {
+test('inline calendar preserves its position while schedule selections change', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 700 });
   await open(page, 'schedule');
-  await page.locator('#calendarDataToggle').scrollIntoViewIfNeeded();
+  await expect(page.locator('#calendarDataSection')).toBeInViewport();
   await page.waitForTimeout(150);
-  const read = () => page.evaluate(() => ({ scroll: document.querySelector('.settings-sheet').scrollTop, top: document.querySelector('#calendarDataToggle').getBoundingClientRect().top }));
+  const read = () => page.evaluate(() => ({ scroll: document.querySelector('.settings-sheet').scrollTop, top: document.querySelector('#calendarDataSection').getBoundingClientRect().top }));
   const before = await read();
   for (let i = 0; i < 4; i++) {
-    await page.locator('#calendarDataToggle').dispatchEvent('click');
+    await page.locator('[data-time-key="morningEnd"] .time-wheel-column[data-unit="minute"]').dispatchEvent('keydown', { key: i % 2 ? 'ArrowUp' : 'ArrowDown' });
     await page.waitForTimeout(350);
     const after = await read();
     expect(Math.abs(after.scroll - before.scroll)).toBeLessThan(1);
@@ -59,7 +60,7 @@ for (const width of [320, 390, 1440]) {
     expect(after.total.text).toBe('6小时');
     expect(after.afternoon.text).toBe('4小时');
     for (const key of ['total', 'morning', 'afternoon']) {
-      for (const dimension of ['x', 'y', 'width', 'height']) expect(Math.abs(after[key].rect[dimension] - before[key].rect[dimension]), `${key}.${dimension}`).toBeLessThan(1);
+      for (const dimension of ['right', 'y', 'height']) expect(Math.abs(after[key].rect[dimension] - before[key].rect[dimension]), `${key}.${dimension}`).toBeLessThan(1);
     }
     await page.locator('[data-time-key="morningEnd"] .time-wheel-column[data-unit="hour"]').dispatchEvent('keydown', { key: 'Home' });
     await expect(page.locator('#scheduleCalibrationTotal')).toHaveText('等待校准');
@@ -79,25 +80,26 @@ test('rapid local operations leave no copy, layer, scroll or focus residue', asy
       await page.locator(`[data-income-mode="${mode}"]`).dispatchEvent('click');
       await page.waitForTimeout(25);
     }
-    await page.keyboard.press('Escape');
+    await discardSettings(page);
     await page.waitForTimeout(40);
     await page.locator('#incomeSettingsCard').dispatchEvent('click');
     await page.waitForTimeout(400);
   }
-  await page.keyboard.press('Escape');
-  await expect(page.locator('#settingsDialog')).toBeHidden();
+  await discardSettings(page);
   await expect(page.locator('.income-mode-previous, .income-shared-shell, .income-shared-origin')).toHaveCount(0);
   expect(await page.locator('[style*="--settings-layer-opacity"]').count()).toBe(0);
   expect(await page.locator('main').evaluate(element => element.inert)).toBe(false);
   expect(errors).toEqual([]);
   await open(page, 'schedule');
   for (let i = 0; i < 10; i++) {
-    await page.locator('#calendarDataToggle').dispatchEvent('click');
+    await page.keyboard.press('Escape');
+    await page.locator('#scheduleSettingsCard').dispatchEvent('click');
     await page.waitForTimeout(25);
   }
   await page.waitForTimeout(350);
-  await expect(page.locator('#calendarDataToggle')).toHaveAttribute('aria-expanded', 'false');
-  expect(await page.locator('#calendarDataContent').evaluate(element => ({ height: element.clientHeight, inert: element.inert }))).toEqual({ height: 0, inert: true });
+  await expect(page.locator('#calendarDataToggle')).toHaveCount(0);
+  await expect(page.locator('#calendarDataSection')).toBeInViewport();
+  expect(await page.locator('#calendarDataContent').evaluate(element => ({ visible: element.clientHeight > 0, inert: element.inert }))).toEqual({ visible: true, inert: false });
 });
 
 test('combined motion observes frame cost and wheel geometry read/write ordering', async ({ page, browserName }, testInfo) => {
