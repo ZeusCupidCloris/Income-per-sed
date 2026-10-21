@@ -4,16 +4,16 @@
 
 ## 当前交付
 
-产品与小组件按所有者确认统一为 **2.7.0**，交付 **20261021.4**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。本批通过独立分支送审，不代表已经合并、创建 Release 或更新线上版本。
+产品与小组件按所有者确认统一为 **2.7.0**，交付 **20261021.4**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。[PR #56](https://github.com/ZeusCupidCloris/Income-per-sed/pull/56)已合并至 `main`，产品提交 `72a6d62`，后续测试维护不改变产品文件。[在线页面](https://zeuscupidcloris.github.io/Income-per-sed/)已部署并核验为同批 2.7.0。本次不创建 Release 或标签，历史 Release 附件保留原版本。
 
 | 事项 | 当前证据 |
 | --- | --- |
 | 本地发布检查 | 四文件版本、语法、共享脚本作用域、手册校验书签与校验清单通过；57 项配套检查通过，连续两次构建六文件字节一致 |
 | 小组件范围 | 核对共享计薪模式、内置日历与设置交换；除版本元数据外保持原有业务和布局 |
-| 网页范围 | 同步已确认的 RC47 交互与字体，Push 重新生成；修复跨脚本压缩重名及残留诊断调用 |
-| 浏览器证据 | RC47 原预览 117 组及 20261021.3 专项 Edge 18 项、WebKit 15 项单独保留；20261021.4 已通过 30 项设置边界检查，完整回归与云端结果以 PR 当前提交为准 |
+| 网页范围 | 同步已确认的 RC47 交互与 RC37 字体，重新生成 Push；修复发布脚本作用域、极小视口遮挡、内层滚动复位和收回动画文字偏移 |
+| 浏览器证据 | 当前交付本地完整回归与[PR 云端完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/39580046999)均为 Edge 230 项、WebKit 143 项通过；WebKit 另有 2 项仅支持 Chromium 原生触摸注入的既定跳过，不记作通过 |
 | 手册 | 九页、五张当前 Push 插图，逐页检查通过；工程历史与用户操作分开，可访问性辅助检查无高、中、低级问题 |
-| GitHub 与 Pages | 2.7.0 已上传至独立分支并创建[草稿 PR #56](https://github.com/ZeusCupidCloris/Income-per-sed/pull/56)；[完整云端检查](https://github.com/ZeusCupidCloris/Income-per-sed/pull/56/checks)已启动，未合并或部署，不沿用历史线上通过结论 |
+| GitHub 与 Pages | [维护 PR #57](https://github.com/ZeusCupidCloris/Income-per-sed/pull/57)修正测试时钟竞态并合并为 `833866c`，产品文件未变；[main 专项 / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/39592603596)通过。2026-10-21 19:41（北京时间）首页和命名 Push 均与交付文件逐字节一致，线上操作无脚本错误；首次被门禁拦截的记录保留在同步记录中 |
 
 详见[本批版本说明](releases/v2.7.0.md)与[四文件同步记录](acceptance/fourfile-20261021.md)。2026-10-09 小组件“持续观察中，暂未发现问题”的用户反馈保留为历史证据，不自动扩展为本批全部设备与状态已验收。
 
