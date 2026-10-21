@@ -13,7 +13,7 @@
 | 网页范围 | 同步已确认的 RC47 交互与字体，Push 重新生成；修复跨脚本压缩重名及残留诊断调用 |
 | 浏览器证据 | RC47 原预览 117 组检查单独保留；本批生成版专项 Edge 18 项、WebKit 15 项通过，不把预览结果冒称为全部仓库套件重跑 |
 | 手册 | 九页、五张当前 Push 插图，逐页检查通过；工程历史与用户操作分开，可访问性辅助检查无高、中、低级问题 |
-| GitHub 与 Pages | 独立分支已上传，正在将交付版本统一为 2.7.0；尚未创建 PR、未合并或部署，不沿用历史线上通过结论 |
+| GitHub 与 Pages | 2.7.0 已上传至独立分支并创建[草稿 PR #56](https://github.com/ZeusCupidCloris/Income-per-sed/pull/56)；[完整云端检查](https://github.com/ZeusCupidCloris/Income-per-sed/pull/56/checks)已启动，未合并或部署，不沿用历史线上通过结论 |
 
 详见[本批版本说明](releases/v2.7.0.md)与[四文件同步记录](acceptance/fourfile-20261021.md)。2026-10-09 小组件“持续观察中，暂未发现问题”的用户反馈保留为历史证据，不自动扩展为本批全部设备与状态已验收。
 
