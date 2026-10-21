@@ -1,7 +1,31 @@
+# Local dependencies and Python bytecode.
 node_modules/
+.venv/
 __pycache__/
 *.py[cod]
+
+# Generated browser diagnostics and the local runtime observation report.
 playwright-report/
 test-results/
+blob-report/
 output/playwright/
+/runtime-observation.json
+
+# GitHub Pages staging output, not the versioned Push HTML.
 _site/
+
+# Personal browser exports at the repository root can contain salary data.
+/Income-per-sed-settings-*.json
+/Income-per-sed-calendar-*.json
+
+# Local environment values stay private; a reviewed example can be committed.
+.env
+.env.*
+!.env.example
+
+# Operating-system metadata.
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+
+# Keep docs/images/ and tests/*-snapshots/ versioned as release evidence.

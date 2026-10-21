@@ -1,18 +1,17 @@
 root = true
 
+# Shared defaults also cover .cjs scripts and extensionless repository files.
 [*]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
-
-[*.{html,js,mjs,json,yml,yaml,md,txt}]
 indent_style = space
 indent_size = 2
 
 [*.py]
-indent_style = space
 indent_size = 4
 
+# Preserve Markdown hard line breaks.
 [*.md]
 trim_trailing_whitespace = false
