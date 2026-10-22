@@ -2,40 +2,41 @@ const { test, expect } = require('@playwright/test');
 const { fullDisplay, discardSettings } = require('./helpers/display-state');
 const appPath = process.env.SETTINGS_RELEASE_CHANNEL === 'push' ? '/Income-per-sed-Push.html' : '/Income-per-sed-Develop.html';
 
-test('centered quick history stays anchored during touch and closes explicitly', async ({ page }) => {
+test('mobile quick history restores cancelled drags and supports explicit and swipe closing', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto(appPath);
   await fullDisplay(page);
   await page.locator('#historyQuickOpen').click();
-  await expect.poll(() => page.locator('#historyQuickPanel').evaluate(panel => {
-    const moving = panel.getAnimations().some(animation => animation.playState === 'running');
-    return moving ? Infinity : Math.abs(new DOMMatrix(getComputedStyle(panel).transform).m42);
-  })).toBeLessThan(0.5);
-  const sample = await page.evaluate(() => {
+  await expect(page.locator('#historyQuickPanel')).not.toHaveAttribute('data-entry-animating');
+  const before = await page.locator('#historyQuickPanel').boundingBox();
+  await page.evaluate(() => {
     const panel = document.querySelector('#historyQuickPanel');
     const grabber = document.querySelector('#historyQuickGrabber');
-    const before = panel.getBoundingClientRect().toJSON();
     const event = (type, y, id = 21) => new PointerEvent(type, { pointerId: id, pointerType: 'touch', button: 0, clientX: 180, clientY: y, bubbles: true });
     grabber.dispatchEvent(event('pointerdown', 500));
     panel.dispatchEvent(event('pointermove', 540));
     panel.dispatchEvent(event('pointercancel', 540));
-    grabber.dispatchEvent(event('pointerdown', 540, 22));
-    panel.dispatchEvent(event('pointermove', 740, 22));
-    panel.dispatchEvent(event('pointerup', 740, 22));
-    return { before, after: panel.getBoundingClientRect().toJSON(), centered: panel.hasAttribute('data-entry-centered') };
   });
-  expect(sample.centered).toBe(true);
-  for (const key of ['x', 'y', 'width', 'height']) expect(Math.abs(sample.after[key] - sample.before[key])).toBeLessThan(0.5);
+  await expect(page.locator('body')).not.toHaveClass(/history-quick-sheet-(returning|dragging)/);
+  const after = await page.locator('#historyQuickPanel').boundingBox();
+  for (const key of ['x', 'y', 'width', 'height']) expect(Math.abs(after[key] - before[key])).toBeLessThan(0.5);
   await expect(page.locator('#historyQuickPanel')).toBeVisible();
   await page.locator('#historyQuickClose').click();
   await expect(page.locator('#historyQuickPanel')).toBeHidden();
   await expect(page.locator('body')).not.toHaveClass(/history-quick-sheet-(returning|dragging)/);
   await page.locator('#historyQuickOpen').click();
-  await expect.poll(() => page.locator('#historyQuickPanel').evaluate(panel => {
-    const moving = panel.getAnimations().some(animation => animation.playState === 'running');
-    return moving ? Infinity : Math.abs(new DOMMatrix(getComputedStyle(panel).transform).m42);
-  })).toBeLessThan(0.5);
+  await expect(page.locator('#historyQuickPanel')).not.toHaveAttribute('data-entry-animating');
+  await page.evaluate(() => {
+    const panel = document.getElementById('historyQuickPanel');
+    const event = (type, y) => new PointerEvent(type, { pointerId: 22, pointerType: 'touch', button: 0, clientX: 180, clientY: y, bubbles: true });
+    document.getElementById('historyQuickGrabber').dispatchEvent(event('pointerdown', 540));
+    panel.dispatchEvent(event('pointermove', 740));
+    panel.dispatchEvent(event('pointerup', 740));
+  });
+  await expect(page.locator('#historyQuickPanel')).toBeHidden();
+  await expect(page.locator('#historyQuickOpen')).toBeFocused();
+  await expect(page.locator('body')).not.toHaveClass(/history-quick-sheet-(returning|dragging)/);
 });
 
 test('quick action retains its source without delaying or stacking feedback', async ({ page }) => {

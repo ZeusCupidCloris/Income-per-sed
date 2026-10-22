@@ -7790,33 +7790,13 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
 }
 
 /* End R31 consolidated release layer. */
-/* Context views remain secondary: no new dashboard cards or overlay layers. */
-.context-disclosure{margin-top:16px;border-top:1px solid var(--material-edge,var(--border-light));font-size:13px;letter-spacing:0;}
-.context-disclosure [hidden]{display:none!important;}
-.context-disclosure>summary{display:flex;align-items:center;gap:8px;min-height:44px;list-style:none;cursor:pointer;color:var(--text-primary);font-weight:500;}
-.context-disclosure>summary::-webkit-details-marker{display:none;}
-.context-disclosure>summary>svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
-.context-chevron{margin-left:auto;width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);flex:none;}
-.context-disclosure[open]>summary .context-chevron{transform:rotate(225deg);}
-.context-badge{font-size:11px;font-weight:400;color:var(--text-secondary);margin-left:auto;}
-.context-badge+.context-chevron{margin-left:4px;}
-.context-disclosure-body{padding:4px 0 10px;min-width:0;}
-.context-disclosure-viewport{min-width:0;display:flow-root;}
-.context-disclosure[data-context-motion]>.context-disclosure-viewport{overflow:hidden;overflow:clip;}
+/* Date-estimate supporting copy and results. */
 .context-meta{font-size:11px;line-height:1.65;color:var(--text-secondary);margin:8px 0;overflow-wrap:anywhere;}
 .context-error{font-size:12px;line-height:1.6;color:var(--error-color,#a04435);margin:8px 0;}
 .context-ledger{margin:0;font-variant-numeric:tabular-nums;}
 .context-ledger>div{display:grid;grid-template-columns:80px minmax(0,1fr);gap:12px;padding:9px 0;align-items:baseline;}
 .context-ledger dt{font-size:12px;color:var(--text-secondary);}
 .context-ledger dd{margin:0;min-width:0;text-align:right;font-size:13px;line-height:1.7;overflow-wrap:anywhere;}
-.context-ledger-total{border-top:1px solid var(--material-edge,var(--border-light));margin-top:4px;}
-.context-ledger-total dd{font-weight:600;}
-.calculation-receipt{border-top:1px dashed var(--material-edge,var(--border-light));}
-.history-date-disclosure{margin-top:12px;}
-.history-date-form{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:10px;}
-.history-date-form label{display:grid;gap:6px;font-size:12px;color:var(--text-secondary);min-width:0;}
-.history-date-form input{box-sizing:border-box;min-width:0;width:100%;min-height:44px;padding:8px;border:1px solid var(--material-edge,var(--border-light));border-radius:var(--ui-radius-control);background:var(--material-field,var(--bg-soft));color:var(--text-primary);font:inherit;font-size:14px;font-variant-numeric:tabular-nums;}
-.history-date-form button{grid-column:1/-1;width:100%;min-height:44px;}
 .date-review-result{margin-top:12px;border-top:1px solid var(--material-edge,var(--border-light));padding-top:10px;}
 .date-review-result h3{font-size:13px;font-weight:600;margin:0;}
 .date-review-amount{font-size:26px;line-height:1.4;font-weight:600;font-variant-numeric:tabular-nums;min-height:37px;margin:6px 0;}
@@ -7824,43 +7804,11 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
 .context-ledger.date-review-ledger>div{grid-template-columns:92px minmax(0,1fr);}
 .date-review-ledger{margin-bottom:8px;}
 .date-review-result button{width:100%;min-height:44px;}
-.schedule-range-modes{position:relative;isolation:isolate;display:flex;gap:4px;max-width:192px;padding:3px;background:var(--material-field,var(--bg-soft));border:1px solid var(--material-edge,var(--border-light));border-radius:var(--ui-radius-control);}
-.schedule-range-modes::before{content:"";position:absolute;left:3px;top:3px;bottom:3px;width:calc((100% - 10px)/2);border-radius:var(--ui-radius-control);background:var(--material-selected,var(--card-hover));pointer-events:none;transition:transform 180ms cubic-bezier(.2,.7,.3,1);}
-.schedule-range-modes[data-period="afternoon"]::before{transform:translateX(calc(100% + 4px));}
-.schedule-range-modes button{position:relative;flex:1;min-width:0;min-height:40px;border:0;border-radius:var(--ui-radius-control);background:transparent;color:var(--text-secondary);font:inherit;font-size:13px;font-weight:500;cursor:pointer;}
-.schedule-range-modes button[aria-pressed="true"]{background:transparent;color:var(--text-primary);font-weight:600;}
-.schedule-range-preview{display:grid;grid-template-columns:144px minmax(0,1fr);align-items:center;gap:24px;padding:12px 0 4px;--range-ink:var(--accent-warm);}
-.schedule-range-preview[data-period="afternoon"]{--range-ink:var(--accent-cool,var(--text-secondary));}
-.schedule-range-clock{position:relative;width:144px;height:144px;}
-.schedule-range-clock svg{display:block;width:100%;height:100%;overflow:visible;}
-.schedule-range-clock svg text{fill:var(--text-secondary);font-family:inherit;font-size:9px;text-anchor:middle;}
-.range-hour-ticks{stroke:var(--text-secondary);stroke-width:1;opacity:.38;}
-.range-track{fill:none;stroke:var(--material-edge,var(--border-light));stroke-width:5;}
-.range-arc{fill:none;stroke:var(--range-ink);stroke-width:5;stroke-linecap:round;}
-.range-endpoint{fill:var(--range-ink);stroke:var(--material-solid,var(--card));stroke-width:1.5;}
-.schedule-range-center{position:absolute;inset:36px 22px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;text-align:center;}
-.schedule-range-center strong{font-size:13px;font-weight:600;white-space:nowrap;}
-.schedule-range-center span{font-size:11px;color:var(--text-secondary);}
-.range-reading>div{grid-template-columns:40px minmax(0,1fr);padding:5px 0;}
-.range-reading dd{font-size:14px;}
-.context-disclosure summary:focus-visible,.history-date-form input:focus-visible,.schedule-range-modes button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:3px;}
-.history-quick-panel.has-date-review{max-height:calc(var(--history-quick-viewport-height,100dvh) - 36px);overflow-y:auto;overscroll-behavior:contain;}
-.history-quick-panel.has-date-review .entry-popover-skin{background:var(--material-solid,var(--card));}
 @media(max-width:620px){
-    .history-quick-panel.has-date-review{max-height:calc(var(--history-quick-viewport-height,100dvh) - 24px - env(safe-area-inset-top,0px));}
-    .schedule-range-preview{grid-template-columns:128px minmax(0,1fr);gap:12px;}
-    .schedule-range-clock{width:128px;height:128px;}
-    .schedule-range-center{inset:30px 18px;}
     .context-ledger>div{grid-template-columns:68px minmax(0,1fr);gap:8px;}
-    .range-reading>div{grid-template-columns:32px minmax(0,1fr);}
 }
-@media(prefers-reduced-motion:reduce){.schedule-range-modes::before{transition:none;}}
 @media(forced-colors:active){
-    .context-disclosure,.calculation-receipt,.date-review-result,.context-ledger-total{border-color:CanvasText;}
-    .history-date-form input,.schedule-range-modes{background:Canvas;color:CanvasText;border-color:CanvasText;}
-    .schedule-range-modes button[aria-pressed="true"]{outline:1px solid Highlight;}
-    .schedule-range-modes::before{background:Canvas;}
-    .range-track,.range-hour-ticks{stroke:GrayText;}.range-arc{stroke:Highlight;}.range-endpoint{fill:Highlight;stroke:Canvas;}
+    .date-review-result{border-color:CanvasText;}
 }
 </style>
 <style id="r40-surface-typography-refinement-preview">
@@ -8788,7 +8736,7 @@ html[data-theme="dark"] .work-segment::after{opacity:.68;}
 
 /* Settings cards share timing while retaining their distinct spatial paths. */
 .income-shared-origin{visibility:hidden!important;}
-#scheduleSettingsCard.settings-expanded-origin{visibility:hidden!important;}
+#incomeSettingsCard.settings-expanded-origin,#scheduleSettingsCard.settings-expanded-origin{visibility:hidden!important;opacity:0!important;}
 .income-shared-shell{position:fixed;left:0;top:0;box-sizing:border-box;pointer-events:none;z-index:var(--z-settings-backdrop);contain:layout style;will-change:transform;backdrop-filter:blur(28px) saturate(1.12);-webkit-backdrop-filter:blur(28px) saturate(1.12);}
 .income-shared-shell>.income-shared-mirror{position:absolute!important;inset:0 auto auto 0!important;box-sizing:border-box;margin:0!important;transform:none!important;translate:0 0!important;background:transparent!important;box-shadow:none!important;border-color:transparent!important;pointer-events:none!important;animation:none!important;transition:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;}
 .income-shared-mirror *{animation:none!important;transition:none!important;}
@@ -9225,13 +9173,6 @@ html:root .entry-popover[data-entry-desktop]{
     .entry-popover-skin{background:Canvas;border-color:CanvasText;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;}
     .entry-popover-shadow{box-shadow:none;}
 }
-html:root .history-quick-panel.has-date-review{
-    max-height:calc(var(--history-sheet-visual-height,var(--app-viewport-height,100dvh)) - 36px)!important;
-    overflow-y:auto!important;
-    overscroll-behavior:contain;
-    background:var(--material-solid)!important;
-}
-html:root .history-quick-panel.has-date-review .entry-popover-skin{background:var(--material-solid);}
 html[data-theme="dark"] .context-error{color:#e4a599;}
 /* Wide touch screens use the existing bottom-sheet behavior, not a mouse-only popup. */
 @media(min-width:621px) and (pointer:coarse){
@@ -9261,7 +9202,6 @@ html[data-theme="dark"] .context-error{color:#e4a599;}
 #historyQuickPanel .history-quick-grid .history-quick-secondary{background:transparent;border-color:transparent;font-size:12px;color:var(--text-secondary);}
 #historyQuickPanel .history-quick-live{margin-top:3px;background:var(--material-selected);}
 #historyQuickPanel .history-quick-live:disabled{background:transparent;border-color:transparent;}
-#historyQuickPanel .history-date-disclosure{margin-top:13px;}
 @media(hover:hover){#historyQuickPanel .history-quick-grid button:hover:not(:disabled){background:var(--material-selected);}}
 @media(forced-colors:active){#historyQuickPanel.entry-popover .entry-popover-skin{background:Canvas;}#historyQuickPanel .history-quick-grid button{border:1px solid ButtonText;color:ButtonText;background:Canvas;}}
 </style>
@@ -9337,7 +9277,7 @@ html:root #historyQuickPanel[data-entry-centered]:not([data-entry-desktop]){widt
 #historyQuickPanel .history-quick-offset{grid-row:3;overflow-wrap:anywhere;}
 #historyQuickPanel .history-quick-clock{grid-row:2;width:9ch;max-width:100%;white-space:nowrap;}
 #historyQuickPanel .history-quick-clock[data-historical]{color:var(--accent-warm);}
-#historyQuickPanel .history-quick-grid,#historyQuickPanel .context-disclosure{min-width:0;max-width:100%;}
+#historyQuickPanel .history-quick-grid{min-width:0;max-width:100%;}
 #historyQuickPanel .history-quick-grid button{min-width:0;}
 .date-wheel-form{display:grid;gap:12px;min-width:0;}
 .date-wheel-form>.settings-action{width:100%;min-height:44px;}
@@ -10122,10 +10062,10 @@ html:root #settingsSafetyConfirm[data-backup-diff]{position:relative;inset:auto;
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v39',
-productVersion: '2.7.0',
-sourceTag: 'v2.7.0',
-buildId: 'v39-20261021.4',
-releaseDate: '2026-10-21',
+productVersion: '2.7.1',
+sourceTag: 'v2.7.1',
+buildId: 'v39-20261022.1',
+releaseDate: '2026-10-22',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
@@ -14742,6 +14682,7 @@ let startupSync = null;
 let foregroundCatchup = null;
 let displayedMonthIncome = null;
 let monthReadoutSampleKey = '';
+let workedReadoutSample = null;
 let hiddenVisualSnapshot = null;
 let dayEndMotion = null;
 let currentStatus = '';
@@ -19162,102 +19103,6 @@ panelOpened: () => { noticePresentation.hide({ immediate: true }); }, panelClose
 dismissNotice: () => noticePresentation.hide({ immediate: true }) });
 })();
 
-const ContextDisclosureMotion = (() => {
-const states = new Map();
-function finish(state) {
-for (const animation of state.animations) animation.cancel();
-state.animations = [];
-state.details.open = state.target;
-state.summary.setAttribute('aria-expanded', String(state.target));
-state.body.inert = !state.target;
-state.body.setAttribute('aria-hidden', String(!state.target));
-state.details.removeAttribute('data-context-motion');
-state.viewport.style.removeProperty('height');
-state.body.style.removeProperty('opacity');
-state.chevron.style.removeProperty('transform');
-if (state.details.id === 'historyDateDisclosure' && historyQuickPanelState.desktop && !dom.historyQuickPanel.hidden && !dom.historyQuickPanel.hasAttribute('data-entry-centered')) historyQuickPresentation.reposition();
-}
-function set(details, next, immediate = false) {
-const state = states.get(details);
-if (!state) { details.open = next; return; }
-// Sample before cancelling so rapid reversals continue from the visible frame.
-const height = details.open ? state.viewport.getBoundingClientRect().height : 0;
-const opacity = details.open ? Number(getComputedStyle(state.body).opacity) : 0;
-const rotation = getComputedStyle(state.chevron).transform;
-const anchoredMenu = details.id === 'historyDateDisclosure' && historyQuickPanelState.desktop && !dom.historyQuickPanel.hidden && !dom.historyQuickPanel.hasAttribute('data-entry-centered');
-const menuFrom = anchoredMenu ? dom.historyQuickPanel.getBoundingClientRect() : null;
-for (const animation of state.animations) animation.cancel();
-state.animations = [];
-state.target = next;
-state.summary.setAttribute('aria-expanded', String(next));
-if (state.body.contains(document.activeElement)) state.summary.focus({ preventScroll: true });
-state.body.inert = true;
-state.body.setAttribute('aria-hidden', 'true');
-if (immediate || reduceMotionQuery.matches || document.hidden || !details.getClientRects().length || typeof state.viewport.animate !== 'function') { finish(state); return; }
-details.open = true;
-const fullHeight = state.body.getBoundingClientRect().height;
-const targetHeight = next ? fullHeight : 0;
-state.details.dataset.contextMotion = next ? 'opening' : 'closing';
-state.viewport.style.height = `${targetHeight}px`;
-state.body.style.opacity = String(Number(next));
-state.chevron.style.transform = `rotate(${next ? 225 : 45}deg)`;
-if (anchoredMenu) {
-dom.historyQuickPanel.classList.add('has-date-review');
-historyQuickPresentation.reposition();
-}
-const duration = Math.max(60, 220 * Math.min(1, Math.abs(targetHeight - height) / Math.max(1, fullHeight)));
-const timing = { duration, easing: 'cubic-bezier(.22,.8,.32,1)', fill: 'backwards' };
-const animations = [
-state.viewport.animate([{ height: `${height}px` }, { height: `${targetHeight}px` }], timing),
-state.body.animate([{ opacity }, { opacity: Number(next) }], timing),
-state.chevron.animate([{ transform: rotation }, { transform: `rotate(${next ? 225 : 45}deg)` }], timing)
-];
-if (anchoredMenu) {
-const menuTo = dom.historyQuickPanel.getBoundingClientRect();
-animations.push(dom.historyQuickPanel.animate([
-{ top: `${menuFrom.top}px`, left: `${menuFrom.left}px` },
-{ top: `${menuTo.top}px`, left: `${menuTo.left}px` }
-], timing));
-}
-for (const animation of animations) animation.id = 'income-context-disclosure';
-state.animations = animations;
-Promise.all(animations.map(animation => animation.finished)).then(() => {
-if (state.animations === animations) finish(state);
-}).catch(() => {});
-}
-function settle(root = document) {
-for (const state of states.values()) if (root.contains(state.details)) finish(state);
-}
-function bind() {
-for (const details of document.querySelectorAll('.context-disclosure')) {
-const body = details.querySelector('.context-disclosure-body');
-const summary = details.querySelector('summary');
-const viewport = document.createElement('div');
-viewport.className = 'context-disclosure-viewport';
-body.before(viewport);
-viewport.appendChild(body);
-const state = { details, body, summary, viewport, chevron: summary.querySelector('.context-chevron'), target: details.open, animations: [] };
-states.set(details, state);
-const scope = details.id === 'historyDateDisclosure' ? ComponentScopes.timeline : ComponentScopes.settings;
-scope.listen(summary, 'click', event => { event.preventDefault(); set(details, !state.target); });
-scope.listen(details, 'toggle', () => {
-if (!details.open) { state.target = false; finish(state); }
-});
-if ('ResizeObserver' in window) {
-const observer = new ResizeObserver(() => {
-if (state.animations.length && state.target && Math.abs(body.getBoundingClientRect().height - parseFloat(viewport.style.height)) > 1) set(details, true);
-});
-observer.observe(body);
-scope.replaceResource(`context-disclosure-${details.id}`, observer, value => { value.disconnect(); finish(state); });
-}
-finish(state);
-}
-ComponentScopes.settings.listen(document, 'visibilitychange', () => { if (document.hidden) settle(); });
-ComponentScopes.settings.listen(reduceMotionQuery, 'change', () => { if (reduceMotionQuery.matches) settle(); });
-}
-return Object.freeze({ bind, set, settle });
-})();
-
 const SettingsUI = (() => {
 const timeFields = Object.freeze([
 Object.freeze({ key: 'morningStart', title: '上午开始' }),
@@ -20393,6 +20238,7 @@ for (const view of dom.incomeSettingsPanel.querySelectorAll('.income-view')) vie
 }
 requestSettingsScrollEdges();
 const sharedPreview = animateIncomeSharedSurface(true);
+dom.incomeSettingsCard.classList.toggle('settings-expanded-origin', income);
 dom.scheduleSettingsCard.classList.toggle('settings-expanded-origin', !income);
 if (sharedPreview) dom.settingsDialog.classList.add('is-visible');
 AppLifecycle.requestFrame(() => {
@@ -20421,7 +20267,6 @@ setDiscardPrompt(false);
 importGeneration += 1;
 importBusy = false;
 draftCalendar = ACTIVE_CALENDAR;
-ContextDisclosureMotion.settle(dom.settingsDialog);
 clearIncomeSharedSurface();
 clearIncomeCopyMotions();
 incomeModeAnimation?.cancel();
@@ -20430,6 +20275,7 @@ AppLifecycle.clearTimeout(settingsCloseTimer);
 destroyScheduleWheels();
 dom.settingsDialog.hidden = true;
 document.getElementById('draftNotice').hidden = !recoveryPanels.size;
+dom.incomeSettingsCard.classList.remove('settings-expanded-origin');
 dom.scheduleSettingsCard.classList.remove('settings-expanded-origin');
 DisplayPreferences.panelClosed();
 dom.settingsDialog.classList.remove('is-closing', 'is-visible');
@@ -20472,7 +20318,6 @@ TimeWheel.cancelActiveEditor();
 importGeneration += 1;
 importBusy = false;
 const closeDuration = reduceMotionQuery.matches ? 0 : Math.max(1,190 * Number(getComputedStyle(getDialogSheet()).opacity));
-ContextDisclosureMotion.settle(dom.settingsDialog);
 clearScheduleAnnouncement();
 dom.settingsDialog.style.setProperty('--panel-motion-ms', `${closeDuration}ms`);
 resetSaveFeedback();
@@ -27331,8 +27176,19 @@ displayedDate = timelineDisplayClockDate(),
 liveNow = getLiveNow()
 ) {
 if (!dom.historyQuickPanel || !dom.historyQuickOffset) return;
-const lowerBound = startOfDay(liveNow).getTime();
 const atLive = timeTravel.state === TIMELINE_STATE.LIVE;
+const panelVisible = historyQuickPanelState.open || !dom.historyQuickPanel.hidden;
+const clockText = panelVisible || !atLive
+? [displayedDate.getHours(), displayedDate.getMinutes(), displayedDate.getSeconds()].map(value => String(value).padStart(2, '0')).join(':')
+: '';
+if (dom.historyQuickOpen) setAttributeIfChanged(
+dom.historyQuickOpen,
+'aria-label',
+atLive ? '打开快速回溯' : `打开快速回溯，当前 ${localDateKey(displayedDate)} ${clockText}`
+);
+// Opening sets open before synchronizing, so the first animation frame is fresh.
+if (!panelVisible) return;
+const lowerBound = startOfDay(liveNow).getTime();
 const returning = timeTravel.state === TIMELINE_STATE.RETURNING_LIVE;
 const playing = timeTravel.state === TIMELINE_STATE.HISTORY_PLAY;
 const playButton = document.getElementById('historyQuickPlay');
@@ -27341,7 +27197,6 @@ setAttributeIfChanged(playButton, 'aria-pressed', String(playing));
 setAttributeIfChanged(playButton, 'aria-label', playing ? '暂停回溯' : '播放回溯');
 setTextIfChanged(playButton.querySelector('[data-history-play-label]'), playing ? '暂停' : '播放');
 const clock = document.getElementById('historyQuickClock');
-const clockText = [displayedDate.getHours(), displayedDate.getMinutes(), displayedDate.getSeconds()].map(value => String(value).padStart(2, '0')).join(':');
 setTextIfChanged(clock, clockText);
 clock.dateTime = displayedDate.toISOString();
 clock.toggleAttribute('data-historical', !atLive);
@@ -27352,13 +27207,6 @@ if (liveLabel) setTextIfChanged(liveLabel, '回到实时');
 setTextIfChanged(
 dom.historyQuickOffset,
 atLive ? '' : `${localDateKey(displayedDate)} · ${playing ? '播放中' : returning ? '回到实时中' : timeTravel.state === TIMELINE_STATE.SCRUBBING ? '定位中' : '已暂停'}`
-);
-
-dom.historyQuickOpen?.setAttribute(
-'aria-label',
-atLive
-? '打开快速回溯'
-: `打开快速回溯，当前 ${localDateKey(displayedDate)} ${clockText}`
 );
 
 const requestedDate = timeTravel.state === TIMELINE_STATE.LIVE || timeTravel.state === TIMELINE_STATE.RETURNING_LIVE
@@ -29094,6 +28942,10 @@ const displayedWork = animated && rates.secondly > 0
 : workSeconds;
 const wholeWork = Math.max(0, Math.floor(displayedWork));
 const remain = Math.max(0, totalWorkSeconds - wholeWork);
+// Ordinary text changes at whole seconds; animated timelines keep frame sampling.
+const sample = workedReadoutSample;
+if (animated || !sample || sample.wholeWork !== wholeWork || sample.total !== totalWorkSeconds || sample.morning !== morningSeconds || sample.status !== status || sample.dayLabel !== dayLabel) {
+workedReadoutSample = animated ? null : { wholeWork, total: totalWorkSeconds, morning: morningSeconds, status, dayLabel };
 setTextIfChanged(dom.workedTime, formatDuration(wholeWork));
 let text = `剩余 ${formatDuration(remain)}`;
 if (status === 'day-off') text = `${dayLabel}不计工作收入`;
@@ -29101,6 +28953,7 @@ else if (wholeWork >= totalWorkSeconds) text = '已完成全天工作';
 else if (status === 'break' && wholeWork === morningSeconds) text = `午休后剩余 ${formatDuration(remain)}`;
 else if (status === 'not-started' && wholeWork === 0) text = `全天待完成 ${formatDuration(remain)}`;
 setTextIfChanged(dom.workedSub, text);
+}
 // Monthly and worked-time readouts share the same whole-second sample.
 const monthSampleKey = `${localDateKey(now)}|${rates.daily}|${rates.secondly}|${wholeWork}|${Boolean(foregroundCatchup?.resume)}`;
 if (monthSampleKey === monthReadoutSampleKey) return;
@@ -30251,7 +30104,6 @@ bindDialInteraction();
 bindTaskWatchInteraction();
 bindTimeTravelInteraction();
 HistoryDateReview.bind();
-ContextDisclosureMotion.bind();
 ContentPressureController.observe();
 refreshProgressGeometry();
 if ('ResizeObserver' in window) {

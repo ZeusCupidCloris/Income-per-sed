@@ -10,6 +10,43 @@ async function open(page, date = '2026-09-07T06:30:00Z') {
 }
 const seek = page => page.evaluate(() => window.__incomeClockDiagnostics.getHistoricalSeekState());
 
+for (const width of [1440, 390]) for (const motion of ['no-preference', 'reduce']) {
+test(`settings source stays hidden until final close: ${width} ${motion}`, async ({ page }) => {
+  await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 });
+  await open(page);
+  await page.emulateMedia({ reducedMotion: motion });
+  if (motion === 'reduce') await page.locator('#privacyToggle').click();
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
+  for (const kind of ['income', 'schedule']) {
+    const card = page.locator(`#${kind}SettingsCard`);
+    const other = page.locator(`#${kind === 'income' ? 'schedule' : 'income'}SettingsCard`);
+    await card.focus();
+    const box = await card.boundingBox();
+    await card.dispatchEvent('click');
+    await page.clock.runFor(600);
+    await expect(page.locator('.income-shared-shell')).toHaveCount(0);
+    expect(await card.evaluate(node => getComputedStyle(node).visibility)).toBe('hidden');
+    expect(await card.evaluate(node => Number(getComputedStyle(node).opacity))).toBe(0);
+    expect(await card.boundingBox()).toEqual(box);
+    await expect(other).toBeVisible();
+    await page.keyboard.press('Escape');
+    if (motion !== 'reduce') {
+      await page.clock.runFor(400);
+      expect(await card.evaluate(node => getComputedStyle(node).visibility)).toBe('hidden');
+      const mirror = page.locator('.income-shared-mirror');
+      expect(await mirror.evaluate(node => getComputedStyle(node).visibility)).toBe('visible');
+      expect(await mirror.evaluate(node => Number(getComputedStyle(node).opacity))).toBeGreaterThan(.5);
+    }
+    await page.clock.runFor(600);
+    await expect(page.locator('#settingsDialog')).toBeHidden();
+    await expect(card).toBeVisible();
+    await expect(card).toBeFocused();
+    expect(await card.boundingBox()).toEqual(box);
+  }
+  await expect(page.locator('.settings-expanded-origin')).toHaveCount(0);
+});
+}
+
 test('settings consistency: equal opening and closing timing with synchronized backdrop', async ({ page }, testInfo) => {
   await open(page);
   await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()+100)));
@@ -543,22 +580,23 @@ test('follower save reports submitted rather than saved', async ({ page, context
   await other.close();
 });
 
-test('mobile centered history closes explicitly without stale focus or out-of-bounds content', async ({ page }) => {
+test('mobile history returns a cancelled drag and closes explicitly without stale focus or out-of-bounds content', async ({ page }) => {
   await open(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('#historyQuickOpen').click();
-  await page.waitForTimeout(260);
+  await expect(page.locator('#historyQuickPanel')).not.toHaveAttribute('data-entry-animating');
   const grabber = page.locator('#historyQuickGrabber');
   const pointer = { pointerId: 11, pointerType: 'touch', button: 0, clientX: 180, clientY: 500, bubbles: true };
   await grabber.dispatchEvent('pointerdown', pointer);
   await page.locator('#historyQuickPanel').dispatchEvent('pointermove', { ...pointer, clientY: 700 });
-  await page.locator('#historyQuickPanel').dispatchEvent('pointerup', { ...pointer, clientY: 700 });
+  await page.locator('#historyQuickPanel').dispatchEvent('pointercancel', { ...pointer, clientY: 700 });
+  await expect(page.locator('body')).not.toHaveClass(/history-quick-sheet-(returning|dragging)/);
   await expect(page.locator('#historyQuickPanel')).toBeVisible();
   await page.locator('#historyQuickClose').click();
   await expect(page.locator('#historyQuickPanel')).toBeHidden();
   await expect(page.locator('#historyQuickOpen')).toBeFocused();
   await page.locator('#historyQuickOpen').click();
-  await page.waitForTimeout(260);
+  await expect(page.locator('#historyQuickPanel')).not.toHaveAttribute('data-entry-animating');
   const bounds = await page.locator('#historyQuickPanel').boundingBox();
   expect(bounds.y).toBeGreaterThanOrEqual(0);
   expect(bounds.y + bounds.height).toBeLessThanOrEqual(845);

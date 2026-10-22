@@ -22,6 +22,7 @@ Windows PowerShell 运行带参数的功能专项时使用 `npm.cmd run check:fo
 - 重复构建：`npm run release:repeatability`，会执行生成，串行运行。
 - 帧开销观察：`npm run test:observe`，手动 Edge 专项，不纳入默认完整回归；采样值用于同机对比，不当作跨设备评分。
 - 长时资源观察：`node scripts/observe-runtime-resources.cjs <报告路径> --minutes 30 --sample-seconds 30`。模拟后台不等于系统冻结、实机后台或真实跨夜。
+- 双版本资源比较：`node scripts/compare-runtime-resources.cjs <旧Develop> <新Develop> <报告路径>`。同机交替采样并隔离生成临时 Push；结果不视为跨设备性能承诺。
 - Develop 预览：维护者可设置 `DEVELOP_PREVIEW=1`；生成版设置反馈检查可设置 `SETTINGS_RELEASE_CHANNEL=push`。这些是内部选择，不增加用户设置。
 - 旧 `test:checks`、`test:recovery`、`test:layout`、`test:settings`、`npm test`、`test:webkit`保留供 CI 与既有调用使用，日常不需要记忆它们。
 - `quality:local`是保留的交付生成流程，会修改交付，不属于三个只读检查入口。
@@ -47,5 +48,6 @@ Windows PowerShell 运行带参数的功能专项时使用 `npm.cmd run check:fo
 | run-python.mjs | 选择 Python 并调用维护脚本 | 由被调用脚本决定 |
 | serve-test-pages.mjs | 本地静态测试服务 | 不写入 |
 | observe-runtime-resources.cjs | 空闲、历史播放、设置开关及恢复的资源采样 | 写报告 |
+| compare-runtime-resources.cjs | 两版交替比较工作态与空闲耗时、文件大小和设置资源稳定性 | 临时隔离构建与报告，不改四文件 |
 
 [维护策略](../docs/REPOSITORY_POLICY.md)定义发布规则；[测试索引](tests-index.md)定义覆盖职责；[仓库地图](repository-map.md)维护全部路径。文档检查不联网、不解析 Word 内部链接，也不把“没有引用”视为删除理由。
