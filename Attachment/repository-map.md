@@ -68,6 +68,7 @@
 | [docs/acceptance/fourfile-20260922.md](../docs/acceptance/fourfile-20260922.md) | 09-22 四文件交付验收证据 | 维护与历史 |
 | [docs/acceptance/fourfile-20260924.md](../docs/acceptance/fourfile-20260924.md) | 09-24 四文件交付验收证据 | 维护与历史 |
 | [docs/acceptance/fourfile-20261021.md](../docs/acceptance/fourfile-20261021.md) | RC47 四文件同步与产品使用手册核对 | 维护与验收 |
+| [docs/acceptance/fourfile-20261022.md](../docs/acceptance/fourfile-20261022.md) | 2.7.1 轻量化四文件同步与交付边界 | 维护与验收 |
 | [docs/acceptance/grid-idle-20260930.md](../docs/acceptance/grid-idle-20260930.md) | 09-30 背景空闲重绘修复证据 | 维护与历史 |
 | [docs/acceptance/grid-recovery-20260930.md](../docs/acceptance/grid-recovery-20260930.md) | 09-30 模拟后台绘制循环检查证据 | 维护与历史 |
 | [docs/acceptance/maintenance-20260915.md](../docs/acceptance/maintenance-20260915.md) | 09-15 仓库维护验收证据 | 维护与历史 |
@@ -89,6 +90,7 @@
 | [docs/releases/v2.6.0.md](../docs/releases/v2.6.0.md) | 2.6.0 四文件同步与验证范围 | 用户与维护 |
 | [docs/releases/v2.6.1.md](../docs/releases/v2.6.1.md) | 中号小组件窄屏修复与四文件同步 | 用户与维护 |
 | [docs/releases/v2.7.0.md](../docs/releases/v2.7.0.md) | 2.7.0 用户交互与手册同步说明 | 用户与维护 |
+| [docs/releases/v2.7.1.md](../docs/releases/v2.7.1.md) | 2.7.1 原卡片修复与读数优化说明 | 用户与维护 |
 | [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本
@@ -101,6 +103,7 @@
 | [scripts/check_delivery_repeatability.py](../scripts/check_delivery_repeatability.py) | 连续构建一致性检查 | 维护 |
 | [scripts/manual_checksum_bookmarks.py](../scripts/manual_checksum_bookmarks.py) | 手册校验书签读取与更新工具 | 维护 |
 | [scripts/observe-runtime-resources.cjs](../scripts/observe-runtime-resources.cjs) | 长时运行资源观察工具 | 维护 |
+| [scripts/compare-runtime-resources.cjs](../scripts/compare-runtime-resources.cjs) | 双版本工作态耗时、文件与资源对比 | 维护 |
 | [scripts/prepare_delivery.py](../scripts/prepare_delivery.py) | 四文件发布准备工具 | 维护 |
 | [scripts/readme-preview-validation.mjs](../scripts/readme-preview-validation.mjs) | 首页图片完整性检查公共函数 | 维护 |
 | [scripts/release-channel.mjs](../scripts/release-channel.mjs) | 正式与候选发布标签识别 | 维护 |

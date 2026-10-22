@@ -1,6 +1,76 @@
 const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
+async function prepareFixedReadouts(page, date) {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.clock.install({ time: new Date(date) });
+  await page.clock.pauseAt(new Date(Date.parse(date) + 1000));
+  await page.goto('/Income-per-sed-Develop.html');
+  await page.clock.runFor(2200);
+  await fullDisplay(page, { paused: true });
+  await page.clock.setFixedTime(new Date(date));
+  await page.clock.runFor(1800);
+}
+
+test('whole-second readouts invalidate for status and saved schedule changes', async ({ page }) => {
+  await prepareFixedReadouts(page, '2026-10-20T08:59:59+08:00');
+  await expect(page.locator('#workedTime')).toHaveText('0时0分0秒');
+  await expect(page.locator('#workedSub')).toHaveText('全天待完成 6时30分0秒');
+  await page.clock.setFixedTime(new Date('2026-10-20T09:00:00+08:00'));
+  await page.clock.runFor(1200);
+  await expect(page.locator('#workedTime')).toHaveText('0时0分0秒');
+  await expect(page.locator('#workedSub')).toHaveText('剩余 6时30分0秒');
+  await page.clock.setFixedTime(new Date('2026-10-20T10:30:00+08:00'));
+  await page.clock.runFor(2200);
+  await expect(page.locator('#workedTime')).toHaveText('1时30分0秒');
+  await expect(page.locator('#workedSub')).toHaveText('剩余 5时0分0秒');
+  await page.locator('#scheduleSettingsCard').dispatchEvent('click');
+  await page.clock.runFor(600);
+  await expect(page.locator('#scheduleSettingsPanel')).not.toHaveAttribute('data-settings-unready');
+  const hour = page.locator('[data-time-key="morningEnd"] [data-unit="hour"]');
+  await expect(hour).toHaveAttribute('aria-valuenow', '11');
+  await hour.press('ArrowDown');
+  await page.clock.runFor(300);
+  await expect(hour).toHaveAttribute('aria-valuenow', '12');
+  await page.locator('#settingsSaveButton').dispatchEvent('click');
+  await page.clock.runFor(2200);
+  await expect(page.locator('#settingsDialog')).toBeHidden();
+  await expect(page.locator('#workedTime')).toHaveText('1时30分0秒');
+  await expect(page.locator('#workedSub')).toHaveText('剩余 6时0分0秒');
+});
+
+test('return to the same live second refreshes readouts and reopens fresh history controls', async ({ page }) => {
+  await prepareFixedReadouts(page, '2026-10-20T10:30:00+08:00');
+  const initial = await page.locator('#monthIncome').textContent();
+  await page.locator('#historyQuickOpen').dispatchEvent('click');
+  await page.clock.runFor(600);
+  await page.locator('[data-history-seconds="-3600"]').dispatchEvent('click');
+  await page.clock.runFor(2200);
+  await expect(page.locator('#workedTime')).toHaveText('0时30分0秒');
+  await expect(page.locator('#historyQuickClock')).toHaveText('09:30:00');
+  await expect(page.locator('#historyQuickPlay')).toBeEnabled();
+  await page.locator('#historyQuickClose').dispatchEvent('click');
+  await page.clock.runFor(600);
+  await expect(page.locator('#historyQuickOpen')).toHaveAttribute('aria-label', '打开快速回溯，当前 2026-10-20 09:30:00');
+  await page.locator('#liveAnchor').dispatchEvent('click');
+  await page.clock.runFor(5000);
+  expect(await page.evaluate(() => window.__incomeClockDiagnostics.getTimelineState())).toBe('LIVE');
+  await expect(page.locator('#workedTime')).toHaveText('1时30分0秒');
+  await expect(page.locator('#workedSub')).toHaveText('剩余 5时0分0秒');
+  await expect(page.locator('#monthIncome')).toHaveText(initial);
+  await expect(page.locator('#historyQuickOpen')).toHaveAttribute('aria-label', '打开快速回溯');
+  await page.clock.setFixedTime(new Date('2026-10-20T10:31:00+08:00'));
+  await page.clock.runFor(1500);
+  await page.locator('#historyQuickOpen').dispatchEvent('click');
+  await expect(page.locator('#historyQuickClock')).toHaveText('10:31:00');
+  await expect(page.locator('#historyQuickPlay')).toBeDisabled();
+  await expect(page.locator('[data-history-seconds="900"]')).toBeDisabled();
+  await page.clock.runFor(600);
+  await page.locator('#historyQuickClose').dispatchEvent('click');
+  await page.clock.runFor(600);
+  await expect(page.locator('#historyQuickPanel')).toBeHidden();
+});
+
 test('work, remaining and month readouts share live and recovery frames', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.install({ time: new Date('2026-09-07T02:30:00Z') });
