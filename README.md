@@ -59,7 +59,7 @@
 
 2.7.1 修复收入设置展开时原卡片仍然显示的问题，清理废弃面板代码，并减少普通文字读数的重复处理；指针、机械滚轮和回溯动画继续连续运行。保留 RC37 字体、计薪规则与小组件既有布局，四文件按同批次同步。
 
-本批通过独立分支检查后合并 `main`，Pages 随质量门禁部署；检查与实际上线状态见[当前交付](docs/README.md#当前交付)。本次不创建 Release 或标签，历史 Release 附件不会因此自动更新。
+本批已通过[PR #60](https://github.com/ZeusCupidCloris/Income-per-sed/pull/60)合并 `main`，[在线体验](https://zeuscupidcloris.github.io/Income-per-sed/)已同步为 2.7.1，首页与命名 Push 的完整字节均已核验。检查范围与一项测试准备步骤重试记录见[当前交付](docs/README.md#当前交付)。本次不创建 Release 或标签，历史 Release 附件不会因此自动更新。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 
