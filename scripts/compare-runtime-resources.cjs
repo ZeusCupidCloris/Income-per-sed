@@ -59,8 +59,13 @@ function median(values) {
 }
 
 async function compare(before, after, output) {
-  assert.notEqual(before, after, 'The before and after paths must differ.');
-  assert(![before, after].includes(output), 'The report must not overwrite an input.');
+  const identity = file => {
+    const resolved = fs.existsSync(file) ? fs.realpathSync(file) : file;
+    return process.platform === 'win32' ? resolved.toLowerCase() : resolved;
+  };
+  const inputPaths = [before, after].map(identity);
+  assert.notEqual(...inputPaths, 'The before and after paths must differ.');
+  assert(!inputPaths.includes(identity(output)), 'The report must not overwrite an input.');
   const sources = [before, after];
   const sizes = buildSizes(sources);
   const report = {
