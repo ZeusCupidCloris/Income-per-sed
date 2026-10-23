@@ -4,6 +4,14 @@
 
 ## 当前交付
 
+产品与小组件统一为 **2.7.2**，交付 **20261023.1**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。当前处于本批生成与检查阶段，PR、main、桌面替换及 Pages 核验结果随后按实际证据更新；不创建 Release 或标签。
+
+本批纳入全天回溯拨盘、持续时间校验、统一播放响应和坐标缓存，保留 RC37 字体、主界面与计薪口径。Widget 仅同步元数据。范围与结果见[2.7.2 版本说明](releases/v2.7.2.md)及[本批验收](acceptance/fourfile-20261023.md)，后续见[逐卡片 CSS 计划](maintainer/card-css-plan.md)。真实手机及真实整夜验收暂缓，不把模拟结果写成真机通过。
+
+### 上批交付参考
+
+以下仅保留 2.7.1 当时的证据，不代表本批远端已经通过。
+
 产品与小组件统一为 **2.7.1**，交付 **20261022.1**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。[PR #60](https://github.com/ZeusCupidCloris/Income-per-sed/pull/60)已合并为 `2773d1b`，Pages 已部署，线上首页及命名 Push 均与本批交付逐字节一致。桌面四文件已备份、替换并校验。不创建 Release 或标签，历史 Release 附件保留原版本。
 
 | 事项 | 当前证据 |

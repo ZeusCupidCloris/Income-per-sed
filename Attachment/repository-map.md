@@ -45,6 +45,7 @@
 | --- | --- | --- |
 | [Attachment/README.md](README.md) | 集中索引入口与目录边界 | 用户与维护 |
 | [docs/maintainer/workflow-review.md](../docs/maintainer/workflow-review.md) | 工作流重复检查评估与待决策方案 | 维护 |
+| [docs/maintainer/card-css-plan.md](../docs/maintainer/card-css-plan.md) | 按卡片分批整理重复样式与验收门槛 | 维护 |
 | [docs/Income-per-sed（说明文档）.docx](../docs/Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
 | [docs/README.md](../docs/README.md) | 当前交付与验收状态索引 | 维护 |
 | [docs/acceptance/maintenance-simplification-20261006.md](../docs/acceptance/maintenance-simplification-20261006.md) | 索引、测试入口与维护收敛验收记录 | 维护 |
@@ -69,6 +70,7 @@
 | [docs/acceptance/fourfile-20260924.md](../docs/acceptance/fourfile-20260924.md) | 09-24 四文件交付验收证据 | 维护与历史 |
 | [docs/acceptance/fourfile-20261021.md](../docs/acceptance/fourfile-20261021.md) | RC47 四文件同步与产品使用手册核对 | 维护与验收 |
 | [docs/acceptance/fourfile-20261022.md](../docs/acceptance/fourfile-20261022.md) | 2.7.1 轻量化四文件同步与交付边界 | 维护与验收 |
+| [docs/acceptance/fourfile-20261023.md](../docs/acceptance/fourfile-20261023.md) | 2.7.2 拨盘四文件同步与发布验收 | 维护与验收 |
 | [docs/acceptance/grid-idle-20260930.md](../docs/acceptance/grid-idle-20260930.md) | 09-30 背景空闲重绘修复证据 | 维护与历史 |
 | [docs/acceptance/grid-recovery-20260930.md](../docs/acceptance/grid-recovery-20260930.md) | 09-30 模拟后台绘制循环检查证据 | 维护与历史 |
 | [docs/acceptance/maintenance-20260915.md](../docs/acceptance/maintenance-20260915.md) | 09-15 仓库维护验收证据 | 维护与历史 |
@@ -91,6 +93,7 @@
 | [docs/releases/v2.6.1.md](../docs/releases/v2.6.1.md) | 中号小组件窄屏修复与四文件同步 | 用户与维护 |
 | [docs/releases/v2.7.0.md](../docs/releases/v2.7.0.md) | 2.7.0 用户交互与手册同步说明 | 用户与维护 |
 | [docs/releases/v2.7.1.md](../docs/releases/v2.7.1.md) | 2.7.1 原卡片修复与读数优化说明 | 用户与维护 |
+| [docs/releases/v2.7.2.md](../docs/releases/v2.7.2.md) | 2.7.2 拨盘与输入修复交付说明 | 用户与维护 |
 | [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本
@@ -154,6 +157,8 @@
 | [docs/acceptance/settings-delivery-20261005.md](../docs/acceptance/settings-delivery-20261005.md) | 设置局部反馈、输入安全与四文件交付验收 | 维护 |
 | [docs/acceptance/runtime-observation-20261003.json](../docs/acceptance/runtime-observation-20261003.json) | 30 分钟资源观察原始采样证据 | 维护 |
 | [tests/startup-history-playback.spec.js](../tests/startup-history-playback.spec.js) | 启动与历史播放运动测试 | 维护 |
+| [tests/history-dial-refinement.spec.js](../tests/history-dial-refinement.spec.js) | 拨盘时间输入、统一入口、坐标缓存与模拟恢复 | 维护 |
+| [tests/history-dial-touch.spec.js](../tests/history-dial-touch.spec.js) | 拨盘原生触摸坐标映射与拖动模拟 | 维护 |
 | [tests/test_prepare_delivery.py](../tests/test_prepare_delivery.py) | 交付生成与手册书签测试 | 维护 |
 | [tests/visual.spec.js](../tests/visual.spec.js) | 页面截图回归测试 | 维护 |
 | [tests/webkit-mobile.spec.js](../tests/webkit-mobile.spec.js) | WebKit 手机尺寸与基础行为测试 | 维护 |
