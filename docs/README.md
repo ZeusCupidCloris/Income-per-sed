@@ -4,7 +4,7 @@
 
 ## 当前交付
 
-产品与小组件统一为 **2.7.2**，交付 **20261023.1**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。[PR #62](https://github.com/ZeusCupidCloris/Income-per-sed/pull/62) 已合并为 `5eeff46`，桌面四文件已备份、替换并核验。main 的 Quality / Pages 尚在执行，不提前标记线上已更新。不创建 Release 或标签。
+产品与小组件统一为 **2.7.2**，交付 **20261023.1**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。[PR #62](https://github.com/ZeusCupidCloris/Income-per-sed/pull/62) 已合并为 `5eeff46`，桌面四文件已备份、替换并核验。main 的 Quality / Pages 通过并部署，线上首页及命名 Push 均与本批发布文件逐字节一致。不创建 Release 或标签。
 
 本批纳入全天回溯拨盘、持续时间校验、统一播放响应和坐标缓存，保留 RC37 字体、主界面与计薪口径。Widget 仅同步元数据。范围与结果见[2.7.2 版本说明](releases/v2.7.2.md)及[本批验收](acceptance/fourfile-20261023.md)，后续见[逐卡片 CSS 计划](maintainer/card-css-plan.md)。真实手机及真实整夜验收暂缓，不把模拟结果写成真机通过。
 
@@ -15,7 +15,7 @@
 | 浏览器证据 | 最终本地 Edge 拨盘/发布/视觉 59 项通过，WebKit 拨盘 34 项通过及 2 项驱动能力跳过；[最终 PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/39939248838) Edge 272 项、WebKit 179 项通过及 4 项既定跳过，均无测试重试 |
 | 手册与预览 | 九页、五张本批 Push 插图；最终校验值更新后重新渲染核对变化页。README 三张预览和来源哈希同步 |
 | 桌面 | 2026-10-23 19:04（北京时间）先备份再替换四文件，校验值与 main 一致；390 像素视口离线交互检查通过，无脚本错误或联网请求 |
-| main 与 Pages | [Quality / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/39943036492) 正在运行；部署后再独立核验线上首页和命名 Push 完整字节及交互 |
+| main 与 Pages | [Quality / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/39943036492) 通过并部署，Edge 272 项、WebKit 179 项通过及 4 项既定跳过，无测试重试。2026-10-23 19:31（北京时间）独立核验首页与命名 Push 的完整字节及线上操作通过，无脚本错误 |
 
 最初 WebKit 安装遇到 Ubuntu 依赖下载超时，有界重跑揭示有效输入在失焦至提交之间被一帧刷新覆盖的问题，修复前已稳定复现，修复后重新执行完整检查。最终四项必需检查均通过，不把前序失败描述为通过。WebKit 四项既定跳过依赖 Chromium CDP 原生触摸注入，Edge 均实际执行通过。
 
