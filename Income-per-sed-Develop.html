@@ -9195,7 +9195,6 @@ html[data-theme="dark"] .context-error{color:#e4a599;}
 <style id="quick-review-refinement">
 #historyQuickPanel.entry-popover .entry-popover-skin{background:var(--material-solid);backdrop-filter:none;-webkit-backdrop-filter:none;}
 #historyQuickPanel .history-quick-header{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:5px 10px;margin-bottom:14px;}
-#historyQuickPanel .history-quick-clock{grid-column:1/-1;display:block;font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;font-weight:500;font-variant-numeric:tabular-nums;color:var(--text-primary);}
 #historyQuickPanel .history-quick-grid{gap:7px 8px;}
 #historyQuickPanel .history-quick-grid button{display:flex;align-items:center;justify-content:center;gap:8px;}
 #historyQuickPanel .history-quick-grid svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
@@ -9275,8 +9274,6 @@ html:root #historyQuickPanel[data-entry-centered]{left:var(--entry-left)!importa
 html:root #historyQuickPanel[data-entry-centered]:not([data-entry-desktop]){width:min(440px,calc(100vw - 24px))!important;max-width:calc(100vw - 24px);}
 #historyQuickPanel .history-quick-header{grid-template-columns:minmax(0,1fr);gap:4px;min-width:0;}
 #historyQuickPanel .history-quick-offset{grid-row:3;overflow-wrap:anywhere;}
-#historyQuickPanel .history-quick-clock{grid-row:2;width:9ch;max-width:100%;white-space:nowrap;}
-#historyQuickPanel .history-quick-clock[data-historical]{color:var(--accent-warm);}
 #historyQuickPanel .history-quick-grid{min-width:0;max-width:100%;}
 #historyQuickPanel .history-quick-grid button{min-width:0;}
 .date-wheel-form{display:grid;gap:12px;min-width:0;}
@@ -9370,22 +9367,27 @@ html:root #historyQuickPanel[data-entry-centered]::-webkit-scrollbar{display:non
 #historyQuickPanel .history-quick-header{position:relative;display:block;min-height:32px;margin-bottom:8px;padding-right:42px;}
 #historyQuickPanel .history-quick-title{font-size:17px;font-weight:600;line-height:32px;}
 #historyQuickClose{position:absolute;right:0;top:0;}
-.history-quick-readout{display:flex;align-items:center;gap:16px;min-height:36px;margin-bottom:18px;}
-#historyQuickPanel .history-quick-clock{flex:none;width:auto;font-size:22px;line-height:32px;}
 #historyQuickPanel .history-quick-offset{display:block;font-size:11px;line-height:18px;white-space:nowrap;}
 #historyQuickPanel .history-quick-offset[hidden]{display:block!important;visibility:hidden;}
 .history-quick-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:start;}
 #historyQuickPanel .history-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,44px);grid-auto-rows:44px;gap:8px;}
 #historyQuickPanel .history-quick-grid button{grid-column:auto;grid-row:auto;height:44px;min-height:44px;padding:0 8px;line-height:1.2;}
-.history-quick-transport{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;margin-top:12px;}
-#historyQuickPanel .history-quick-transport button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border:1px solid var(--material-edge);border-radius:8px;font:inherit;font-size:13px;cursor:pointer;}
+.history-quick-transport{display:grid;grid-template-columns:44px 124px;justify-content:center;gap:10px;margin-top:12px;}
+#historyQuickPanel .history-quick-transport button{display:flex;align-items:center;justify-content:center;gap:8px;height:44px;min-height:44px;border:1px solid var(--material-edge);border-radius:8px;font:inherit;font-size:13px;cursor:pointer;transition:background-color 160ms var(--ease-settle),border-color 160ms var(--ease-settle),box-shadow 160ms var(--ease-settle);}
 #historyQuickPanel .history-quick-transport svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;}
-#historyQuickPanel .history-quick-live{grid-column:2;grid-row:1;margin:0;background:var(--material-selected);color:var(--text-primary);}
-#historyQuickPanel .history-quick-live:disabled{opacity:.4;background:transparent;}
-#historyQuickPanel #historyQuickPlay{grid-column:1;grid-row:1;margin:0;min-height:40px;align-self:center;border-color:transparent;background:transparent;color:var(--text-secondary);}
-#historyQuickPanel #historyQuickPlay:disabled{opacity:.3;cursor:default;}
-#historyQuickPanel #historyQuickPlay:hover:not(:disabled){background:var(--material-selected);}
-#historyQuickPanel #historyQuickPlay:focus-visible{outline:2px solid var(--accent-warm);outline-offset:1px;}
+#historyQuickPanel .history-quick-live{grid-column:1;grid-row:1;width:44px;margin:0;padding:0;border-color:var(--material-edge);background:transparent;color:var(--text-secondary);box-shadow:none;}
+#historyQuickPanel .history-quick-live:disabled{opacity:.35;background:transparent;border-color:var(--material-edge);cursor:default;}
+#historyQuickPanel #historyQuickPlay{grid-column:2;grid-row:1;width:124px;margin:0;padding:0 14px;align-self:center;border-color:color-mix(in srgb,var(--workshop-green) 42%,var(--material-edge));background:color-mix(in srgb,var(--workshop-green) 78%,#38463d);color:#f6f3eb;font-weight:500;box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 2px 4px rgba(46,61,51,.09);}
+#historyQuickPanel #historyQuickPlay[aria-pressed="true"]{border-color:color-mix(in srgb,var(--accent-warm) 65%,var(--material-edge));background:color-mix(in srgb,var(--workshop-green) 68%,#38463d);}
+#historyQuickPanel #historyQuickPlay:disabled{opacity:.5;background:var(--material-selected);border-color:var(--material-edge);color:var(--text-secondary);box-shadow:none;cursor:default;}
+#historyQuickPanel .history-quick-transport button:focus-visible{outline:2px solid var(--accent-warm);outline-offset:3px;}
+@media(hover:hover){
+ #historyQuickPanel .history-quick-live:hover:not(:disabled){background:var(--material-selected);border-color:var(--text-secondary);color:var(--text-primary);}
+ #historyQuickPanel #historyQuickPlay:hover:not(:disabled){background:color-mix(in srgb,var(--workshop-green) 62%,#38463d);}
+}
+#historyQuickPanel .history-quick-transport button:active:not(:disabled){box-shadow:inset 0 1px 3px color-mix(in srgb,var(--text-primary) 16%,transparent);}
+@media(prefers-reduced-motion:reduce){#historyQuickPanel .history-quick-transport button{transition:none;}}
+@media(forced-colors:active){#historyQuickPanel :is(#historyQuickPlay,.history-quick-live){background:ButtonFace;color:ButtonText;border-color:ButtonText;box-shadow:none;}#historyQuickPanel #historyQuickPlay:not(:disabled){background:Highlight;color:HighlightText;border-color:Highlight;}#historyQuickPanel :is(#historyQuickPlay,.history-quick-live):disabled{background:ButtonFace;color:GrayText;border-color:GrayText;opacity:1;}}
 #historyQuickPlay [data-history-pause-icon]{display:none;}
 #historyQuickPlay[aria-pressed="true"] [data-history-play-icon]{display:none;}
 #historyQuickPlay[aria-pressed="true"] [data-history-pause-icon]{display:block;}
@@ -9411,8 +9413,6 @@ html:root #historyQuickPanel[data-entry-centered]::-webkit-scrollbar{display:non
  #historyQuickPanel .history-quick-header{min-height:36px;margin-bottom:6px;}
  #historyQuickPanel .history-quick-title{line-height:36px;}
  #historyQuickClose{right:-4px;top:-4px;}
- .history-quick-readout{gap:10px;margin-bottom:12px;}
- #historyQuickPanel .history-quick-clock{font-size:20px;}
  #historyQuickPanel .history-quick-offset{font-size:10px;}
  .history-quick-body{grid-template-columns:minmax(0,1fr);gap:16px;}
  .history-date-section{border-left:0;border-top:1px solid var(--material-edge);padding:12px 0 0;}
@@ -9423,7 +9423,6 @@ html:root #historyQuickPanel[data-entry-centered]::-webkit-scrollbar{display:non
 }
 @media(max-height:700px){
  #historySeekWheels,#incomeEstimateWheels{--context-wheel-height:110px;}
- .history-quick-readout{margin-bottom:8px;}
  .history-quick-body{gap:10px;}
  #historyQuickPanel .history-quick-grid{gap:6px;}
  .history-quick-transport{margin-top:8px;}
@@ -9463,7 +9462,7 @@ html:root .settings-discard-confirm .settings-action{min-height:36px;padding:0 1
 @media(pointer:coarse){
  html:root :is(#settingsDialog,#historyQuickPanel) :is(.settings-close,.settings-data-action,#historyQuickPlay,#incomePrivacyUnlock){min-width:44px;min-height:44px;}
  #calendarDataSection .settings-data-actions{gap:2px;}
- #historyQuickPanel .history-quick-transport{grid-template-columns:44px minmax(0,1fr);}
+ #historyQuickPanel .history-quick-transport{grid-template-columns:44px 124px;}
  html:root #settingsDialog .settings-actions .settings-action{min-height:44px;}
  html:root #settingsDialog .settings-discard-confirm .settings-action{min-height:44px;}
 }
@@ -9615,6 +9614,73 @@ html:root #settingsSafetyConfirm[data-backup-diff]{position:relative;inset:auto;
 @media(pointer:coarse){#settingsBackupDiff button{width:44px;min-width:44px;height:44px;}}
 @media(max-width:380px){html:root #settingsSafetyConfirm[data-backup-diff]{padding:14px;}.backup-diff-table th,.backup-diff-table td{padding-inline:5px;font-size:11px;}.backup-diff-table thead th{font-size:11px;}}
 </style>
+<style id="history-time-dial-preview">
+#historyQuickPanel .history-quick-body{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"dial controls" "transport controls";gap:14px 24px;align-items:center;}
+.history-dial-column{grid-area:dial;min-width:0;}
+#historyQuickPanel .history-quick-controls{grid-area:controls;display:grid;gap:18px;min-width:0;}
+#historyQuickPanel .history-date-section{border:0;padding:0;}
+#historyQuickPanel #historySeekWheels{grid-template-columns:minmax(0,1fr);--context-wheel-height:102px;}
+#historyQuickPanel #historySeekWheels .time-wheel-title{font-size:12px;}
+#historyQuickPanel #historySeekSubmit{min-height:36px;height:36px;margin-top:8px;padding:0 14px;}
+#historyQuickPanel .history-quick-transport{grid-area:transport;margin:0;}
+.history-time-dial{position:relative;width:100%;max-width:280px;aspect-ratio:1;margin-inline:auto;}
+.history-dial-track{position:absolute;inset:0;border-radius:50%;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;outline:none;}
+.history-dial-track:active{cursor:grabbing;}
+.history-dial-track:focus-visible{box-shadow:0 0 0 2px var(--accent-warm);outline:3px solid transparent;outline-offset:2px;}
+.history-dial-track svg{display:block;width:100%;height:100%;overflow:visible;}
+.history-dial-face{fill:var(--material-panel,var(--material-selected));fill-opacity:.25;stroke:var(--material-edge);stroke-width:2;}
+.history-dial-work{fill:none;stroke-width:8;stroke-linecap:round;}
+.history-dial-work.morning{stroke:var(--accent-warm);}
+.history-dial-work.afternoon{stroke:var(--accent-blue);}
+.history-dial-unavailable{fill:none;stroke:var(--material-edge);stroke-width:8;stroke-dasharray:1 5;opacity:.8;}
+.history-dial-ticks{stroke:var(--text-secondary);stroke-width:1;opacity:.4;}
+.history-dial-ticks .major{stroke-width:1.5;opacity:1;}
+.history-dial-labels{font:11px ui-monospace,"SFMono-Regular",Consolas,monospace;fill:var(--text-secondary);text-anchor:middle;}
+.history-dial-needle{stroke:var(--text-primary);stroke-width:1.5;fill:var(--accent-warm);transform-origin:140px 140px;transition:transform 180ms var(--ease-settle);}
+.history-dial-track[data-dragging] .history-dial-needle{transition:none;}
+.history-dial-needle .history-dial-grip{stroke:var(--material-solid);stroke-width:1;}
+.history-dial-now{fill:var(--text-primary);stroke:var(--material-solid);stroke-width:2;}
+.history-dial-center{position:absolute;left:50%;top:50%;width:64%;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:5px;pointer-events:none;}
+.history-dial-date{font:11px ui-monospace,"SFMono-Regular",Consolas,monospace;color:var(--text-secondary);white-space:nowrap;}
+#historyDialTime{pointer-events:auto;box-sizing:border-box;width:9ch;max-width:100%;height:38px;min-height:38px;padding:0;border:0;border-bottom:1px solid transparent;border-radius:0;background:transparent;box-shadow:none;color:var(--text-primary);font:500 22px/1.2 ui-monospace,"SFMono-Regular",Consolas,monospace;font-variant-numeric:tabular-nums;text-align:center;letter-spacing:0;}
+#historyDialTime:focus{outline:0;border-bottom-color:var(--accent-warm);box-shadow:none!important;}
+#historyDialTime[aria-invalid="true"]{border-bottom-color:var(--accent-red,#a25244);}
+#historyQuickPanel .history-dial-center .history-quick-offset{font-size:11px;line-height:18px;text-align:center;white-space:nowrap;}
+.history-dial-legend{display:flex;justify-content:center;align-items:center;gap:14px;min-height:20px;margin-top:3px;font-size:11px;line-height:20px;color:var(--text-secondary);}
+.history-dial-legend span::before{content:"";display:inline-block;width:12px;height:3px;margin-right:5px;vertical-align:middle;border-radius:2px;background:var(--accent-warm);}
+.history-dial-legend .afternoon::before{background:var(--accent-blue);}
+.history-dial-legend .now::before{width:5px;height:5px;border-radius:50%;background:var(--text-primary);}
+#historyQuickPanel .history-quick-grid button{font-size:13px;}
+@media(max-width:620px){
+ #historyQuickPanel .history-quick-body{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"dial presets" "date date" "transport transport";gap:14px 12px;}
+ #historyQuickPanel .history-quick-controls{display:contents;}
+ #historyQuickPanel .history-date-section{grid-area:date;}
+ #historyQuickPanel .history-quick-grid{grid-area:presets;grid-template-rows:repeat(3,44px);gap:6px;}
+ #historyQuickPanel .history-quick-grid button{font-size:12px;padding:0 3px;gap:4px;}
+ #historyQuickPanel .history-quick-grid svg{width:14px;height:14px;}
+ #historyQuickPanel #historySeekForm{display:grid;grid-template-columns:minmax(0,1fr) 82px;gap:12px;align-items:center;}
+ #historyQuickPanel #historySeekSubmit{margin:16px 0 0;padding:0 8px;min-width:0;width:100%;min-height:44px;height:44px;}
+ #historyQuickPanel #historySeekWheels{--context-wheel-height:88px;}
+ #historyDialTime{font-size:18px;height:44px;min-height:44px;}
+ .history-dial-labels{font-size:17px;}
+ .history-dial-center{gap:0;width:70%;}
+ .history-dial-date{font-size:10px;}
+ #historyQuickPanel .history-dial-center .history-quick-offset{font-size:10px;line-height:16px;}
+ .history-dial-legend{gap:8px;font-size:10px;}
+ .history-dial-legend span::before{width:8px;margin-right:3px;}
+}
+@media(max-width:360px){
+ #historyQuickPanel .history-quick-body{gap:12px 10px;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);}
+ #historyDialTime{font-size:16px;}
+ .history-dial-labels{font-size:20px;}
+ #historyQuickPanel .history-quick-grid button{font-size:11px;gap:2px;}
+ #historyQuickPanel .history-quick-grid svg{width:12px;}
+ #historyQuickPanel #historySeekForm{grid-template-columns:minmax(0,1fr) 74px;gap:8px;}
+ #historyQuickPanel #historySeekWheels .time-wheel-item{font-size:16px;}
+}
+@media(forced-colors:active){.history-dial-work.morning{stroke:Highlight;}.history-dial-work.afternoon{stroke:LinkText;}.history-dial-face{fill:Canvas;stroke:CanvasText;}.history-dial-needle{stroke:CanvasText;fill:Highlight;}.history-dial-ticks{stroke:CanvasText;}.history-dial-labels{fill:CanvasText;}.history-dial-now{fill:CanvasText;stroke:Canvas;}}
+@media(prefers-reduced-motion:reduce){.history-dial-needle{transition:none;}}
+</style>
 </head>
 <body class="startup-presentation-active">
     <canvas class="ambient-motion-layer ambient-grid-backdrop" id="ambientGridBackdrop" aria-hidden="true"></canvas>
@@ -9693,12 +9759,42 @@ html:root #settingsSafetyConfirm[data-backup-diff]{position:relative;inset:auto;
                             <span class="history-quick-title">快速回溯</span>
                             <button class="settings-close" type="button" id="historyQuickClose" aria-label="关闭快速回溯">×</button>
                         </div>
-                        <div class="history-quick-readout">
-                            <time class="history-quick-clock" id="historyQuickClock">00:00:00</time>
-                            <span class="history-quick-offset" id="historyQuickOffset" hidden></span>
-                        </div>
                         <div class="history-quick-body">
+                        <div class="history-dial-column">
+                            <div class="history-time-dial" id="historyTimeDial">
+                                <div class="history-dial-track" id="historyDialTrack" role="slider" tabindex="0" aria-label="回溯时间" aria-valuemin="0" aria-valuemax="86399" aria-valuenow="0" aria-valuetext="00:00:00">
+                                    <svg viewBox="0 0 280 280" aria-hidden="true">
+                                        <circle class="history-dial-face" cx="140" cy="140" r="112"/>
+                                        <path class="history-dial-unavailable" id="historyDialUnavailable"/>
+                                        <path class="history-dial-work morning" id="historyDialMorning"/>
+                                        <path class="history-dial-work afternoon" id="historyDialAfternoon"/>
+                                        <g class="history-dial-ticks" id="historyDialTicks"></g>
+                                        <g class="history-dial-labels"><text x="140" y="14">00</text><text x="270" y="144">06</text><text x="140" y="272">12</text><text x="10" y="144">18</text></g>
+                                        <circle class="history-dial-now" id="historyDialNow" r="3.5"/>
+                                        <g class="history-dial-needle" id="historyDialNeedle"><path d="M140 43V28"/><circle cx="140" cy="28" r="8"/><path class="history-dial-grip" d="M138 24V32M142 24V32"/></g>
+                                    </svg>
+                                </div>
+                                <div class="history-dial-center">
+                                    <span class="history-dial-date" id="historyDialDate"></span>
+                                    <label class="sr-only" for="historyDialTime">精确回溯时间，时分秒</label>
+                                    <input id="historyDialTime" type="text" inputmode="text" autocomplete="off" spellcheck="false" value="00:00:00" maxlength="8" aria-describedby="historySeekError">
+                                    <time class="sr-only" id="historyQuickClock">00:00:00</time>
+                                    <span class="history-quick-offset" id="historyQuickOffset"></span>
+                                </div>
+                            </div>
+                            <div class="history-dial-legend" aria-hidden="true"><span class="morning">上午</span><span class="afternoon">下午</span><span class="now">实时</span></div>
+                        </div>
                         <div class="history-quick-controls">
+                        <section class="history-date-section" aria-labelledby="historyDateTitle">
+                            <h3 id="historyDateTitle" class="sr-only">回溯日期</h3>
+                                <form id="historySeekForm" class="date-wheel-form" novalidate>
+                                    <input id="historySeekDateInput" type="hidden">
+                                    <input id="historySeekTimeInput" type="hidden">
+                                    <div class="date-time-wheels" id="historySeekWheels" role="group" aria-label="回溯日期" aria-describedby="historySeekError"></div>
+                                    <button class="settings-action" id="historySeekSubmit" type="submit">定位日期</button>
+                                </form>
+                                <p class="context-error" id="historySeekError" role="alert" hidden></p>
+                        </section>
                         <div class="history-quick-grid">
                             <button type="button" data-history-seconds="-900" aria-label="后退15分钟"><svg viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-arrow-left"><path d="m12 19-7-7 7-7M5 12h14"/></svg><span>15 分钟</span></button>
                             <button type="button" data-history-seconds="900" aria-label="前进15分钟"><span>15 分钟</span><svg viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-arrow-right"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></button>
@@ -9707,21 +9803,11 @@ html:root #settingsSafetyConfirm[data-backup-diff]{position:relative;inset:auto;
                             <button class="history-quick-secondary" type="button" data-history-seconds="-14400">后退 4 小时</button>
                             <button class="history-quick-secondary" type="button" data-history-action="start">今日零点</button>
                         </div>
+                        </div>
                         <div class="history-quick-transport">
-                            <button type="button" id="historyQuickPlay" aria-label="播放回溯" aria-pressed="false" disabled><svg viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-play" data-history-play-icon><path d="m6 3 14 9-14 9V3Z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-pause" data-history-pause-icon><path d="M9 4H5v16h4ZM19 4h-4v16h4Z"/></svg><span class="sr-only" data-history-play-label>播放</span></button>
-                            <button class="history-quick-live" type="button" data-history-action="live"><svg viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-rotate-ccw"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8M3 3v5h5"/></svg><span data-history-live-label>回到实时</span></button>
+                            <button class="history-quick-live" type="button" data-history-action="live" aria-label="回到实时"><svg viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-rotate-ccw"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8M3 3v5h5"/></svg><span class="sr-only" data-history-live-label>回到实时</span></button>
+                            <button type="button" id="historyQuickPlay" aria-label="播放回溯" aria-pressed="false" disabled><svg viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-play" data-history-play-icon><path d="m6 3 14 9-14 9V3Z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" data-icon-source="lucide-pause" data-history-pause-icon><path d="M9 4H5v16h4ZM19 4h-4v16h4Z"/></svg><span data-history-play-label>播放</span></button>
                         </div>
-                        </div>
-                        <section class="history-date-section" aria-labelledby="historyDateTitle">
-                            <h3 id="historyDateTitle">按日期回溯</h3>
-                                <form id="historySeekForm" class="date-wheel-form" novalidate>
-                                    <input id="historySeekDateInput" type="hidden">
-                                    <input id="historySeekTimeInput" type="hidden">
-                                    <div class="date-time-wheels" id="historySeekWheels" role="group" aria-label="回溯日期与时间" aria-describedby="historySeekError"></div>
-                                    <button class="settings-action primary" id="historySeekSubmit" type="submit">回溯到所选时间</button>
-                                </form>
-                                <p class="context-error" id="historySeekError" role="alert" hidden></p>
-                        </section>
                         </div>
                     </div>
                 </div>
@@ -10062,10 +10148,10 @@ html:root #settingsSafetyConfirm[data-backup-diff]{position:relative;inset:auto;
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v39',
-productVersion: '2.7.1',
-sourceTag: 'v2.7.1',
-buildId: 'v39-20261022.1',
-releaseDate: '2026-10-22',
+productVersion: '2.7.2',
+sourceTag: 'v2.7.2',
+buildId: 'v39-20261023.1',
+releaseDate: '2026-10-23',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
@@ -10081,7 +10167,7 @@ scopeModel: 'hierarchical-v2',
 frameBudgetController: 'pressure-cooldown-v2',
 historySeekController: 'reference-mechanical-target-v1',
 historyPlaybackInterruptPolicy: 'interruptible-mechanical-handoff-v2',
-historyPlaybackStart: 'mechanical-chase-handoff-v2',
+historyPlaybackStart: 'bounded-seek-handoff-v3',
 historySubhandInterpolation: 'bounded-directional-turns-v1',
 historyTargetRetargetPolicy: 'device-adaptive-energy-continuous-brake-v3',
 historySubhandRetargetPolicy: 'nearest-equivalent-angle-v2',
@@ -10839,15 +10925,10 @@ HISTORY_TARGET_COALESCE_DEFAULT_MS,
 historyPlayHandoff: {
 active: false,
 phase: 'idle',
+readyAt: 0,
 targetTimeMs: 0,
-launchStartedAt: 0,
-launchDuration: 260,
-launchStartTimeMs: 0,
-launchEndTimeMs: 0,
 requestedAt: 0,
-requestedWallAt: 0,
-peakTimeVelocity: 0,
-peakMainVelocity: 0
+requestedWallAt: 0
 }
 };
 const visibilityMotion = {
@@ -11397,17 +11478,6 @@ frame = null
 ) {
 const currentFrame =
 frame || createFrameSnapshot();
-if (
-timeTravel.historyPlayHandoff.active &&
-timeTravel.historyPlayHandoff.phase ===
-'launch'
-) {
-return new Date(
-sampleHistoryPlaybackLaunchTime(
-currentFrame.monotonicNow
-)
-);
-}
 if (
 timeTravel.state ===
 TIMELINE_STATE.SCRUBBING ||
@@ -14759,7 +14829,7 @@ const HISTORY_SUBHAND_SERVO_STIFFNESS = 36;
 const HISTORY_SUBHAND_SERVO_DAMPING = 12;
 const RETURN_LIVE_LOCK_START = 0.84;
 const RETURN_LIVE_LOCK_REQUIRED_FRAMES = 3;
-const RETURN_LIVE_LOCK_TIMEOUT_MS = 220;
+const RETURN_LIVE_LOCK_TIMEOUT_MS = 60;
 const RETURN_LIVE_HANDOFF_BLEND_MS = 76;
 const RETURN_LIVE_MAIN_ANGLE_EPSILON = 0.02;
 const RETURN_LIVE_SUBHAND_ANGLE_EPSILON = 0.02;
@@ -18464,10 +18534,11 @@ host.append(section);
 return picker;
 }
 const datePicker = group('日期', true);
-const timePicker = group('时间', false);
+const timePicker = key === 'history-seek' ? null : group('时间', false);
 function sync() {
 const day = `${selected.year}-${String(selected.month).padStart(2, '0')}-${String(selected.day).padStart(2, '0')}`;
-const time = `${String(selected.hour).padStart(2, '0')}:${String(selected.minute).padStart(2, '0')}`;
+const time = !timePicker && /^\d{2}:\d{2}(?::\d{2})?$/.test(timeInput.value) ? timeInput.value
+: `${String(selected.hour).padStart(2, '0')}:${String(selected.minute).padStart(2, '0')}`;
 const changed = dateInput.value !== day || timeInput.value !== time;
 dateInput.value = day;
 timeInput.value = time;
@@ -18496,15 +18567,17 @@ dayCount = maximum;
 add('year', '年', 0, years, datePicker);
 add('month', '月', 0, Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')), datePicker);
 rebuildDay();
-add('hour', `${key === 'history-seek' ? '回溯' : '估算'}`, 0, null, timePicker);
+if (timePicker) {
+add('hour', '估算', 0, null, timePicker);
 const separator = document.createElement('span');
 separator.className = 'time-wheel-separator';
 separator.textContent = ':';
 timePicker.append(separator);
-add('minute', `${key === 'history-seek' ? '回溯' : '估算'}`, 0, null, timePicker);
+add('minute', '估算', 0, null, timePicker);
+}
 function refresh() {
 const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateInput.value);
-const time = /^(\d{2}):(\d{2})$/.exec(timeInput.value);
+const time = /^(\d{2}):(\d{2})(?::\d{2})?$/.exec(timeInput.value);
 const now = timelineDisplayClockDate();
 selected = day && time ? { year: Number(day[1]), month: Number(day[2]), day: Number(day[3]), hour: Number(time[1]), minute: Number(time[2]) }
 : { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate(), hour: now.getHours(), minute: now.getMinutes() };
@@ -18512,12 +18585,213 @@ selected.year = Math.max(startYear, Math.min(endYear, selected.year));
 wheels.get('year').setValue(selected.year - startYear, { emit: false });
 wheels.get('month').setValue(selected.month - 1, { emit: false });
 rebuildDay();
-wheels.get('hour').setValue(selected.hour, { emit: false });
-wheels.get('minute').setValue(selected.minute, { emit: false });
+wheels.get('hour')?.setValue(selected.hour, { emit: false });
+wheels.get('minute')?.setValue(selected.minute, { emit: false });
 sync();
 }
 return Object.freeze({ refresh, destroy: () => { for (const wheel of wheels.values()) wheel.destroy(); host.replaceChildren(); } });
 }
+
+const HistoryTimeDial = (() => {
+const track = document.getElementById('historyDialTrack');
+const input = document.getElementById('historyDialTime');
+const needle = document.getElementById('historyDialNeedle');
+const nowMarker = document.getElementById('historyDialNow');
+const unavailable = document.getElementById('historyDialUnavailable');
+const error = document.getElementById('historySeekError');
+let selection = null;
+let pointer = null;
+let trackBounds = null;
+let faceKey = '';
+let editing = false;
+const clockText = date => [date.getHours(), date.getMinutes(), date.getSeconds()].map(value => String(value).padStart(2, '0')).join(':');
+function point(seconds, radius = 112) {
+const angle = seconds / 86400 * Math.PI * 2 - Math.PI / 2;
+return [140 + Math.cos(angle) * radius, 140 + Math.sin(angle) * radius];
+}
+function arc(start, end) {
+if (end <= start) return '';
+const a = point(start), b = point(Math.min(end, start + 86399.99));
+return `M${a[0]} ${a[1]}A112 112 0 ${end - start > 43200 ? 1 : 0} 1 ${b[0]} ${b[1]}`;
+}
+function limits(date, live = getLiveNow()) {
+const dayStart = startOfDay(date).getTime();
+const bounds = historyDateBounds(live);
+return { min: Math.max(0, Math.ceil((bounds.lowerBound - dayStart) / 1000)), max: Math.min(86399, Math.floor((bounds.upperBound - dayStart) / 1000)) };
+}
+function clearError() {
+error.hidden = true;
+input.removeAttribute('aria-invalid');
+}
+function sync(date, live = getLiveNow()) {
+selection = new Date(date);
+const seconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+const bounds = limits(date, live);
+const day = localDateKey(date);
+const working = isWorkday(date);
+const key = `${day}|${working}|${Object.values(CONFIG.schedule).join('|')}`;
+if (key !== faceKey) {
+faceKey = key;
+setAttributeIfChanged(document.getElementById('historyDialMorning'), 'd', working ? arc(parseClock(CONFIG.schedule.morningStart), parseClock(CONFIG.schedule.morningEnd)) : '');
+setAttributeIfChanged(document.getElementById('historyDialAfternoon'), 'd', working ? arc(parseClock(CONFIG.schedule.afternoonStart), parseClock(CONFIG.schedule.afternoonEnd)) : '');
+for (const label of document.querySelectorAll('.history-dial-legend .morning,.history-dial-legend .afternoon')) label.hidden = !working;
+setTextIfChanged(document.getElementById('historyDialDate'), day);
+}
+const rotation = `rotate(${seconds / 240}deg)`;
+if (needle.style.transform !== rotation) needle.style.transform = rotation;
+setAttributeIfChanged(track, 'aria-valuemin', String(bounds.min));
+setAttributeIfChanged(track, 'aria-valuemax', String(bounds.max));
+setAttributeIfChanged(track, 'aria-valuenow', String(seconds));
+setAttributeIfChanged(track, 'aria-valuetext', `${day} ${clockText(date)}`);
+const text = clockText(date);
+if (!editing && input.value !== text) input.value = text;
+const today = day === localDateKey(live);
+nowMarker.hidden = !today;
+nowMarker.style.display = today ? '' : 'none';
+document.querySelector('.history-dial-legend .now').hidden = !today;
+if (today) {
+const nowSeconds = live.getHours() * 3600 + live.getMinutes() * 60 + live.getSeconds();
+const p = point(nowSeconds, 124);
+setAttributeIfChanged(nowMarker, 'cx', String(p[0]));
+setAttributeIfChanged(nowMarker, 'cy', String(p[1]));
+}
+setAttributeIfChanged(unavailable, 'd', today ? arc(bounds.max, 86400) : '');
+HistoryDateReview.syncSeekClock(date);
+}
+function applySeconds(seconds, direct = false) {
+if (!selection) return false;
+const bounds = limits(selection);
+const bounded = Math.max(bounds.min, Math.min(bounds.max, Math.round(seconds)));
+const target = new Date(selection);
+target.setHours(0, 0, bounded, 0);
+editing = false;
+clearError();
+if (!direct) return seekHistoryDate(target, 'time-dial');
+const timestamp = performance.now();
+cancelTimelineScrubCoast(false);
+if (timeTravel.state !== TIMELINE_STATE.SCRUBBING) enterTimelineScrubbing(timelineDisplayClockDate());
+timeTravel.historyTime = target;
+queueHistoricalVisualTarget(target, timestamp);
+timeTravel.shadowSettlingUntil = timestamp + 260;
+clearVisualScheduler();
+updateStats();
+render(timestamp);
+return true;
+}
+function commit({ apply = true } = {}) {
+if (!editing) return true;
+const text = input.value.trim();
+const match = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/.exec(text);
+let target;
+try {
+if (!match) throw new Error('请输入有效时间，例如 09:30 或 09:30:15。');
+target = HistoryDateReview.readSeekDate(text);
+const bounds = historyDateBounds();
+if (target.getTime() < bounds.lowerBound || target.getTime() > bounds.upperBound) throw new Error('不能选择尚未发生或超出范围的时间。');
+} catch (failure) {
+setTextIfChanged(error, failure.message);
+error.hidden = false;
+input.setAttribute('aria-invalid', 'true');
+return false;
+}
+editing = false;
+clearError();
+HistoryDateReview.syncSeekClock(target);
+if (apply && target.getTime() !== selection?.getTime()) seekHistoryDate(target, 'time-input');
+if (apply) sync(target);
+return true;
+}
+function restoreInput() {
+editing = false;
+clearError();
+if (selection) input.value = clockText(selection);
+}
+function finish() {
+if (pointer) {
+const id = pointer.id;
+pointer = null;
+trackBounds = null;
+track.removeAttribute('data-dragging');
+if (track.hasPointerCapture?.(id)) track.releasePointerCapture(id);
+settleTimelineScrubbing();
+}
+restoreInput();
+}
+function pointerSeconds(event) {
+const box = trackBounds || (trackBounds = track.getBoundingClientRect());
+const angle = Math.atan2(event.clientY - box.top - box.height / 2, event.clientX - box.left - box.width / 2) + Math.PI / 2;
+return ((angle / (Math.PI * 2) + 1) % 1) * 86400;
+}
+function move(event) {
+if (!pointer || event.pointerId !== pointer.id) return;
+event.preventDefault();
+const raw = pointerSeconds(event);
+// Stay on the selected date when crossing midnight rather than jumping a full day.
+let delta = raw - pointer.last;
+if (delta > 43200) delta -= 86400;
+if (delta < -43200) delta += 86400;
+pointer.total = Math.max(0, Math.min(86399, pointer.total + delta));
+pointer.last = raw;
+const minute = Math.min(86340, Math.round(pointer.total / 60) * 60);
+if (minute !== pointer.minute) { pointer.minute = minute; applySeconds(minute, true); }
+}
+function bind() {
+const svgNS = 'http://www.w3.org/2000/svg';
+const ticks = document.createDocumentFragment();
+for (let hour = 0; hour < 24; hour += 1) {
+const tick = document.createElementNS(svgNS, 'line');
+const a = point(hour * 3600, hour % 6 ? 103 : 99), b = point(hour * 3600, 107);
+for (const [key, value] of Object.entries({ x1: a[0], y1: a[1], x2: b[0], y2: b[1] })) tick.setAttribute(key, value);
+if (hour % 6 === 0) tick.classList.add('major');
+ticks.append(tick);
+}
+document.getElementById('historyDialTicks').replaceChildren(ticks);
+ComponentScopes.timeline.listen(track, 'pointerdown', event => {
+if ((event.pointerType === 'mouse' && event.button !== 0) || pointer || !commit()) return;
+const box = track.getBoundingClientRect();
+if (Math.hypot(event.clientX - box.left - box.width / 2, event.clientY - box.top - box.height / 2) < box.width * .28) return;
+event.preventDefault();
+track.focus({ preventScroll: true });
+trackBounds = box;
+const raw = pointerSeconds(event);
+pointer = { id: event.pointerId, last: raw, total: raw, minute: -1 };
+track.setAttribute('data-dragging', '');
+track.setPointerCapture?.(event.pointerId);
+move(event);
+});
+ComponentScopes.timeline.listen(track, 'pointermove', move, { passive: false });
+for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) ComponentScopes.timeline.listen(track, type, event => {
+if (event.pointerId !== pointer?.id) return;
+if (type === 'pointerup') move(event);
+finish();
+});
+ComponentScopes.timeline.listen(track, 'keydown', event => {
+const seconds = selection ? selection.getHours() * 3600 + selection.getMinutes() * 60 + selection.getSeconds() : 0;
+const step = event.shiftKey ? 900 : 60;
+const targets = { ArrowRight: seconds + step, ArrowUp: seconds + step, ArrowLeft: seconds - step, ArrowDown: seconds - step, PageUp: seconds + 3600, PageDown: seconds - 3600, Home: 0, End: 86399 };
+if (!(event.key in targets)) return;
+event.preventDefault();
+if (!commit()) return;
+applySeconds(targets[event.key], true);
+settleTimelineScrubbing();
+});
+ComponentScopes.timeline.listen(input, 'focus', () => { editing = true; input.select(); });
+ComponentScopes.timeline.listen(input, 'blur', event => commit({ apply: event.relatedTarget?.id !== 'historySeekSubmit' }));
+const invalidateBounds = () => { trackBounds = null; };
+ComponentScopes.timeline.listen(window, 'resize', invalidateBounds, { passive: true });
+ComponentScopes.timeline.listen(window, 'scroll', invalidateBounds, { passive: true, capture: true });
+if (window.visualViewport) {
+ComponentScopes.timeline.listen(window.visualViewport, 'resize', invalidateBounds, { passive: true });
+ComponentScopes.timeline.listen(window.visualViewport, 'scroll', invalidateBounds, { passive: true });
+}
+ComponentScopes.timeline.listen(input, 'keydown', event => {
+if (event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); if (commit()) input.blur(); }
+if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); restoreInput(); input.blur(); track.focus({ preventScroll: true }); }
+});
+ComponentScopes.app.on('destroy', finish);
+}
+return Object.freeze({ bind, sync, finish, commit });
+})();
 
 const SHARED_CARD_MOTION = Object.freeze({ duration: 360, axisLead: 45, contentStart: .70, contentSpan: .30, landingDuration: 120, landingDepth: 2 });
 const EntryPopovers = (() => {
@@ -20588,6 +20862,8 @@ const seekTime = document.getElementById('historySeekTimeInput');
 const seekError = document.getElementById('historySeekError');
 let seekPicker = null;
 let estimatePicker = null;
+let seekDateDirty = false;
+let syncingSeek = false;
 function clearResult() {
 result.hidden = true;
 error.hidden = true;
@@ -20599,15 +20875,29 @@ day.value = localDateKey(initial);
 time.value = `${String(initial.getHours()).padStart(2, '0')}:${String(initial.getMinutes()).padStart(2, '0')}`;
 }
 function prepare() {
+seekDateDirty = false;
+syncingSeek = true;
 initialValues(seekDate, seekTime);
 seekError.hidden = true;
 document.getElementById('historySeekWheels').removeAttribute('aria-invalid');
 seekPicker?.destroy();
 seekPicker = createDateTimeWheels(document.getElementById('historySeekWheels'), seekDate, seekTime, 'history-seek', () => {
-seekError.hidden = true;
+if (!syncingSeek) seekDateDirty = true;
+if (!document.getElementById('historyDialTime').hasAttribute('aria-invalid')) seekError.hidden = true;
 document.getElementById('historySeekWheels').removeAttribute('aria-invalid');
 });
 seekPicker.refresh();
+syncingSeek = false;
+}
+function syncSeekClock(date) {
+const text = [date.getHours(), date.getMinutes(), date.getSeconds()].map(value => String(value).padStart(2, '0')).join(':');
+if (seekTime.value !== text) seekTime.value = text;
+if (!seekDateDirty && seekDate.value !== localDateKey(date)) {
+seekDate.value = localDateKey(date);
+syncingSeek = true;
+seekPicker?.refresh();
+syncingSeek = false;
+}
 }
 function prepareEstimate() {
 initialValues(dateInput, timeInput);
@@ -20618,10 +20908,10 @@ estimatePicker.refresh();
 }
 function selected(dayInput, clockInput) {
 const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dayInput.value);
-const time = /^(\d{2}):(\d{2})$/.exec(clockInput.value);
+const time = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(clockInput.value);
 if (!day || !time) throw new Error('请选择完整的日期和时间。');
-const date = new Date(Number(day[1]), Number(day[2]) - 1, Number(day[3]), Number(time[1]), Number(time[2]));
-if (localDateKey(date) !== dayInput.value || date.getHours() !== Number(time[1]) || date.getMinutes() !== Number(time[2])) throw new Error('日期或时间无效。');
+const date = new Date(Number(day[1]), Number(day[2]) - 1, Number(day[3]), Number(time[1]), Number(time[2]), Number(time[3] || 0));
+if (localDateKey(date) !== dayInput.value || date.getHours() !== Number(time[1]) || date.getMinutes() !== Number(time[2]) || date.getSeconds() !== Number(time[3] || 0)) throw new Error('日期或时间无效。');
 if (!isCalendarDateCovered(date)) throw new Error(`可选日期为 ${ACTIVE_CALENDAR.coverage.start} 至 ${ACTIVE_CALENDAR.coverage.end}。`);
 if (date.getTime() > getLiveNow().getTime()) throw new Error('不能选择尚未发生的时间。');
 return date;
@@ -20658,11 +20948,14 @@ function bind() {
 ComponentScopes.settings.listen(form, 'submit', submit);
 ComponentScopes.timeline.listen(seekForm, 'submit', event => {
 event.preventDefault();
-if (!TimeWheel.commitActiveEditor()) return;
+if (!TimeWheel.commitActiveEditor() || !HistoryTimeDial.commit({ apply: false })) return;
 seekError.hidden = true;
 try {
 const date = selected(seekDate, seekTime);
 if (!seekHistoryDate(date, 'date-picker')) throw new Error('所选时间不在可回溯范围内。');
+seekDateDirty = false;
+syncSeekClock(date);
+HistoryTimeDial.sync(date);
 } catch (failure) {
 setTextIfChanged(seekError, failure.message);
 seekError.hidden = false;
@@ -20671,7 +20964,7 @@ document.getElementById('historySeekWheels').setAttribute('aria-invalid', 'true'
 });
 ComponentScopes.app.on('destroy', () => { seekPicker?.destroy(); estimatePicker?.destroy(); });
 }
-return Object.freeze({ bind, prepare, prepareEstimate, refreshEstimate: () => estimatePicker?.refresh() });
+return Object.freeze({ bind, prepare, prepareEstimate, syncSeekClock, readSeekDate: time => selected(seekDate, { value: time }), refreshEstimate: () => estimatePicker?.refresh() });
 })();
 
 function statusText(status) {
@@ -21013,14 +21306,6 @@ return Math.min(1, Math.max(0, value));
 function smootherStep(value) {
 const t = clamp01(value);
 return t * t * t * (t * (t * 6 - 15) + 10);
-}
-function integratedSmootherStep(value) {
-const t = clamp01(value);
-const t2 = t * t;
-const t4 = t2 * t2;
-const t5 = t4 * t;
-const t6 = t5 * t;
-return t6 - 3 * t5 + 2.5 * t4;
 }
 function easeInOutQuadratic(value) {
 const progress = clamp01(value);
@@ -21530,213 +21815,13 @@ timestamp;
 }
 handoff.active = false;
 handoff.phase = 'idle';
+handoff.readyAt = 0;
 handoff.targetTimeMs = 0;
-handoff.launchStartedAt = 0;
-handoff.launchStartTimeMs = 0;
-handoff.launchEndTimeMs = 0;
-handoff.launchDuration = 0;
 handoff.requestedAt = 0;
 handoff.requestedWallAt = 0;
-handoff.peakTimeVelocity = 0;
-handoff.peakMainVelocity = 0;
 body.classList.remove(
 'timeline-history-play-handoff'
 );
-}
-function sampleHistoryPlaybackLaunchTime(
-timestamp = performance.now()
-) {
-const handoff =
-timeTravel.historyPlayHandoff;
-if (
-!handoff.active ||
-handoff.phase !== 'launch'
-) {
-return (
-historicalVisual.displayedTimeMs ||
-handoff.targetTimeMs ||
-AppClock.wallNow()
-);
-}
-const durationSeconds =
-Math.max(
-0.001,
-handoff.launchDuration / 1000
-);
-const elapsedSeconds =
-Math.min(
-durationSeconds,
-Math.max(
-0,
-(
-timestamp -
-handoff.launchStartedAt
-) /
-1000
-)
-);
-const progress =
-clamp01(
-elapsedSeconds /
-durationSeconds
-);
-const displacement = 1000 * durationSeconds *
-integratedSmootherStep(progress);
-const visualTime = handoff.launchStartTimeMs + displacement;
-historicalVisual.displayedTimeMs =
-visualTime;
-historicalVisual.targetTimeMs =
-visualTime;
-historicalVisual.motionActive = false;
-historicalVisual.continuousRetarget = false;
-historicalVisual.motionVelocityMsPerSecond =
-1000 * smootherStep(progress);
-historicalVisual.motionAccelerationMsPerSecond2 = 0;
-historicalVisual.motionLastSampleAt =
-timestamp;
-return visualTime;
-}
-function historyPlayHandoffIsMechanicallyReady(
-timestamp = performance.now()
-) {
-const handoff =
-timeTravel.historyPlayHandoff;
-const targetDate =
-new Date(handoff.targetTimeMs);
-const targetWorkSeconds =
-getWorkSeconds(targetDate);
-const targetRates =
-getRates(targetDate);
-const targetClock =
-clockAnglesForDate(targetDate);
-const targetIncome =
-targetWorkSeconds *
-targetRates.secondly;
-sampleHistoricalVisualTime(timestamp);
-const timeReady =
-!historicalVisual.motionActive &&
-Math.abs(
-historicalVisual.displayedTimeMs -
-handoff.targetTimeMs
-) <= HISTORY_TIME_SETTLE_DISTANCE;
-const mainReady =
-Math.abs(
-historicalVisual.mainTargetAngle -
-historicalVisual.mainAngle
-) <=
-HISTORY_MAIN_HAND_EPSILON *
-1.6 &&
-Math.abs(
-historicalVisual.mainVelocity
-) < 3;
-const subhandsReady =
-!historicalVisual.subhandMotionActive &&
-Math.abs(shortestAngleDelta(
-historicalVisual.minuteAngle,
-targetClock.minute
-)) <= HISTORY_SUBHAND_SETTLE_EPSILON * 2 &&
-Math.abs(shortestAngleDelta(
-historicalVisual.hourAngle,
-targetClock.hour
-)) <= HISTORY_SUBHAND_SETTLE_EPSILON * 2 &&
-Math.abs(historicalVisual.minuteMotionVelocity) <=
-HISTORY_SUBHAND_SETTLE_SPEED_EPSILON &&
-Math.abs(historicalVisual.hourMotionVelocity) <=
-HISTORY_SUBHAND_SETTLE_SPEED_EPSILON &&
-Math.abs(historicalVisual.minuteMotionAcceleration) <=
-HISTORY_SUBHAND_SETTLE_ACCELERATION_EPSILON &&
-Math.abs(historicalVisual.hourMotionAcceleration) <=
-HISTORY_SUBHAND_SETTLE_ACCELERATION_EPSILON &&
-Math.abs(historicalVisual.minuteMechanicalLag) <= 0.04 &&
-Math.abs(historicalVisual.hourMechanicalLag) <= 0.04;
-const rollerReady =
-!historicalVisual
-.rollerEntryBrakeActive &&
-Math.abs(
-rollerMotion.displayValue -
-targetIncome
-) <= Math.max(
-0.0008,
-targetRates.secondly * 0.25
-);
-return (
-timeReady &&
-mainReady &&
-subhandsReady &&
-rollerReady
-);
-}
-function beginHistoryPlaybackLaunch(
-timestamp = performance.now()
-) {
-const handoff =
-timeTravel.historyPlayHandoff;
-historicalVisual.displayedTimeMs =
-handoff.targetTimeMs;
-historicalVisual.targetTimeMs =
-handoff.targetTimeMs;
-historicalVisual.motionActive = false;
-historicalVisual
-.motionVelocityMsPerSecond = 0;
-historicalVisual.motionLastSampleAt =
-timestamp;
-historicalVisual.subhandMotionActive = false;
-historicalVisual.minuteMotionVelocity = 0;
-historicalVisual.hourMotionVelocity = 0;
-historicalVisual.minuteMotionAcceleration = 0;
-historicalVisual.hourMotionAcceleration = 0;
-rebaseHistoricalVisualAnchors(timestamp);
-const chaseElapsed =
-Math.max(
-0,
-timestamp - handoff.requestedAt
-);
-const timeEnergy = clamp01(
-handoff.peakTimeVelocity /
-HISTORY_TIME_MAX_SPEED
-);
-const mainEnergy = clamp01(
-handoff.peakMainVelocity /
-HISTORY_MAIN_HAND_MAX_SPEED
-);
-const chaseEnergy = clamp01(
-chaseElapsed / 900
-);
-const mechanicalEnergy =
-Math.max(
-timeEnergy,
-mainEnergy
-);
-handoff.launchDuration =
-Math.round(
-150 +
-mechanicalEnergy * 140 +
-chaseEnergy * 60
-);
-handoff.launchDuration =
-Math.min(
-360,
-Math.max(
-150,
-handoff.launchDuration
-)
-);
-handoff.phase = 'launch';
-handoff.launchStartedAt = timestamp;
-handoff.launchStartTimeMs =
-handoff.targetTimeMs;
-handoff.launchEndTimeMs =
-handoff.launchStartTimeMs +
-0.5 *
-1000 *
-(
-handoff.launchDuration /
-1000
-);
-timeTravel.shadowSettlingUntil =
-timestamp +
-handoff.launchDuration +
-180;
 }
 function completeHistoryPlaybackHandoff(
 timestamp = performance.now()
@@ -21744,7 +21829,8 @@ timestamp = performance.now()
 const handoff =
 timeTravel.historyPlayHandoff;
 const finalTimeMs =
-handoff.launchEndTimeMs;
+clampHistoryDate(new Date(handoff.targetTimeMs + Math.max(0, timestamp - handoff.requestedAt))).getTime();
+settleHistoricalVisualToTarget(finalTimeMs, timestamp);
 timeTravel.historyTime =
 clampHistoryDate(
 new Date(finalTimeMs)
@@ -21787,48 +21873,7 @@ timestamp = performance.now()
 const handoff =
 timeTravel.historyPlayHandoff;
 if (!handoff.active) return;
-if (handoff.phase === 'chase') {
-handoff.peakTimeVelocity =
-Math.max(
-handoff.peakTimeVelocity,
-Math.abs(
-historicalVisual
-.motionVelocityMsPerSecond
-)
-);
-handoff.peakMainVelocity =
-Math.max(
-handoff.peakMainVelocity,
-Math.abs(
-historicalVisual
-.mainVelocity
-)
-);
-}
-if (
-handoff.phase === 'chase' &&
-historyPlayHandoffIsMechanicallyReady(
-timestamp
-)
-) {
-beginHistoryPlaybackLaunch(
-timestamp
-);
-return;
-}
-if (
-handoff.phase === 'launch' &&
-timestamp -
-handoff.launchStartedAt >=
-handoff.launchDuration
-) {
-sampleHistoryPlaybackLaunchTime(
-timestamp
-);
-completeHistoryPlaybackHandoff(
-timestamp
-);
-}
+if (timestamp >= handoff.readyAt) completeHistoryPlaybackHandoff(timestamp);
 }
 function requestHistoryPlaybackHandoff(
 timestamp = performance.now()
@@ -21855,67 +21900,16 @@ handoff.phase = 'chase';
 handoff.targetTimeMs = targetMs;
 handoff.requestedAt = timestamp;
 handoff.requestedWallAt = AppClock.wallNow();
-handoff.peakTimeVelocity =
-Math.abs(
-historicalVisual.motionVelocityMsPerSecond
-);
-handoff.peakMainVelocity =
-Math.abs(historicalVisual.mainVelocity);
 timeTravel.historyTime = targetDate;
 timeTravel.playHistoryBase = null;
 timeTravel.playRealStartedAt = 0;
-if (
-Math.abs(
-historicalVisual.targetTimeMs -
-targetMs
-) > HISTORY_TIME_SETTLE_DISTANCE
-) {
-setHistoricalVisualTarget(
-targetDate,
-timestamp,
-{ continuousRetarget: true }
-);
-}
-const playbackSubhandTargets =
-historyNearestSubhandTargets(
-targetMs,
-historicalVisual.minuteAngle,
-historicalVisual.hourAngle
-);
-historicalVisual.rapidStartMinuteAngle =
-historicalVisual.minuteAngle;
-historicalVisual.rapidTargetMinuteAngle =
-playbackSubhandTargets.minuteAngle;
-historicalVisual.rapidStartHourAngle =
-historicalVisual.hourAngle;
-historicalVisual.rapidTargetHourAngle =
-playbackSubhandTargets.hourAngle;
-historicalVisual.subhandMotionActive =
-Math.abs(
-historicalVisual.rapidTargetMinuteAngle -
-historicalVisual.minuteAngle
-) > HISTORY_SUBHAND_SETTLE_EPSILON ||
-Math.abs(
-historicalVisual.rapidTargetHourAngle -
-historicalVisual.hourAngle
-) > HISTORY_SUBHAND_SETTLE_EPSILON ||
-Math.abs(
-historicalVisual.minuteMotionVelocity
-) > HISTORY_SUBHAND_SETTLE_SPEED_EPSILON ||
-Math.abs(
-historicalVisual.hourMotionVelocity
-) > HISTORY_SUBHAND_SETTLE_SPEED_EPSILON;
-body.classList.add(
-'timeline-history-play-handoff'
-);
-timeTravel.shadowSettlingUntil =
-timestamp + 520;
-recordDiagnosticEvent('timeline', '历史播放追针交接已启动', {
-targetTimeMs: targetMs,
-seekPolicy: APP_RELEASE.historySeekController,
-interruptPolicy: APP_RELEASE.historyPlaybackInterruptPolicy,
-playbackStart: APP_RELEASE.historyPlaybackStart
-});
+AppLifecycle.clearTimeout(timeTravel.scrubSettleTimer);
+timeTravel.scrubSettleTimer = 0;
+cancelHistoricalTargetCommit();
+const duration = beginHistoryPresetSeek(targetMs, timestamp, 120);
+handoff.readyAt = timestamp + duration;
+body.classList.add('timeline-history-play-handoff');
+if (!duration) completeHistoryPlaybackHandoff(timestamp);
 clearVisualScheduler();
 render(timestamp);
 }
@@ -22558,7 +22552,7 @@ if (APP_RELEASE.scopeModel !== 'hierarchical-v2' || typeof ComponentScopes.setti
 if (!CalendarManifest.valid) failures.push('日历数据未通过指纹边界校验');
 if (APP_RELEASE.historySeekController !== 'reference-mechanical-target-v1') failures.push('长跨度回溯未启用参考机械追随');
 if (APP_RELEASE.historyPlaybackInterruptPolicy !== 'interruptible-mechanical-handoff-v2') failures.push('历史播放交接未启用可打断策略');
-if (APP_RELEASE.historyPlaybackStart !== 'mechanical-chase-handoff-v2') failures.push('历史播放未启用追针后平滑交接');
+if (APP_RELEASE.historyPlaybackStart !== 'bounded-seek-handoff-v3') failures.push('历史播放未统一限时交接');
 if (APP_RELEASE.historySubhandInterpolation !== 'bounded-directional-turns-v1') failures.push('分针与时针未启用定向限圈插值');
 if (APP_RELEASE.historyTargetRetargetPolicy !== 'device-adaptive-energy-continuous-brake-v3') failures.push('快速回溯未启用设备自适应连续改向');
 if (APP_RELEASE.historySubhandRetargetPolicy !== 'nearest-equivalent-angle-v2') failures.push('分针与时针反向改向未启用最近等效角');
@@ -23088,7 +23082,7 @@ if (APP_RELEASE.scopeModel !== 'hierarchical-v2') failures.push('组件作用域
 if (APP_RELEASE.frameBudgetController !== 'pressure-cooldown-v2') failures.push('帧预算控制器未升级');
 if (APP_RELEASE.historySeekController !== 'reference-mechanical-target-v1') failures.push('长跨度回溯控制器未采用参考实现');
 if (APP_RELEASE.historyPlaybackInterruptPolicy !== 'interruptible-mechanical-handoff-v2') failures.push('历史播放交接可打断策略未升级');
-if (APP_RELEASE.historyPlaybackStart !== 'mechanical-chase-handoff-v2') failures.push('历史播放追针交接策略未升级');
+if (APP_RELEASE.historyPlaybackStart !== 'bounded-seek-handoff-v3') failures.push('历史播放限时交接策略未升级');
 if (APP_RELEASE.backgroundHistoryPlayback !== 'dual-anchor-continuous-direct-resume-v2') failures.push('历史播放后台连续计时策略未升级');
 if (APP_RELEASE.systemClockRecovery !== 'guarded-exported-compensation-v2') failures.push('系统时钟跳变恢复策略未升级');
 if (APP_RELEASE.backgroundHistoryClockIsolation !== 'monotonic-wall-drift-isolation-v2') failures.push('后台历史播放时钟漂移隔离策略未升级');
@@ -24325,15 +24319,6 @@ function sampleHistoricalVisualTime(
 timestamp = performance.now()
 ) {
 if (
-timeTravel.historyPlayHandoff.active &&
-timeTravel.historyPlayHandoff.phase ===
-'launch'
-) {
-return sampleHistoryPlaybackLaunchTime(
-timestamp
-);
-}
-if (
 !Number.isFinite(
 historicalVisual.displayedTimeMs
 ) ||
@@ -25273,11 +25258,7 @@ const rapidProgress = rapidSeekMode
 ? rapidLinearProgress
 : 1;
 const historyPlayMode =
-timeTravel.state === TIMELINE_STATE.HISTORY_PLAY ||
-(
-timeTravel.historyPlayHandoff.active &&
-timeTravel.historyPlayHandoff.phase === 'launch'
-);
+timeTravel.state === TIMELINE_STATE.HISTORY_PLAY;
 const boundedSubhands = historyPlayMode
 ? null
 : historicalSubhandAnglesAt(visualDate.getTime());
@@ -26283,11 +26264,12 @@ snapshot.hourAngle
 );
 const mobileReturnLite = false;
 clearReturnMotionProfile();
-const returnProfile = createReturnMotionProfile(
+const baseReturnProfile = createReturnMotionProfile(
 gapSeconds,
 mechanicalTurns,
 mobileReturnLite
 );
+const returnProfile = Object.freeze({ ...baseReturnProfile, duration: reduceMotionQuery.matches ? 1 : 180 });
 timeTravel.returnProfile = returnProfile;
 timeTravel.returnDuration = returnProfile.duration;
 body.dataset.timelineReturnProfile = returnProfile.tier;
@@ -27124,6 +27106,7 @@ if (returnFocus && dom.settingsDialog.hidden) dom.historyQuickOpen.focus({ preve
 
 function setHistoryQuickPanelOpen(open) {
 const nextOpen = Boolean(open);
+if (!nextOpen) HistoryTimeDial.finish();
 if (!nextOpen && TimeWheel.activeEditor?.editor && dom.historyQuickPanel?.contains(TimeWheel.activeEditor.editor.wrap)) TimeWheel.cancelActiveEditor();
 if (nextOpen && !historyQuickPanelState.open) HistoryDateReview.prepare();
 if (!dom.historyQuickPanel || !dom.historyQuickOpen) return;
@@ -27190,28 +27173,25 @@ atLive ? '打开快速回溯' : `打开快速回溯，当前 ${localDateKey(disp
 if (!panelVisible) return;
 const lowerBound = startOfDay(liveNow).getTime();
 const returning = timeTravel.state === TIMELINE_STATE.RETURNING_LIVE;
-const playing = timeTravel.state === TIMELINE_STATE.HISTORY_PLAY;
+const playing = timeTravel.state === TIMELINE_STATE.HISTORY_PLAY || timeTravel.historyPlayHandoff.active;
 const playButton = document.getElementById('historyQuickPlay');
-playButton.disabled = atLive || returning || timeTravel.state === TIMELINE_STATE.SCRUBBING;
+playButton.disabled = atLive || returning;
 setAttributeIfChanged(playButton, 'aria-pressed', String(playing));
 setAttributeIfChanged(playButton, 'aria-label', playing ? '暂停回溯' : '播放回溯');
 setTextIfChanged(playButton.querySelector('[data-history-play-label]'), playing ? '暂停' : '播放');
 const clock = document.getElementById('historyQuickClock');
 setTextIfChanged(clock, clockText);
 clock.dateTime = displayedDate.toISOString();
-clock.toggleAttribute('data-historical', !atLive);
-dom.historyQuickOffset.hidden = atLive;
+dom.historyQuickOffset.hidden = false;
 const liveLabel = dom.historyQuickPanel.querySelector('[data-history-live-label]');
 if (liveLabel) setTextIfChanged(liveLabel, '回到实时');
-
-setTextIfChanged(
-dom.historyQuickOffset,
-atLive ? '' : `${localDateKey(displayedDate)} · ${playing ? '播放中' : returning ? '回到实时中' : timeTravel.state === TIMELINE_STATE.SCRUBBING ? '定位中' : '已暂停'}`
-);
 
 const requestedDate = timeTravel.state === TIMELINE_STATE.LIVE || timeTravel.state === TIMELINE_STATE.RETURNING_LIVE
 ? liveNow
 : timeTravel.state === TIMELINE_STATE.HISTORY_PLAY ? displayedDate : (timeTravel.historyTime || displayedDate);
+const status = { working: '工作中', break: '午休', ended: '工作结束', 'not-started': '未上班', 'day-off': '休息日' }[getStatus(requestedDate)];
+setTextIfChanged(dom.historyQuickOffset, `${status} · ${atLive ? '实时' : playing ? '播放中' : returning ? '返回中' : timeTravel.state === TIMELINE_STATE.SCRUBBING ? '定位中' : '已暂停'}`);
+HistoryTimeDial.sync(requestedDate, liveNow);
 const requestedMs = requestedDate.getTime();
 const bounds = historyDateBounds(liveNow);
 const epsilon = HISTORY_TIME_SETTLE_DISTANCE;
@@ -27268,6 +27248,8 @@ const seconds =
 Number(button.dataset.historySeconds);
 const action =
 button.dataset.historyAction || '';
+if (action === 'live') HistoryTimeDial.finish();
+else if (!HistoryTimeDial.commit()) return;
 
 clearHistoryQuickPressedButton();
 AppLifecycle.clearTimeout(historyQuickPanelState.recentTimer);
@@ -27317,7 +27299,7 @@ event.preventDefault();
 }
 if (event.key === 'Tab' && (dom.historyQuickPanel.inert || dom.historyQuickPanel.hasAttribute('data-entry-animating'))) { event.preventDefault(); return; }
 if (event.key === 'Tab' && !historyQuickPanelState.desktop) {
-const controls = [...dom.historyQuickPanel.querySelectorAll('button:not(:disabled):not([tabindex="-1"]),input:not([type="hidden"]),summary,[role="spinbutton"]')].filter(node => !node.hidden && node.getClientRects().length && !node.closest('[inert]'));
+const controls = [...dom.historyQuickPanel.querySelectorAll('button:not(:disabled):not([tabindex="-1"]),input:not([type="hidden"]),summary,[role="spinbutton"],[role="slider"]')].filter(node => !node.hidden && node.getClientRects().length && !node.closest('[inert]'));
 const first = controls[0], last = controls.at(-1);
 if (event.shiftKey && target === first) { event.preventDefault(); last?.focus(); }
 else if (!event.shiftKey && target === last) { event.preventDefault(); first?.focus(); }
@@ -27374,6 +27356,7 @@ setHistoryQuickPanelOpen(false);
 );
 ComponentScopes.timeline.listen(document.getElementById('historyQuickClose'), 'click', () => setHistoryQuickPanelOpen(false));
 ComponentScopes.timeline.listen(document.getElementById('historyQuickPlay'), 'click', () => {
+if (!HistoryTimeDial.commit()) return;
 toggleHistoryPlayback();
 syncHistoryQuickPanel();
 });
@@ -30104,6 +30087,7 @@ bindDialInteraction();
 bindTaskWatchInteraction();
 bindTimeTravelInteraction();
 HistoryDateReview.bind();
+HistoryTimeDial.bind();
 ContentPressureController.observe();
 refreshProgressGeometry();
 if ('ResizeObserver' in window) {
