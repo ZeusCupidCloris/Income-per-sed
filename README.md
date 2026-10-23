@@ -59,7 +59,7 @@
 
 2.7.2 纳入全天回溯拨盘，修复无效时间提交，统一播放与返回实时的响应，并减少拖动时的重复测量和旧交接代码。保留 RC37 字体、主界面、计薪规则与小组件既有布局，四文件按同批次同步。
 
-本批合并、桌面替换与 Pages 核验进度见[当前交付](docs/README.md#当前交付)，不把本地检查当作已上线。本次不创建 Release 或标签，历史 Release 附件不会因此自动更新。
+本批已通过 [PR #62](https://github.com/ZeusCupidCloris/Income-per-sed/pull/62) 合并 main，桌面四文件已备份、替换并核验；Pages 状态另见[当前交付](docs/README.md#当前交付)，不把本地检查当作已上线。本次不创建 Release 或标签，历史 Release 附件不会因此自动更新。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 
