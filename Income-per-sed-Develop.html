@@ -18776,7 +18776,10 @@ applySeconds(targets[event.key], true);
 settleTimelineScrubbing();
 });
 ComponentScopes.timeline.listen(input, 'focus', () => { editing = true; input.select(); });
-ComponentScopes.timeline.listen(input, 'blur', event => commit({ apply: event.relatedTarget?.id !== 'historySeekSubmit' }));
+ComponentScopes.timeline.listen(input, 'blur', event => {
+// Preserve the draft until submit consumes it, even if a render runs before click.
+if (event.relatedTarget?.id !== 'historySeekSubmit') commit();
+});
 const invalidateBounds = () => { trackBounds = null; };
 ComponentScopes.timeline.listen(window, 'resize', invalidateBounds, { passive: true });
 ComponentScopes.timeline.listen(window, 'scroll', invalidateBounds, { passive: true, capture: true });

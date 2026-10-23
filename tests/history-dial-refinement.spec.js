@@ -97,6 +97,21 @@ for (const version of ['Develop', 'Push']) {
       await expect(page.locator('#historyDialTime')).toHaveValue('23:30:15');
       await expect(page.locator('#historySeekError')).toBeHidden();
     });
+    test('valid time survives a frame between blur and date submit', async ({ page }) => {
+      await open(page, version);
+      await page.locator('#historySeekWheels [data-date-part="day"]').press('ArrowUp');
+      const input = page.locator('#historyDialTime');
+      const submit = page.locator('#historySeekSubmit');
+      await input.fill('23:30:15');
+      await submit.focus();
+      await page.clock.runFor(1200);
+      await expect(input).toHaveValue('23:30:15');
+      expect(await mode(page)).toBe('LIVE');
+      await submit.click();
+      await hold(page);
+      await expect(page.locator('#historyDialDate')).toHaveText('2026-10-21');
+      await expect(input).toHaveValue('23:30:15');
+    });
     test('future and malformed values stay editable and Escape discards', async ({ page }) => {
       await open(page, version);
       const input = page.locator('#historyDialTime');
