@@ -3532,8 +3532,6 @@ body::after{display:none;}
     --display-font:"SF Pro Display","Avenir Next",-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
     --numeric-font:"SF Mono","Cascadia Code","Roboto Mono",Consolas,monospace;
     --dial-yellow:#c9b66d;
-    --release-module-gap:18px;
-    --release-detail-gap:7px;
 }
 
 /* 全局数字语言：金额、时间、工时和百分比采用稳定等宽数字。 */
@@ -3722,14 +3720,12 @@ body[data-work-status="day-off"] .dial-glass{opacity:.58;}
 }
 
 @media (max-width:620px){
-    :root{--release-module-gap:13px;}
     .income-main-card{margin-block:0 3px;}
     .section-kicker{margin-bottom:6px;font-size:.73rem;}
     .task-stopwatch-panel{transform:scale(.95);}
     .schedule-calibration-summary{padding:8px 10px;}
 }
 @media (max-width:390px){
-    :root{--release-module-gap:11px;}
     .flip-digits:not(.task-income-roller){letter-spacing:-.036em;}
     .info-label,.month-workdays-label,.fun-title{font-size:.69rem;}
     .info-value{font-size:1rem;}
@@ -7040,12 +7036,8 @@ html.compatibility-safe-mode #flipContainer::before{display:none;}
     /* R40 enclosure geometry. */
 
     /* 4px spacing rhythm. */
-    --r40-space-1:4px;
-    --r40-space-2:8px;
     --r40-space-3:12px;
     --r40-space-4:16px;
-    --r40-space-5:20px;
-    --r40-space-6:24px;
 
     /* Surface hierarchy: material brightness carries more hierarchy than shadow. */
     --r40-surface-hero:color-mix(in srgb,var(--card) 98%,#f2e9dd);
@@ -7433,12 +7425,7 @@ body::-webkit-scrollbar-track,
 @media (max-width:620px){
     :root{
         --adaptive-amount-size:3.05rem;
-        --r40-radius-hero:22px;
-        --r40-radius-primary:19px;
         --r40-radius-secondary:17px;
-        --r40-radius-nested:13px;
-        --r40-radius-control:9px;
-        --r40-radius-micro:7px;
     }
     .main-container{row-gap:var(--r40-space-4);column-gap:var(--r40-space-4);}
     .status-row{border-radius:var(--r40-radius-secondary);gap:0;}
@@ -7454,11 +7441,7 @@ body::-webkit-scrollbar-track,
 @media (max-width:390px){
     :root{
         --adaptive-amount-size:2.72rem;
-        --r40-radius-hero:21px;
-        --r40-radius-primary:18px;
         --r40-radius-secondary:16px;
-        --r40-radius-nested:12px;
-        --r40-radius-control:8px;
     }
 }
 @media (max-width:340px){:root{--adaptive-amount-size:2.48rem;}.year-estimate{font-size:.66rem;}}
@@ -7653,14 +7636,8 @@ body.timeline-detent .dial-fixed-hub{animation-duration:150ms !important;}
     --ui-radius-roller:6.5px;
     --ui-radius-roller-recess:4px;
     --ui-radius-roller-window:2.8px;
-    --radius-md:var(--ui-radius-surface);
     --radius-lg:var(--ui-radius-surface);
-    --r40-radius-hero:var(--ui-radius-surface);
-    --r40-radius-primary:var(--ui-radius-surface);
     --r40-radius-secondary:var(--ui-radius-surface);
-    --r40-radius-nested:var(--ui-radius-inset);
-    --r40-radius-control:var(--ui-radius-control);
-    --r40-radius-micro:var(--ui-radius-detail);
     --r43-dashboard-radius:var(--ui-radius-surface);
     --r43-status-radius:var(--ui-radius-surface);
     --r43-dashboard-gap:16px;
@@ -7680,9 +7657,7 @@ body.timeline-detent .dial-fixed-hub{animation-duration:150ms !important;}
     border-radius:var(--r43-dashboard-radius);
 }
 .settings-sheet{
-    --settings-field-radius:var(--ui-radius-inset);
     --settings-control-radius:var(--ui-radius-control);
-    --settings-wheel-radius:var(--ui-radius-inset);
 }
 .schedule-calibration-summary,
 .time-wheel-card,
