@@ -844,23 +844,13 @@ justify-content: space-between;
 text-align: center;
 }
 .month-card{
-align-items: flex-end;
 flex-wrap: wrap;
-}
-.month-value{
-font-variant-numeric: tabular-nums;
-}
-.month-detail,
-.month-workdays-label{
-color: var(--text-muted);
-font-size: 0.73rem;
 }
 .calendar-warning{
 max-width: 38em;
 margin-top: 6px;
 padding: 5px 8px;
 border: 1px solid color-mix(in srgb, var(--accent-warm) 24%, var(--border-light));
-border-radius: 8px;
 background: color-mix(in srgb, var(--accent-warm) 8%, transparent);
 color: color-mix(in srgb, var(--accent-warm) 76%, var(--text-secondary));
 font-size: 0.68rem;
@@ -869,7 +859,6 @@ line-height: 1.45;
 .calendar-warning[hidden]{display:none;}
 .month-workdays{
 text-align: right;
-font-variant-numeric: tabular-nums;
 }
 @media (orientation: landscape) and (min-width: 680px){
 .main-container{
@@ -3900,7 +3889,6 @@ body::after{display:none;}
 .month-value{
     margin-top:4px;
     color:color-mix(in srgb,var(--text-primary) 89%,var(--workshop-ink));
-    letter-spacing:-.025em;
 }
 .month-workdays{
     color:color-mix(in srgb,var(--text-primary) 84%,var(--workshop-ink));
@@ -4678,9 +4666,6 @@ body.startup-presentation-active .progress-card{
     animation-delay:220ms !important;
 }
 
-body.startup-presentation-active .month-card{
-    animation-delay:260ms !important;
-}
 
 body.startup-presentation-active .fun-card{
     animation-delay:300ms !important;
@@ -8539,7 +8524,6 @@ body.timeline-detent .dial-fixed-hub{animation-duration:150ms !important;}
     .info-cards-row > .card,
     .progress-card{padding:18px 20px;}
 
-    .month-card{padding:16px 20px;}
     .fun-card{padding:12px 18px;}
 }
 
@@ -8548,7 +8532,6 @@ body.timeline-detent .dial-fixed-hub{animation-duration:150ms !important;}
     .income-main-card{padding-block:22px 21px;}
     .info-cards-row > .card,
     .progress-card{padding:17px 18px;}
-    .month-card{padding:15px 18px;}
     .fun-card{padding:12px 16px;}
 }
 
