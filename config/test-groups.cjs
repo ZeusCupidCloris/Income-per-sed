@@ -8,7 +8,8 @@ module.exports = {
     files: ['browser-lifecycle.spec.js', 'cross-date-month.spec.js', 'foreground-progress.spec.js',
       'foreground-resume.spec.js', 'input-device-motion.spec.js', 'interaction-handoff.spec.js',
       'readout-sync.spec.js', 'recovery-combinations.spec.js', 'recovery-cross-actions.spec.js',
-      'startup-history-playback.spec.js', 'history-dial-refinement.spec.js', 'history-dial-touch.spec.js'],
+      'startup-history-playback.spec.js', 'history-dial-refinement.spec.js', 'history-dial-touch.spec.js',
+      'live-reference-marker.spec.js'],
   },
   settings: {
     label: '设置交互',
