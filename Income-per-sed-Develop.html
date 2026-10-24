@@ -776,7 +776,6 @@ font-size: 0.8rem;
 }
 .work-timeline{
 display: grid;
-grid-template-columns: 2.5fr minmax(52px, 0.72fr) 4fr;
 align-items: center;
 gap: 8px;
 }
@@ -827,8 +826,6 @@ border-top: 1px dashed color-mix(in srgb, var(--accent-warm) 38%, var(--border))
 }
 .schedule-labels{
 display: grid;
-grid-template-columns: 2.5fr minmax(52px, 0.72fr) 4fr;
-gap: 8px;
 color: var(--text-muted);
 }
 .schedule-range{
@@ -3467,7 +3464,6 @@ body::after{display:none;}
     position:relative;
     color:color-mix(in srgb,var(--workshop-green) 74%,var(--text-muted));
     font-size:.66rem;
-    letter-spacing:.08em;
 }
 .progress-phase::before{
     content:"";
@@ -3488,39 +3484,19 @@ body::after{display:none;}
     gap:3px;
     padding:1px 0 0 14px;
     border-left:1px solid color-mix(in srgb,var(--workshop-brass) 22%,var(--border-light));
-    font-variant-numeric:tabular-nums;
-}
-.progress-readout strong{
-    color:color-mix(in srgb,var(--text-primary) 88%,var(--workshop-ink));
-    font-family:"SF Mono","Cascadia Code",Consolas,monospace;
-    letter-spacing:.025em;
-}
-.progress-readout span{
-    color:var(--text-muted);
-    white-space:nowrap;
 }
 .work-timeline{
     margin:16px 0 11px;
 }
 .work-segment{
-    height:10px;
     border:1px solid color-mix(in srgb,var(--workshop-brass) 14%,var(--border-light));
-    background:
-        linear-gradient(180deg,rgba(255,255,255,.18),transparent 45%),
-        color-mix(in srgb,var(--bg-soft) 84%,var(--workshop-paper-deep));
-    box-shadow:
-        inset 0 1px 2px rgba(70,48,31,.10),
-        inset 0 -1px 0 rgba(255,255,255,.28);
 }
 .work-segment::after{
     --theme-rail-major:var(--r44-rail-major);
     --theme-rail-minor:var(--r44-rail-minor);
     content:"";
     position:absolute;
-    inset:1px;
-    border-radius:inherit;
     background:repeating-linear-gradient(90deg,transparent 0 13px,rgba(72,55,38,.055) 13px 14px);
-    pointer-events:none;
 }
 .work-segment:nth-child(3) .segment-fill{
     background:linear-gradient(90deg,#aab9ae 0%,var(--workshop-green) 74%,color-mix(in srgb,var(--workshop-brass) 35%,var(--workshop-green)) 100%);
@@ -3533,13 +3509,8 @@ body::after{display:none;}
     pointer-events:none;
 }
 .progress-marker{
-    width:9px;
-    height:15px;
     border:1px solid color-mix(in srgb,var(--workshop-brass) 64%,#6d563d);
     background:linear-gradient(90deg,#7a6043 0%,#d7bd91 43%,#a8875d 62%,#6d553d 100%);
-    box-shadow:
-        0 0 0 2px color-mix(in srgb,var(--card) 72%,transparent),
-        0 2px 5px rgba(68,48,31,.22);
 }
 .progress-marker.paused{
     background:linear-gradient(90deg,#82513d 0%,#c88b69 50%,#774633 100%);
@@ -3551,9 +3522,6 @@ body::after{display:none;}
     height:8px;
     background:repeating-linear-gradient(135deg,transparent 0 4px,color-mix(in srgb,var(--workshop-copper) 20%,transparent) 4px 5px);
     transform:translateY(-50%);
-}
-.schedule-labels{
-    letter-spacing:.015em;
 }
 .schedule-break{
     color:color-mix(in srgb,var(--workshop-copper) 60%,var(--text-muted));
@@ -3788,7 +3756,7 @@ body::after{display:none;}
     }
 }
 @media (max-width:620px){
-    .progress-readout{min-width:92px;padding-left:10px;}
+    .progress-readout{min-width:92px;}
     .schedule-calibration-summary{gap:10px;}
     .schedule-calibration-total{min-width:100px;}
     .schedule-calibration-split{gap:4px 10px;font-size:.61rem;}
@@ -3798,7 +3766,7 @@ body::after{display:none;}
 @media (max-width:390px){
     .progress-header{gap:8px;}
     .progress-readout{min-width:84px;}
-    .progress-readout span{max-width:84px;overflow:hidden;text-overflow:ellipsis;}
+    .progress-readout span{overflow:hidden;text-overflow:ellipsis;}
     .schedule-calibration-summary{align-items:flex-start;}
     .schedule-calibration-split{display:grid;justify-items:end;}
     .task-stopwatch-caption{font-size:.50rem;}
@@ -4657,9 +4625,6 @@ body.startup-presentation-active .fun-card{
 }
 
 
-body.startup-presentation-active .progress-card{
-    animation-delay:220ms !important;
-}
 
 
 
@@ -5788,13 +5753,6 @@ body.timeline-scrubbing .current-time{
 }
 
 /* The progress card remains the operational focus; summaries step back. */
-.progress-card{
-    border-color:var(--tier-two-border);
-    background:
-        linear-gradient(135deg,color-mix(in srgb,white 8%,transparent),transparent 36%),
-        color-mix(in srgb,var(--card) 95%,var(--bg-soft));
-    box-shadow:var(--tier-two-shadow);
-}
 
 .month-card,
 .info-cards-row > .card{
@@ -6019,14 +5977,7 @@ body.timeline-scrubbing .current-time{
     z-index:5;
     top:50%;
     left:0;
-    width:7px;
-    height:13px;
     border:1px solid color-mix(in srgb,var(--workshop-brass) 60%,#6d563d);
-    border-radius:3px;
-    background:linear-gradient(90deg,#765d42 0%,#cfb687 43%,#9e8058 64%,#69523c 100%);
-    box-shadow:
-        0 0 0 2px color-mix(in srgb,var(--card) 66%,transparent),
-        0 2px 4px rgba(68,48,31,.15);
     opacity:1;
     pointer-events:none;
     transform:translate3d(calc(var(--timeline-cursor-x) - 50%),-50%,0);
@@ -6629,8 +6580,6 @@ html[data-theme="dark"] .income-main-card{
 
 html[data-theme="dark"] .progress-card{
     border-color:rgba(255,255,255,.055);
-    background:color-mix(in srgb,var(--card) 95%,#24221e);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.032),0 7px 18px rgba(0,0,0,.09);
 }
 
 html[data-theme="dark"] .month-card,
@@ -8112,10 +8061,6 @@ html[data-theme="dark"] .income-dial{filter:saturate(.86) brightness(.91) contra
 .work-segment{
     height:9px;
     border-color:color-mix(in srgb,#b8aa98 20%,var(--border-light));
-    background:
-        repeating-linear-gradient(90deg,transparent 0 10px,color-mix(in srgb,var(--text-primary) 5%,transparent) 10px 11px),
-        repeating-linear-gradient(90deg,transparent 0 54px,color-mix(in srgb,var(--workshop-brass) 13%,transparent) 54px 55px),
-        color-mix(in srgb,var(--bg-soft) 90%,#b8aa98);
     box-shadow:inset 0 1px 2px color-mix(in srgb,var(--text-primary) 8%,transparent),inset 0 -1px 0 color-mix(in srgb,var(--glass-edge-light) 28%,transparent);
 }
 .timeline-handoff-marker{
