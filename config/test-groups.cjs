@@ -14,7 +14,7 @@ module.exports = {
     label: '设置交互',
     files: ['motion-feedback.spec.js', 'settings-input-safety.spec.js', 'settings-local-motion.spec.js',
       'settings-refinements.spec.js', 'settings-scrollbar-handoff.spec.js', 'settings-stability.spec.js',
-      'settings-text-continuity.spec.js'],
+      'settings-text-continuity.spec.js', 'global-css-feedback.spec.js'],
     manual: ['settings-frame-budget.spec.js'],
   },
   layout: {

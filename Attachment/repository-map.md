@@ -145,6 +145,7 @@
 | [tests/settings-refinements.spec.js](../tests/settings-refinements.spec.js) | 设置及快速回溯的局部反馈、拖动接管与滚动边界检查 | 维护 |
 | [tests/settings-stability.spec.js](../tests/settings-stability.spec.js) | 设置滚动锚定、摘要布局、快速操作清理与读写耗时检查 | 维护 |
 | [tests/settings-input-safety.spec.js](../tests/settings-input-safety.spec.js) | 不可见控件防误触、触屏手势意图及停靠后摘要播报测试 | 维护 |
+| [tests/global-css-feedback.spec.js](../tests/global-css-feedback.spec.js) | 存储提示生命周期、隐私解锁触摸尺寸与键盘焦点视觉契约 | 维护 |
 | [tests/settings-frame-budget.spec.js](../tests/settings-frame-budget.spec.js) | 设置卡片实际帧间隔与样式计算开销观察 | 维护 |
 | [tests/release-naming.test.mjs](../tests/release-naming.test.mjs) | 对外名称与版本对应测试 | 维护 |
 | [tests/readme-preview-validation.test.mjs](../tests/readme-preview-validation.test.mjs) | 首页图片检查器测试 | 维护 |
