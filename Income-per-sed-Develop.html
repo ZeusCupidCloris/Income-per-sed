@@ -1772,7 +1772,6 @@ in srgb,
 var(--accent-warm) 54%,
 var(--text-secondary)
 );
-transform: translateY(-1px);
 }
 body.timeline-history-play .current-time{
 color: color-mix(
@@ -4118,13 +4117,7 @@ body[data-work-status="day-off"] .dial-glass{opacity:.58;}
         display:grid;
         place-items:center;
         padding:0;
-        border:1px solid color-mix(
-            in srgb,
-            var(--border-light) 62%,
-            transparent
-        );
         border-radius:50%;
-        background:color-mix(in srgb,var(--bg-soft) 58%,transparent);
         color:color-mix(
             in srgb,
             var(--text-muted) 88%,
@@ -4449,13 +4442,8 @@ body[data-work-status="day-off"] .dial-glass{opacity:.58;}
         left:14px !important;
         right:14px !important;
         top:auto !important;
-        bottom:max(
-            18px,
-            calc(env(safe-area-inset-bottom) + 10px)
-        ) !important;
         width:auto !important;
         max-width:430px;
-        max-height:min(68svh,460px);
         margin-inline:auto;
         overflow:auto;
         overscroll-behavior:contain;
@@ -4488,11 +4476,6 @@ body[data-work-status="day-off"] .dial-glass{opacity:.58;}
     .history-quick-panel{
         left:12px !important;
         right:12px !important;
-        bottom:max(
-            14px,
-            calc(env(safe-area-inset-bottom) + 8px)
-        ) !important;
-        max-height:min(72svh,480px);
     }
 
     .history-quick-grid button{
@@ -9076,13 +9059,11 @@ html[data-theme="dark"] .context-error{color:#e4a599;}
 </style>
 <style id="quick-review-refinement">
 #historyQuickPanel.entry-popover .entry-popover-skin{background:var(--material-solid);backdrop-filter:none;-webkit-backdrop-filter:none;}
-#historyQuickPanel .history-quick-header{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:5px 10px;margin-bottom:14px;}
-#historyQuickPanel .history-quick-grid{gap:7px 8px;}
+#historyQuickPanel .history-quick-header{align-items:baseline;}
 #historyQuickPanel .history-quick-grid button{display:flex;align-items:center;justify-content:center;gap:8px;}
 #historyQuickPanel .history-quick-grid svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
 #historyQuickPanel .history-quick-grid .history-quick-secondary{background:transparent;border-color:transparent;font-size:12px;color:var(--text-secondary);}
-#historyQuickPanel .history-quick-live{margin-top:3px;background:var(--material-selected);}
-#historyQuickPanel .history-quick-live:disabled{background:transparent;border-color:transparent;}
+#historyQuickPanel .history-quick-live{margin-top:3px;}
 @media(hover:hover){#historyQuickPanel .history-quick-grid button:hover:not(:disabled){background:var(--material-selected);}}
 @media(forced-colors:active){#historyQuickPanel.entry-popover .entry-popover-skin{background:Canvas;}#historyQuickPanel .history-quick-grid button{border:1px solid ButtonText;color:ButtonText;background:Canvas;}}
 </style>
@@ -9150,7 +9131,7 @@ html.theme-task-live-transition .flip-digit-item{transition-property:text-shadow
 @media(prefers-reduced-motion:reduce){html.theme-task-live-transition *{transition-duration:1ms!important;}}
 </style>
 <style id="quick-shared-card-motion">
-html:root #historyQuickPanel[data-entry-centered]{left:var(--entry-left)!important;top:var(--entry-top)!important;right:auto!important;bottom:auto!important;margin:0!important;max-height:var(--entry-max-height)!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;overflow-anchor:none;scrollbar-gutter:auto;background:var(--material-solid);border-color:var(--material-edge);box-shadow:inset 0 1px 0 var(--material-highlight),0 14px 36px var(--material-shadow);transform:translate3d(0,var(--history-sheet-drag-y,0px),0)!important;}
+html:root #historyQuickPanel[data-entry-centered]{left:var(--entry-left)!important;top:var(--entry-top)!important;right:auto!important;bottom:auto!important;margin:0!important;max-height:var(--entry-max-height)!important;overflow-x:hidden!important;overscroll-behavior:contain;overflow-anchor:none;scrollbar-gutter:auto;background:var(--material-solid);border-color:var(--material-edge);box-shadow:inset 0 1px 0 var(--material-highlight),0 14px 36px var(--material-shadow);transform:translate3d(0,var(--history-sheet-drag-y,0px),0)!important;}
 /* The scroll container owns its surface; an absolute skin would scroll away. */
 #historyQuickPanel[data-entry-centered]>.entry-popover-skin{display:none;}
 html:root #historyQuickPanel[data-entry-centered]:not([data-entry-desktop]){width:min(440px,calc(100vw - 24px))!important;max-width:calc(100vw - 24px);}
