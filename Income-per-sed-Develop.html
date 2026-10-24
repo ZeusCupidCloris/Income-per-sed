@@ -221,7 +221,6 @@ min-width: 320px;
 body{
 min-height:100vh;
 min-height:100svh;
-min-height:100dvh;
 min-height: 100dvh;
 display: flex;
 justify-content: center;
@@ -232,7 +231,6 @@ radial-gradient(circle at 88% 84%, color-mix(in srgb, var(--ambient-wash) 62%, t
 var(--bg);
 color: var(--text-primary);
 font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
-letter-spacing: 0.01em;
 }
 body[data-work-status="working"]{
 --state-aura: color-mix(in srgb, var(--accent-green) 13%, transparent);
@@ -4630,18 +4628,6 @@ body{
 body{
     align-items:center;
     background-color:var(--page-backdrop-bottom);
-    background-image:
-        linear-gradient(var(--workshop-grid) 1px,transparent 1px),
-        linear-gradient(90deg,var(--workshop-grid) 1px,transparent 1px),
-        linear-gradient(var(--workshop-grid-major) 1px,transparent 1px),
-        linear-gradient(90deg,var(--workshop-grid-major) 1px,transparent 1px),
-        linear-gradient(180deg,var(--page-backdrop-top),var(--page-backdrop-bottom));
-    background-size:
-        var(--workshop-fine-grid) var(--workshop-fine-grid),
-        var(--workshop-fine-grid) var(--workshop-fine-grid),
-        var(--workshop-major-grid) var(--workshop-major-grid),
-        var(--workshop-major-grid) var(--workshop-major-grid),
-        auto;
     background-position:center;
 }
 
@@ -4650,17 +4636,10 @@ body{
 }
 
 body::before{
-    background:linear-gradient(
-        180deg,
-        var(--page-backdrop-sheen),
-        transparent 42%,
-        var(--page-backdrop-shade)
-    );
     mix-blend-mode:normal;
 }
 
 body::after{
-    opacity:.018;
     mix-blend-mode:soft-light;
 }
 
@@ -5169,7 +5148,6 @@ body.timeline-scrub-coasting .current-time{
         --scrollbar-thumb-hover:#71685e;
     }
 
-    body::after{opacity:.024;}
 
 
 
@@ -5259,20 +5237,6 @@ body{
     letter-spacing:0;
 }
 
-body::before{
-    background:
-        radial-gradient(
-            ellipse at 50% 44%,
-            color-mix(in srgb,var(--page-backdrop-top) 48%,transparent) 0%,
-            transparent 68%
-        ),
-        linear-gradient(
-            180deg,
-            var(--page-backdrop-sheen),
-            transparent 46%,
-            var(--page-backdrop-shade)
-        );
-}
 
 /* Status, time travel and live state read as one compact system control. */
 .status-card{
@@ -5921,12 +5885,6 @@ html[data-theme="dark"]{
 
 html[data-theme] body{
     background-color:var(--page-backdrop-bottom);
-    background-image:
-        linear-gradient(var(--workshop-grid) 1px,transparent 1px),
-        linear-gradient(90deg,var(--workshop-grid) 1px,transparent 1px),
-        linear-gradient(var(--workshop-grid-major) 1px,transparent 1px),
-        linear-gradient(90deg,var(--workshop-grid-major) 1px,transparent 1px),
-        linear-gradient(180deg,var(--page-backdrop-top),var(--page-backdrop-bottom));
 }
 
 html.theme-transitioning body,
@@ -6941,7 +6899,6 @@ html[data-theme="dark"]{
     inset:0;
     width:100%;
     height:100%;
-    opacity:var(--ambient-grid-opacity);
 }
 
 body.performance-degraded .ambient-grid-backdrop{opacity:.38;}
@@ -7020,7 +6977,6 @@ html[data-theme="dark"] .income-main-card > .traditional-card-frame{
     pointer-events:none;
     transform:translateX(-50%);
     background-repeat:repeat-x;
-    opacity:.72;
 }
 
 #flipContainer::before{
