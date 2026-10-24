@@ -4,6 +4,8 @@
 
 ## 当前交付
 
+此本地分支另含尚未发布的[八批 CSS 清理](maintainer/card-css-plan.md#本地执行记录-2026-年-10-月-24-日)：局部对照 165 次、最终全页对照 59 场景、配套检查 57 项、Edge 272 项和 WebKit 179 项通过；WebKit 有 4 项既定驱动能力跳过，均未启用测试重试。下面的线上、桌面和 PR 记录指已交付的 2.7.2，不代表本地维护分支已发布。本地校验清单、手册校验值和 README 图片来源已随候选页面更新；本轮没有升级版本或替换桌面文件，真实手机及真实整夜验收仍暂缓。
+
 产品与小组件统一为 **2.7.2**，交付 **20261023.1**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。[PR #62](https://github.com/ZeusCupidCloris/Income-per-sed/pull/62) 已合并为 `5eeff46`，桌面四文件已备份、替换并核验。main 的 Quality / Pages 通过并部署，线上首页及命名 Push 均与本批发布文件逐字节一致。不创建 Release 或标签。
 
 本批纳入全天回溯拨盘、持续时间校验、统一播放响应和坐标缓存，保留 RC37 字体、主界面与计薪口径。Widget 仅同步元数据。范围与结果见[2.7.2 版本说明](releases/v2.7.2.md)及[本批验收](acceptance/fourfile-20261023.md)，后续见[逐卡片 CSS 计划](maintainer/card-css-plan.md)。真实手机及真实整夜验收暂缓，不把模拟结果写成真机通过。
