@@ -741,11 +741,6 @@ body.settings-open{overflow:hidden;}
 .fun-card{
 border: 1px solid var(--border-light);
 }
-.fun-title{
-color: var(--text-muted);
-font-size: 0.68rem;
-opacity: 0.78;
-}
 .fun-fact{
 display: grid;
 grid-template-columns: repeat(2,minmax(0,1fr));
@@ -4667,9 +4662,6 @@ body.startup-presentation-active .progress-card{
 }
 
 
-body.startup-presentation-active .fun-card{
-    animation-delay:300ms !important;
-}
 
 body.page-resumed-once .card{
     animation:none !important;
@@ -5637,8 +5629,6 @@ body.timeline-scrub-coasting .current-time{
 
     .fun-card{
         border-color:transparent;
-        background:rgba(255,255,255,.014);
-        opacity:.73;
     }
 
     .flip-digit-container{
@@ -6781,20 +6771,9 @@ html[data-theme="light"] .task-stopwatch{
 /* R26 low-priority glass shells are intentionally restored for both bottom cards. */
 .fun-card{
     padding:10px 12px;
-    border-color:transparent;
-    border-radius:16px;
-    background:color-mix(in srgb,var(--bg-soft) 47%,transparent);
-    box-shadow:none;
-    backdrop-filter:none;
     -webkit-backdrop-filter:none;
-    opacity:.68;
 }
 
-.fun-card::before,
-.fun-card::after{
-    content:none !important;
-    display:none !important;
-}
 
 .fun-title{
     margin-bottom:5px;
@@ -8524,7 +8503,6 @@ body.timeline-detent .dial-fixed-hub{animation-duration:150ms !important;}
     .info-cards-row > .card,
     .progress-card{padding:18px 20px;}
 
-    .fun-card{padding:12px 18px;}
 }
 
 @media (min-width:621px) and (max-width:1179px){
@@ -8532,7 +8510,6 @@ body.timeline-detent .dial-fixed-hub{animation-duration:150ms !important;}
     .income-main-card{padding-block:22px 21px;}
     .info-cards-row > .card,
     .progress-card{padding:17px 18px;}
-    .fun-card{padding:12px 16px;}
 }
 
 @media (max-width:620px){
