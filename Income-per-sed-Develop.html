@@ -81,20 +81,14 @@ color-scheme: light dark;
 --accent-green: #8a9e8b;
 --accent-green-soft: #b8c9b6;
 --accent-blue: #8b95a0;
---accent-blue-soft: #bcc5cd;
 --accent-rose: #b8a099;
 --accent-warm: #c2a98e;
 --accent-warm-soft: #ddcdb8;
 --border: #e3dcd3;
 --border-light: rgba(227, 220, 211, 0.8);
---shadow-sm: 0 1px 2px rgba(74, 63, 56, 0.04);
 --shadow-md: 0 10px 30px rgba(74, 63, 56, 0.07);
---decoration-1: #d9ccc0;
---decoration-2: #c8d3cb;
---decoration-3: #ccbfb8;
 --state-aura: rgba(138, 158, 139, 0.10);
 --needle-red: #e35b32;
---needle-red-deep: #9b2f1f;
 --needle-red-glow: rgba(227, 91, 50, 0.34);
 --ambient-wash: rgba(138, 158, 139, 0.13);
 --glass-edge-light: rgba(255, 255, 255, 0.62);
@@ -126,8 +120,6 @@ color-scheme: light dark;
 --metal-mid: #c7c9ca;
 --metal-shadow: #777b7d;
 --metal-deep: #4e5356;
---glass-highlight: rgba(255, 255, 255, 0.28);
---glass-shadow: rgba(47, 40, 36, 0.10);
 }
 @media (prefers-color-scheme: dark){
 :root{
@@ -145,12 +137,8 @@ color-scheme: light dark;
 --accent-warm-soft: #7c6a58;
 --border: #4b4640;
 --border-light: rgba(75, 70, 64, 0.78);
---decoration-1: #655950;
---decoration-2: #526058;
---decoration-3: #625550;
 --shadow-md: 0 12px 34px rgba(0, 0, 0, 0.18);
 --needle-red: #ff7043;
---needle-red-deep: #b83a24;
 --needle-red-glow: rgba(255, 112, 67, 0.42);
 --ambient-wash: rgba(135, 154, 132, 0.11);
 --glass-edge-light: rgba(255, 255, 255, 0.16);
@@ -160,8 +148,6 @@ color-scheme: light dark;
 --metal-mid: #aaaeb0;
 --metal-shadow: #64696c;
 --metal-deep: #3d4245;
---glass-highlight: rgba(255, 255, 255, 0.18);
---glass-shadow: rgba(0, 0, 0, 0.22);
 }
 }
 
@@ -942,17 +928,12 @@ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--needle-red) 3%, transparent
 }
 
 :root{
---dial-red: #c71331;
---dial-shell-light: #41454a;
---dial-shell-mid: #24272b;
---dial-shell-dark: #0c0e10;
 --dial-glare-x: 35%;
 --dial-glare-y: 22%;
 }
 body[data-work-status="working"]{
 --dial-face-color: var(--dial-yellow);
 --dial-face-ink: #171610;
---dial-face-muted: rgba(23, 22, 16, 0.45);
 }
 body[data-work-status="break"]{
 --dial-face-color: #e6e2d8;
@@ -1174,7 +1155,6 @@ left: calc(50% + 1.7px);
 :root{
 --dial-face-color: #e7e5df;
 --dial-face-ink: #171715;
---dial-face-muted: rgba(23, 23, 21, 0.50);
 }
 body[data-work-status="working"],
 body[data-work-status="break"],
@@ -1183,7 +1163,6 @@ body[data-work-status="ended"],
 body[data-work-status="day-off"]{
 --dial-face-color: #e7e5df;
 --dial-face-ink: #171715;
---dial-face-muted: rgba(23, 23, 21, 0.50);
 }
 .dial-moving-surface{
 background-color: var(--dial-face-color);
@@ -1773,10 +1752,6 @@ drop-shadow(
 rgba(74,63,56,0.065)
 )
 brightness(1.012);
-}
-body.time-control-hover .dial-glass,
-body.timeline-history-active .dial-glass{
---glare-boost: 0.035;
 }
 body.timeline-scrubbing .dial-subhand-wrap,
 body.timeline-scrubbing .segment-fill,
@@ -3058,18 +3033,13 @@ html.compatibility-safe-mode [data-visual-priority="secondary"]{content-visibili
  */
 :root{
 --workshop-paper:#e8dfd3;
---workshop-paper-deep:#d8c9b7;
 --workshop-grid:rgba(108,82,58,.075);
 --workshop-grid-major:rgba(108,82,58,.04);
 --workshop-ink:#514337;
 --workshop-brass:#b99361;
---workshop-brass-light:#dec49b;
 --workshop-copper:#a86e4b;
 --workshop-green:#718676;
 --workshop-red:#b84f36;
---workshop-metal-light:#d6d0c5;
---workshop-metal-mid:#8f8b84;
---workshop-metal-dark:#383632;
 --workshop-lamp:rgba(184,137,83,.19);
 --workshop-cool:rgba(102,126,114,.11);
 --workshop-fine-grid:36px;
@@ -3211,7 +3181,6 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
 :root{
 --workshop-ink:#e1d1bb;
 --workshop-brass:#b79568;
---workshop-brass-light:#725e45;
 --workshop-copper:#b47652;
 --workshop-green:#7f9585;
 --workshop-red:#d26446;
@@ -5089,7 +5058,6 @@ body.timeline-scrub-coasting .current-time{
         --border:#403c36;
         --border-light:rgba(110,101,91,.48);
         --workshop-paper:#1d1c19;
-        --workshop-paper-deep:#151411;
         --workshop-grid:rgba(218,193,159,.032);
         --workshop-grid-major:rgba(218,193,159,.017);
         --glass-edge-light:rgba(255,255,255,.115);
@@ -5806,7 +5774,6 @@ html[data-theme="dark"]{
     --border:#3d3933;
     --border-light:rgba(103,95,85,.44);
     --workshop-paper:#1d1c19;
-    --workshop-paper-deep:#151411;
     --workshop-grid:rgba(218,193,159,.026);
     --workshop-grid-major:rgba(218,193,159,.014);
     --glass-edge-light:rgba(255,255,255,.095);
@@ -7233,7 +7200,6 @@ html[data-theme="dark"] body[data-work-status="ended"],
 html[data-theme="dark"] body[data-work-status="day-off"]{
     --dial-face-color:#d6d1c7;
     --dial-face-ink:#201e1b;
-    --dial-face-muted:rgba(32,30,27,.46);
 }
 html[data-theme="dark"] .dial-glass::before{opacity:.72;}
 html[data-theme="dark"] .dial-glass::after{opacity:.70;}
