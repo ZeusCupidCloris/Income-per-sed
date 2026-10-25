@@ -52,6 +52,7 @@
 | [docs/maintainer/webkit-stability.md](../docs/maintainer/webkit-stability.md) | WebKit 原崩溃的连续、同页、冷启动与原生记录排查 | 维护 |
 | [docs/maintainer/css-variable-tuning.md](../docs/maintainer/css-variable-tuning.md) | 第二批七个无用旧参数删除与独立验收 | 维护 |
 | [docs/maintainer/css-variable-display-color.md](../docs/maintainer/css-variable-display-color.md) | 第三批显示层级与旧配色的两组清理和逐组验收 | 维护 |
+| [docs/maintainer/css-variable-metal-alias.md](../docs/maintainer/css-variable-metal-alias.md) | 最后四对金属别名删除、全量变量复核与完整业务回归 | 维护 |
 | [docs/Income-per-sed（说明文档）.docx](../docs/Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
 | [docs/README.md](../docs/README.md) | 当前交付与验收状态索引 | 维护 |
 | [docs/acceptance/maintenance-simplification-20261006.md](../docs/acceptance/maintenance-simplification-20261006.md) | 索引、测试入口与维护收敛验收记录 | 维护 |
