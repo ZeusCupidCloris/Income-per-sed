@@ -88,15 +88,16 @@ for (const version of ['Develop','Push']) {
     }
     expect(errors).toEqual([]);
   });
-  test(`${version}: settings persist across all income modes`, async ({page}) => {
-    const errors=[]; page.on('pageerror',e=>errors.push(e.message));
-    await page.clock.setFixedTime(new Date('2026-09-07T06:30:00Z'));
-    await page.goto(`/Income-per-sed-${version}.html`);
-    await fullDisplay(page);
-    for(const mode of ['fixed-monthly','annual-average','fixed-daily']) {
+  for (const mode of ['fixed-monthly','annual-average','fixed-daily']) {
+    test(`${version}: settings persist for ${mode}`, async ({page}) => {
+      const errors=[]; page.on('pageerror',e=>errors.push(e.message));
+      await page.clock.setFixedTime(new Date('2026-09-07T06:30:00Z'));
+      await page.goto(`/Income-per-sed-${version}.html`);
+      await fullDisplay(page);
       await page.locator('#incomeSettingsCard').click();
       await settingsReady(page);
       await page.locator(`[data-income-mode="${mode}"]`).click();
+      await expect(page.locator(`[data-income-mode="${mode}"]`)).toHaveAttribute('aria-pressed','true');
       await page.locator('#incomeAmountInput').fill('2600');
       await page.locator('#settingsSaveButton').click();
       await expect(page.locator('#settingsDialog')).toBeHidden();
@@ -105,11 +106,15 @@ for (const version of ['Develop','Push']) {
       await page.locator('#incomeSettingsCard').click();
       await settingsReady(page);
       await expect(page.locator('#incomeAmountInput')).toHaveValue('2600.00');
+      await expect(page.locator(`[data-income-mode="${mode}"]`)).toHaveAttribute('aria-pressed','true');
+      const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('income-per-sed-settings')));
+      expect(saved.payload.settings.incomeMode).toBe(mode);
       await page.keyboard.press('Escape');
       expect(Number(await page.locator('#progressTrack').getAttribute('aria-valuenow'))).toBeGreaterThan(0);
-    }
-    expect(errors).toEqual([]);
-  });
+      expect(errors).toEqual([]);
+      await expect(page.locator('#settingsDialog')).toBeHidden();
+    });
+  }
   test(`${version}: mobile history, return and repeated recovery remain usable`,async({page})=>{
     const errors=[]; page.on('pageerror',e=>errors.push(e.message));
     await page.setViewportSize({width:390,height:844});
