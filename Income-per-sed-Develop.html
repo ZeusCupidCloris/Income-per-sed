@@ -116,10 +116,6 @@ color-scheme: light dark;
 --z-settings-sheet: 1;
 --z-settings-sticky: 4;
 --z-debug-panel: 12000;
---metal-highlight: rgba(255, 255, 255, 0.88);
---metal-mid: #c7c9ca;
---metal-shadow: #777b7d;
---metal-deep: #4e5356;
 }
 @media (prefers-color-scheme: dark){
 :root{
@@ -144,10 +140,6 @@ color-scheme: light dark;
 --glass-edge-light: rgba(255, 255, 255, 0.16);
 --glass-edge-dark: rgba(0, 0, 0, 0.24);
 --glass-noise-opacity: 0.035;
---metal-highlight: rgba(255, 255, 255, 0.55);
---metal-mid: #aaaeb0;
---metal-shadow: #64696c;
---metal-deep: #3d4245;
 }
 }
 
@@ -2812,12 +2804,6 @@ text-rendering:geometricPrecision;
 .dial-glass{z-index:var(--z-dial-glass);}
 /* Pocket watch hierarchy; its interaction controller remains independent. */
 .task-stopwatch-labels{z-index:var(--z-dial-numerals);}
-.pocket-watch-ring,.pocket-watch-neck,.task-stopwatch-crown,.task-stopwatch{
-    --pocket-metal-highlight:var(--metal-highlight);
-    --pocket-metal-mid:var(--metal-mid);
-    --pocket-metal-shadow:var(--metal-shadow);
-    --pocket-metal-deep:var(--metal-deep);
-}
 
 /* ======================== Performance protection ======================== */
 .storage-warning-toast{
