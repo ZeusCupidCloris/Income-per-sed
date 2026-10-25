@@ -49,6 +49,8 @@
 | [docs/maintainer/global-css-audit.md](../docs/maintainer/global-css-audit.md) | 全局37条覆盖候选的逐项决定、兼容保留与反馈回归 | 维护 |
 | [docs/maintainer/css-variable-audit.md](../docs/maintainer/css-variable-audit.md) | 自定义变量消费关系、动态入口和四批清理候选 | 维护 |
 | [docs/maintainer/css-variable-layout.md](../docs/maintainer/css-variable-layout.md) | 第一批无用变量删除、外观对照与参考线独立修复预览 | 维护 |
+| [docs/maintainer/webkit-stability.md](../docs/maintainer/webkit-stability.md) | WebKit 原崩溃的连续、同页、冷启动与原生记录排查 | 维护 |
+| [docs/maintainer/css-variable-tuning.md](../docs/maintainer/css-variable-tuning.md) | 第二批七个无用旧参数删除与独立验收 | 维护 |
 | [docs/Income-per-sed（说明文档）.docx](../docs/Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
 | [docs/README.md](../docs/README.md) | 当前交付与验收状态索引 | 维护 |
 | [docs/acceptance/maintenance-simplification-20261006.md](../docs/acceptance/maintenance-simplification-20261006.md) | 索引、测试入口与维护收敛验收记录 | 维护 |
