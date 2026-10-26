@@ -59,7 +59,7 @@
 
 2.7.3 整理卡片与全局 CSS、清除无效变量和被覆盖的旧关键帧，修复历史状态下实时参考刻线的颜色来源，并减少顶部标签写入和同次时间格式化的重复工作。保留 RC37 字体、主界面、计薪规则、机械连续动效与小组件既有布局，不新增产品依赖。
 
-本批四文件、桌面替换、PR 检查和 Pages 核验进度见[当前交付](docs/README.md#当前交付)，不把本地检查当作已上线。历史 WebKit 偶发崩溃本轮未归因，真实手机与真实整夜验收仍暂缓；具体边界见[本批验收](docs/acceptance/fourfile-20261026.md)。本次不创建 Release 或标签，历史 Release 附件不会因此自动更新。
+本批已通过 [PR #64](https://github.com/ZeusCupidCloris/Income-per-sed/pull/64) 合并 main，桌面四文件已先备份、替换并核验；main 完整检查与 Pages 部署通过，线上首页和命名 Push 与本批文件逐字节一致。历史 WebKit 偶发崩溃仍未归因，真实手机与真实整夜验收暂缓；结果与边界见[本批验收](docs/acceptance/fourfile-20261026.md)。不创建 Release 或标签，历史附件不会因此自动更新。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 
@@ -75,7 +75,7 @@
 | 当前交付、待验收、历史证据 | [验收索引](docs/README.md) |
 | 命名、日历、手册与发布规则 | [维护策略](docs/REPOSITORY_POLICY.md) |
 | CI 的作用与重复检查评估 | [工作流评估](docs/maintainer/workflow-review.md) |
-| 下一步逐卡片精简 CSS | [分批整理方案](docs/maintainer/card-css-plan.md) |
+| 已完成卡片整理与分批记录 | [分批整理方案](docs/maintainer/card-css-plan.md) |
 
 `scripts/`、`tests/`、`config/` 和 `.github/` 服务于构建与自动检查，日常使用无需安装这些工具。历史资料保留原地址。
 

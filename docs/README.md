@@ -4,7 +4,11 @@
 
 ## 当前交付
 
-产品与小组件正在同步为 **2.7.3**，交付 **20261026.1**，以[清单](../release-manifest.json)和[校验值](../SHA256SUMS.txt)为准。纳入前述累计精简，不新增界面或算法修改。依次完成本地检查、桌面四文件、独立 PR、main 与 Pages；进度按[本批验收](acceptance/fourfile-20261026.md)更新，不预填上线结果。[版本说明](releases/v2.7.3.md)列明变化与残余风险，不创建 Release 或标签。
+产品与小组件统一为 **2.7.3**，交付 **20261026.1**，以[清单](../release-manifest.json)和[校验值](../SHA256SUMS.txt)为准。[PR #64](https://github.com/ZeusCupidCloris/Income-per-sed/pull/64) 已合并为 `20b7e5c`；桌面四文件已备份、替换并校验。[PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40323193353)与 [main Quality / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40330490334) 均以 Edge 296、WebKit 203 项通过及 4 项既定触摸驱动跳过完成，没有测试重试。Pages 已部署，2026-10-26 21:58（北京时间）独立核对线上首页和命名 Push 的完整字节与线上操作通过。[本批验收](acceptance/fourfile-20261026.md)与[版本说明](releases/v2.7.3.md)保留残余风险和未验收边界；不创建 Release 或标签。
+
+### 交付前维护记录
+
+以下保留各本地检查点的范围和当时结果，不将旧版本、旧哈希、历史待办或失败覆盖为当前交付结论。
 
 2026-10-26 完成[累计补丁交付准备](maintainer/patch-readiness.md)：只读核对 main 基准、累计改动、16 个参考刻线生命周期场景、两组真实像素对照和当前候选三阶段原生时钟采样。六文件与 `37d0a67` 的已验收候选相同，引用上轮完整结果而非重复宣称重跑；本轮只新增本地审阅包与维护说明。刻线功能正常但视觉很弱，人工观感、残余崩溃风险处置及新版本交付仍待确认，不上传、合并、部署或替换桌面。
 
@@ -42,11 +46,11 @@
 
 下面的线上、桌面和 PR 记录指已交付的 2.7.2，不代表上述本地维护候选已发布。本地校验清单、手册校验值和 README 图片来源已随候选页面更新；本轮没有升级版本、上传 GitHub、部署 Pages 或替换桌面文件，真实手机及真实整夜验收仍暂缓。
 
-### 已发布基线
+### 2.7.2 历史交付
 
-以下为 2026-10-23 的交付记录，本轮未重新查询远端。当前本地校验值已随维护候选改变，不用于声称线上或桌面与当前候选一致。
+以下为 2026-10-23 的历史交付记录，保留当时的范围与结论，不代替上方 2.7.3 的新检查。历史清单使用固定提交地址，不与当前根目录的清单或校验值混用。
 
-产品与小组件统一为 **2.7.2**，交付 **20261023.1**，以[发布清单](../release-manifest.json)与[校验值](../SHA256SUMS.txt)为准。[PR #62](https://github.com/ZeusCupidCloris/Income-per-sed/pull/62) 已合并为 `5eeff46`，桌面四文件已备份、替换并核验。main 的 Quality / Pages 通过并部署，线上首页及命名 Push 均与本批发布文件逐字节一致。不创建 Release 或标签。
+当时产品与小组件统一为 **2.7.2**，交付 **20261023.1**，历史[发布清单](https://github.com/ZeusCupidCloris/Income-per-sed/blob/1adc69471684c78102fcad9fc15efc5def7321e7/release-manifest.json)与[校验值](https://github.com/ZeusCupidCloris/Income-per-sed/blob/1adc69471684c78102fcad9fc15efc5def7321e7/SHA256SUMS.txt)固定在对应提交。[PR #62](https://github.com/ZeusCupidCloris/Income-per-sed/pull/62) 已合并为 `5eeff46`，当批桌面和 Pages 的核验结果保留如下，不代表当前线上仍为 2.7.2。不创建 Release 或标签。
 
 本批纳入全天回溯拨盘、持续时间校验、统一播放响应和坐标缓存，保留 RC37 字体、主界面与计薪口径。Widget 仅同步元数据。范围与结果见[2.7.2 版本说明](releases/v2.7.2.md)及[本批验收](acceptance/fourfile-20261023.md)，后续见[逐卡片 CSS 计划](maintainer/card-css-plan.md)。真实手机及真实整夜验收暂缓，不把模拟结果写成真机通过。
 
