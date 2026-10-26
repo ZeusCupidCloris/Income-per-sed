@@ -58,6 +58,7 @@
 | [docs/maintainer/webkit-sampler-split.md](../docs/maintainer/webkit-sampler-split.md) | 几何、样式、仅记录及纯记录的隔离对照与负载核对 | 维护 |
 | [docs/maintainer/trace-boundary-audit.md](../docs/maintainer/trace-boundary-audit.md) | 追踪开关对照、关键帧审计、全量现状及恢复修改条件 | 维护 |
 | [docs/maintainer/keyframe-clock-preview.md](../docs/maintainer/keyframe-clock-preview.md) | 两份旧关键帧清理预览、时钟有界对照及重复读写核对 | 维护 |
+| [docs/maintainer/timeline-label-writes.md](../docs/maintainer/timeline-label-writes.md) | 两个顶部无障碍标签去重、同秒状态回归和前后写入量 | 维护 |
 | [docs/maintainer/2.7x-review.md](../docs/maintainer/2.7x-review.md) | 2.7.0 起已交付改动、本地精简、问题处理及当前边界 | 维护 |
 | [docs/Income-per-sed（说明文档）.docx](../docs/Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
 | [docs/README.md](../docs/README.md) | 当前交付与验收状态索引 | 维护 |

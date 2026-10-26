@@ -32,7 +32,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 拨盘触摸 | history-dial-touch.spec.js | 按原生事件实际坐标验证点选分钟；Edge 注入原生拖动，WebKit 对不支持的多事件注入明确跳过，不替代真机 |
 | 前台恢复 | foreground-resume.spec.js | 同日、跨日、上午开工及午休结束；模拟后台，不代表系统休眠 |
 | 恢复进度 | foreground-progress.spec.js | 两段工作轨道、拨钮位置及恢复交接的同帧边界 |
-| 读数同步 | readout-sync.spec.js | 主针、金额、工时、剩余时间及月收入共同使用统一显示时间 |
+| 读数同步 | readout-sync.spec.js | 主针、金额、工时、剩余时间及月收入共同使用统一显示时间；Develop/Push 的顶部标签去重、同秒状态切换、错误标签恢复与毫秒 datetime 更新；不代替读屏实机验收 |
 | 跨日期月收入 | cross-date-month.spec.js | Develop/Push、三种工资模式、次日和工作日/休息日跨月；独立算式校验最终金额；Edge 与 WebKit |
 | 恢复组合 | recovery-combinations.spec.js | 恢复中再次隐藏、跨日恢复中回溯后返回实时；三种工资模式及双版本；模拟后台，不代表实机 |
 | 连续接管 | interaction-handoff.spec.js | 前台恢复、历史播放、返回实时途中滚轮接管与显示值连续性 |
