@@ -22796,9 +22796,10 @@ setTextIfChanged(dom.incomeContextDate, `${localDateKey(displayedDate)} · ${mod
 setAttributeIfChanged(dom.incomeContextDate, 'datetime', displayedDate.toISOString());
 }
 setAttributeIfChanged(document.getElementById('incomeMainCard'), 'aria-label', atLive ? '今日实时收入' : `所选时刻收入，${localDateKey(displayedDate)}`);
+const displayText = timeFormatter.format(displayedDate);
 setTextIfChanged(
 dom.currentTime,
-timeFormatter.format(displayedDate)
+displayText
 );
 setAttributeIfChanged(
 dom.currentTime,
@@ -22815,8 +22816,6 @@ setTransformIfChanged(
 dom.dialRealMarker,
 `rotate(${liveMarkerAngle}deg)`
 );
-const displayText =
-timeFormatter.format(displayedDate);
 const liveText =
 timeFormatter.format(liveNow);
 if (
