@@ -122,3 +122,117 @@ test('work, remaining and month readouts share live and recovery frames', async 
     expect(Math.abs(s.month - dailyBase - s.income)).toBeLessThan(.1);
   }
 });
+
+const LABEL_TIME = new Date('2026-10-20T14:30:00.250+08:00');
+
+async function prepareTimelineLabels(page, version) {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.clock.install({ time: LABEL_TIME });
+  await page.clock.pauseAt(new Date(LABEL_TIME.getTime() + 1000));
+  await page.goto(`/Income-per-sed-${version}.html`);
+  await page.clock.runFor(2200);
+  await fullDisplay(page, { paused: true });
+  await page.clock.setFixedTime(LABEL_TIME);
+  await page.clock.runFor(2200);
+}
+
+const timelineLabelSnapshot = () => ({
+  wallNow: Date.now(),
+  state: document.body.dataset.timelineState,
+  text: document.getElementById('currentTime').textContent,
+  label: document.getElementById('currentTime').getAttribute('aria-label'),
+  datetime: document.getElementById('currentTime').getAttribute('datetime'),
+  pressed: document.getElementById('currentTime').getAttribute('aria-pressed'),
+  liveLabel: document.getElementById('liveAnchor').getAttribute('aria-label'),
+  liveHidden: document.getElementById('liveAnchor').getAttribute('aria-hidden'),
+});
+
+for (const version of ['Develop', 'Push']) {
+  test(`${version}: timeline labels skip unchanged writes and retain millisecond updates`, async ({ page }, testInfo) => {
+    await prepareTimelineLabels(page, version);
+    const initial = await page.evaluate(timelineLabelSnapshot);
+    await page.evaluate(() => {
+      window.__timelineLabelWrites = [];
+      window.__timelineLabelObserver = new MutationObserver(records => {
+        for (const record of records) window.__timelineLabelWrites.push({ id: record.target.id, name: record.attributeName, oldValue: record.oldValue, value: record.target.getAttribute(record.attributeName) });
+      });
+      for (const id of ['currentTime', 'liveAnchor']) window.__timelineLabelObserver.observe(document.getElementById(id), { attributes: true, attributeOldValue: true, attributeFilter: ['aria-label', 'datetime'] });
+    });
+    await page.clock.runFor(240);
+    const frozen = await page.evaluate(() => window.__timelineLabelWrites.slice());
+    await page.evaluate(() => {
+      document.getElementById('currentTime').setAttribute('aria-label', 'stale-label');
+      window.__timelineLabelObserver.takeRecords();
+      window.__timelineLabelWrites = [];
+    });
+    await page.clock.runFor(32);
+    const repaired = await page.evaluate(timelineLabelSnapshot);
+    expect(repaired.label).toBe(initial.label);
+    await page.evaluate(() => { window.__timelineLabelWrites = []; });
+    await page.clock.setFixedTime(new Date(LABEL_TIME.getTime() + 200));
+    await page.clock.runFor(32);
+    const after = await page.evaluate(timelineLabelSnapshot);
+    const advanced = await page.evaluate(() => window.__timelineLabelWrites.slice());
+    expect(after.text).toBe(initial.text);
+    expect(after.label).toBe(initial.label);
+    expect(after.liveLabel).toBe(initial.liveLabel);
+    expect(Date.parse(after.datetime) - Date.parse(initial.datetime)).toBe(200);
+    expect(advanced.some(record => record.id === 'currentTime' && record.name === 'datetime')).toBe(true);
+    await page.evaluate(() => window.__timelineLabelObserver.disconnect());
+    await testInfo.attach('timeline-label-writes.json', { body: JSON.stringify({ initial, frozen, repaired, after, advanced }), contentType: 'application/json' });
+    expect(frozen.filter(record => record.name === 'aria-label')).toEqual([]);
+    expect(advanced.filter(record => record.name === 'aria-label')).toEqual([]);
+  });
+
+  test(`${version}: same-second timeline labels follow handoff, playback, pause, scrub and return`, async ({ page }, testInfo) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await prepareTimelineLabels(page, version);
+    await page.locator('#historyQuickOpen').dispatchEvent('click');
+    await page.clock.runFor(600);
+    const live = await page.evaluate(timelineLabelSnapshot);
+    await page.locator('[data-history-seconds="-3600"]').dispatchEvent('click');
+    const selected = await page.evaluate(timelineLabelSnapshot);
+    expect(selected.state).toBe('scrubbing');
+    await page.locator('#historyQuickPlay').dispatchEvent('click');
+    const handoff = await page.evaluate(timelineLabelSnapshot);
+    expect(handoff.text).toBe(selected.text);
+    expect(handoff.label).toContain('正在衔接播放');
+    await page.clock.runFor(160);
+    const playing = await page.evaluate(timelineLabelSnapshot);
+    expect(playing.state).toBe('history-play');
+    expect(playing.text).toBe(handoff.text);
+    expect(playing.label).toBe(`历史时间 ${playing.text}，正在播放，点击暂停`);
+    expect(playing.pressed).toBe('true');
+    await page.locator('#historyQuickPlay').dispatchEvent('click');
+    const held = await page.evaluate(timelineLabelSnapshot);
+    expect(held.state).toBe('history-hold');
+    expect(held.text).toBe(playing.text);
+    expect(held.label).toBe(`历史时间 ${held.text}，点击继续播放`);
+    expect(held.pressed).toBe('false');
+    await page.locator('#currentTime').dispatchEvent('wheel', { deltaY: 120, shiftKey: true, bubbles: true, cancelable: true });
+    const scrub = await page.evaluate(timelineLabelSnapshot);
+    expect(scrub.state).toBe('scrubbing');
+    expect(scrub.text).toBe(held.text);
+    expect(scrub.label).toBe(`历史时间 ${scrub.text}，正在回弦`);
+    await page.locator('#liveAnchor').dispatchEvent('click');
+    const returning = await page.evaluate(timelineLabelSnapshot);
+    expect(returning.state).toBe('returning-live');
+    expect(returning.label).toContain('返回当前时间');
+    await page.clock.runFor(600);
+    const restored = await page.evaluate(timelineLabelSnapshot);
+    expect(restored.state).toBe('live');
+    expect(restored.text).toBe(live.text);
+    expect(restored.label).toBe(live.label);
+    expect(restored.liveHidden).toBe('true');
+    const samples = { live, selected, handoff, playing, held, scrub, returning, restored };
+    for (const sample of Object.values(samples)) {
+      expect(sample.wallNow).toBe(LABEL_TIME.getTime());
+      expect(sample.liveLabel).toBe(live.liveLabel);
+    }
+    await expect(page.locator('#statusLabel')).toHaveAttribute('aria-live', 'polite');
+    expect(errors).toEqual([]);
+    await testInfo.attach('same-second-timeline-labels.json', { body: JSON.stringify(samples), contentType: 'application/json' });
+  });
+}
