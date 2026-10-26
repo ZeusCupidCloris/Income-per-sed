@@ -60,6 +60,7 @@
 | [docs/maintainer/keyframe-clock-preview.md](../docs/maintainer/keyframe-clock-preview.md) | 两份旧关键帧清理预览、时钟有界对照及重复读写核对 | 维护 |
 | [docs/maintainer/timeline-label-writes.md](../docs/maintainer/timeline-label-writes.md) | 两个顶部无障碍标签去重、同秒状态回归和前后写入量 | 维护 |
 | [docs/maintainer/frame-time-format.md](../docs/maintainer/frame-time-format.md) | 本次顶部同步的时间格式化复用及原完整验收 | 维护 |
+| [docs/maintainer/patch-readiness.md](../docs/maintainer/patch-readiness.md) | 累计补丁清单、参考刻线观感、耗时样本及交付待办 | 维护 |
 | [docs/maintainer/2.7x-review.md](../docs/maintainer/2.7x-review.md) | 2.7.0 起已交付改动、本地精简、问题处理及当前边界 | 维护 |
 | [docs/Income-per-sed（说明文档）.docx](../docs/Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
 | [docs/README.md](../docs/README.md) | 当前交付与验收状态索引 | 维护 |
