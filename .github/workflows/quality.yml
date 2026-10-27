@@ -109,21 +109,37 @@ jobs:
     name: WebKit smoke
     needs: [scope]
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble@sha256:dcc5531e97840b9b5e794f2814476b21571c5124a3fca2267d73041f56e7580e
+      options: --init --user 1001
+    env:
+      PLAYWRIGHT_IMAGE_VERSION: 1.62.1
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: '3.13'
       - run: node scripts/install-ci-dependencies.mjs npm
         timeout-minutes: 11
         if: ${{ !contains(fromJSON('["widget","docs","metadata"]'), needs.scope.outputs.scope) }}
-      - run: node scripts/install-ci-dependencies.mjs webkit
-        timeout-minutes: 15
+      - name: Verify preinstalled WebKit
+        timeout-minutes: 2
         if: ${{ !contains(fromJSON('["widget","docs","metadata"]'), needs.scope.outputs.scope) }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { access } from 'node:fs/promises';
+          import { createRequire } from 'node:module';
+          const require = createRequire(import.meta.url);
+          const { version } = require('@playwright/test/package.json');
+          assert.equal(version, process.env.PLAYWRIGHT_IMAGE_VERSION);
+          const { webkit } = require('playwright');
+          await access(webkit.executablePath());
+          const browser = await webkit.launch();
+          console.log(`Preinstalled WebKit ${browser.version()}, Playwright ${version}`);
+          await browser.close();
+          NODE
       - run: node scripts/quality-scope.mjs run webkit ${{ needs.scope.outputs.scope }}
       - name: Upload WebKit diagnostics
         if: ${{ !cancelled() }}
