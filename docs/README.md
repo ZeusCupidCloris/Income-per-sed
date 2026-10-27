@@ -4,7 +4,11 @@
 
 ## 当前交付
 
-产品与小组件统一为 **2.7.3**，交付 **20261026.1**，以[清单](../release-manifest.json)和[校验值](../SHA256SUMS.txt)为准。[PR #64](https://github.com/ZeusCupidCloris/Income-per-sed/pull/64) 已合并为 `20b7e5c`；桌面四文件已备份、替换并校验。[PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40323193353)与 [main Quality / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40330490334) 均以 Edge 296、WebKit 203 项通过及 4 项既定触摸驱动跳过完成，没有测试重试。Pages 已部署，2026-10-26 21:58（北京时间）独立核对线上首页和命名 Push 的完整字节与线上操作通过。[本批验收](acceptance/fourfile-20261026.md)与[版本说明](releases/v2.7.3.md)保留残余风险和未验收边界；不创建 Release 或标签。
+产品与小组件统一为 **2.7.4**，交付 **20261027.1**，以[清单](../release-manifest.json)和[校验值](../SHA256SUMS.txt)为准。冻结功能候选完成 Edge 310 项、WebKit 217 项全量业务检查及 4 项既定跳过，零失败、零重试；另完成 8 组、96 项完整备份恢复验收。升版后 57 项配套检查、159 文件目录与两次六文件重复构建通过，手册九页逐页查看后确认仅封面和末页变化。桌面四文件已先备份、替换并校验，远程 PR / main / Pages 待完成，不创建 Release 或标签。详见[本批验收](acceptance/fourfile-20261027.md)与[版本说明](releases/v2.7.4.md)。历史偶发 WebKit 崩溃仍未归因，真机和真实整夜验收继续暂缓。
+
+### 2.7.3 历史交付
+
+当时产品与小组件统一为 **2.7.3**，交付 **20261026.1**，历史[清单](https://github.com/ZeusCupidCloris/Income-per-sed/blob/01ce242e8af4b4ef958eb9e64d5c6e76c7b42550/release-manifest.json)和[校验值](https://github.com/ZeusCupidCloris/Income-per-sed/blob/01ce242e8af4b4ef958eb9e64d5c6e76c7b42550/SHA256SUMS.txt)固定在对应提交。[PR #64](https://github.com/ZeusCupidCloris/Income-per-sed/pull/64) 已合并为 `20b7e5c`；桌面四文件已备份、替换并校验。[PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40323193353)与 [main Quality / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40330490334) 均以 Edge 296、WebKit 203 项通过及 4 项既定触摸驱动跳过完成，没有测试重试。Pages 当时已部署，2026-10-26 21:58（北京时间）独立核对线上首页和命名 Push 的完整字节与线上操作通过。[当批验收](acceptance/fourfile-20261026.md)与[版本说明](releases/v2.7.3.md)保留残余风险和未验收边界；不创建 Release 或标签。
 
 ### 交付前维护记录
 
