@@ -4,7 +4,7 @@
 
 ## 当前交付
 
-产品与小组件统一为 **2.7.4**，交付 **20261027.1**，以[清单](../release-manifest.json)和[校验值](../SHA256SUMS.txt)为准。冻结功能候选完成 Edge 310 项、WebKit 217 项全量业务检查及 4 项既定跳过，零失败、零重试；另完成 8 组、96 项完整备份恢复验收。升版后 57 项配套检查、159 文件目录与两次六文件重复构建通过，手册九页逐页查看后确认仅封面和末页变化。桌面四文件已先备份、替换并校验，远程 PR / main / Pages 待完成，不创建 Release 或标签。详见[本批验收](acceptance/fourfile-20261027.md)与[版本说明](releases/v2.7.4.md)。历史偶发 WebKit 崩溃仍未归因，真机和真实整夜验收继续暂缓。
+产品与小组件统一为 **2.7.4**，交付 **20261027.1**，以[清单](../release-manifest.json)和[校验值](../SHA256SUMS.txt)为准。[PR #66](https://github.com/ZeusCupidCloris/Income-per-sed/pull/66) 已合并为 `9f0dfaa`；[PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40445825030)与 [main 完整检查 / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40450019386)各自实际完成 Edge 310 项、WebKit 217 项通过及 4 项既定跳过，零失败、零重试。另完成 8 组、96 项完整备份恢复验收，57 项配套检查、159 文件目录与两次六文件重复构建通过；手册九页逐页查看，仅封面和末页变化。桌面四文件已先备份、替换并校验，2026-10-27 13:07（北京时间）独立核对线上两入口字节与窄屏、宽屏操作通过。详见[本批验收](acceptance/fourfile-20261027.md)与[版本说明](releases/v2.7.4.md)。不创建 Release 或标签；历史偶发 WebKit 崩溃仍未归因，真机和真实整夜验收继续暂缓。
 
 ### 2.7.3 历史交付
 
@@ -52,7 +52,7 @@
 
 ### 2.7.2 历史交付
 
-以下为 2026-10-23 的历史交付记录，保留当时的范围与结论，不代替上方 2.7.3 的新检查。历史清单使用固定提交地址，不与当前根目录的清单或校验值混用。
+以下为 2026-10-23 的历史交付记录，保留当时的范围与结论，不代替上方 2.7.4 的新检查。历史清单使用固定提交地址，不与当前根目录的清单或校验值混用。
 
 当时产品与小组件统一为 **2.7.2**，交付 **20261023.1**，历史[发布清单](https://github.com/ZeusCupidCloris/Income-per-sed/blob/1adc69471684c78102fcad9fc15efc5def7321e7/release-manifest.json)与[校验值](https://github.com/ZeusCupidCloris/Income-per-sed/blob/1adc69471684c78102fcad9fc15efc5def7321e7/SHA256SUMS.txt)固定在对应提交。[PR #62](https://github.com/ZeusCupidCloris/Income-per-sed/pull/62) 已合并为 `5eeff46`，当批桌面和 Pages 的核验结果保留如下，不代表当前线上仍为 2.7.2。不创建 Release 或标签。
 

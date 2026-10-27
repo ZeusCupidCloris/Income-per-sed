@@ -59,7 +59,7 @@
 
 2.7.4 减少回溯面板在窗口变化时的重复定位与相同样式写入，保留展开收起、断点关闭和既有操作。字体、布局、计薪规则、指针、机械滚轮与小组件功能不变，不新增缓存或产品依赖。
 
-本批四文件已本地同步并先备份、替换桌面，远程 PR 检查、main 合并与 Pages 部署待完成，不创建 Release 或标签。冻结功能候选的完整业务检查为 Edge 310 项、WebKit 217 项通过及 4 项既定跳过，无测试重试；完整备份恢复另做 8 组、96 项验收。升版后 57 项配套检查、重复构建、手册及本地文件验收均通过，范围和边界见[本批验收](docs/acceptance/fourfile-20261027.md)。历史 WebKit 偶发崩溃仍未归因，真实手机与真实整夜验收暂缓；[2.7.3 交付记录](docs/acceptance/fourfile-20261026.md)保留原远程证据，不冒充本批上线结果。
+本批四文件已统一并先备份、替换桌面；[PR #66](https://github.com/ZeusCupidCloris/Income-per-sed/pull/66) 已合并 main，[main 完整检查与 Pages 部署](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40450019386)通过。PR 与 main 各自实际完成 Edge 310 项、WebKit 217 项通过及 4 项既定跳过，无失败或测试重试。完整备份恢复另做 8 组、96 项验收；配套检查、重复构建、手册及本地文件验收均通过。2026-10-27 13:07（北京时间）独立核对线上两入口的完整字节及窄屏、宽屏操作，范围见[本批验收](docs/acceptance/fourfile-20261027.md)。不创建 Release 或标签；历史 WebKit 偶发崩溃仍未归因，真实手机与真实整夜验收暂缓。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 
