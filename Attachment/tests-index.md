@@ -51,7 +51,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 小组件一致性 | widget-parity.spec.js | 三种工资模式、完整内置日历、金额缩写；Scriptable 日期接口使用测试适配 |
 | 输入设备与刷新率 | input-device-motion.spec.js | 固定工作日业务时间，动画时钟继续 |
 | 背景 | background-grid.spec.js | 空闲绘制、鼠标画布变化、降级；Develop/Push 十轮模拟后台恢复，检查后台零绘制、最多一个待执行帧、恢复交互与自然静止；Edge 与 WebKit |
-| 异常存储 | storage-resilience.spec.js | 浏览器存储不可用与损坏；Develop/Push 临时键及主键写入失败时保留旧配置、清理临时键并允许重试；收入/工时保存中关闭或模拟后台恢复；多窗口分别保存收入与工时后刷新核对；Edge 与 WebKit，不代表实机后台 |
+| 异常存储 | storage-resilience.spec.js | 浏览器存储不可用与损坏；Develop/Push 临时键及主键写入失败时保留旧配置、清理临时键并允许重试；完整备份导入在两种写入失败下核对日历原键恢复或移除及重试；实际下载的备份恢复工资、工时与日历后刷新，保留暂停任务和隐私状态，不以初始化脚本重置数据；收入/工时保存中关闭或模拟后台恢复；多窗口保存后刷新核对；Edge 与 WebKit，不代表实机后台 |
 | 页面视觉 | visual.spec.js | 既有截图基线，不随测试失败重建 |
 | 全局反馈样式 | global-css-feedback.spec.js | Develop/Push 存储成功与失败提示的显隐生命周期、键盘与高对比度焦点、粗指针隐私解锁尺寸及重开恢复；不修改产品逻辑或截图基线 |
 | WebKit 冒烟 | webkit-mobile.spec.js | WebKit 专属基础启动和手机回溯面板边界；其余文件的浏览器范围以 config/playwright-webkit.config.js 中的 testMatch 为唯一来源，避免维护第二份容易遗漏的名单；默认发布与 Develop 预览范围不同，不等于真实 iPhone |
@@ -70,6 +70,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 - `helpers/background-recovery.js`：恢复专项固定步长推进；最终业务值仍用独立算式计算。
 - `helpers/settings-page.js`：普通设置测试的共同初始化；不处理暂停时钟和中间帧采样。
 - `helpers/display-state.js`：通过真实专注及隐私按钮准备完整显示，等待设置交接；需要丢弃草稿时明确操作放弃确认，不绕过产品状态。
+- `helpers/settings-backup.js`：发布与存储测试共用真实备份下载、上传及独立校验，保留明文和工资提醒断言；不直接调用产品内部的导入或校验函数。
 
 默认 Playwright 只收集 `*.spec.js`。Node `*.test.mjs`、小组件 `widget-settings.cjs`和 Python `test_prepare_delivery.py`由快速检查运行，避免在浏览器收集阶段重复执行或产生副作用。
 
