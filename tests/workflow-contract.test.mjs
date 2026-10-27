@@ -21,7 +21,23 @@ test('all dependency installs have bounded retries and outer step deadlines', ()
     assert.doesNotMatch(workflow, /- run: npm ci/);
     assert.match(workflow, /install-ci-dependencies\.mjs npm\r?\n\s+timeout-minutes: 11/);
   }
-  assert.match(quality, /install-ci-dependencies\.mjs webkit\r?\n\s+timeout-minutes: 15/);
+});
+
+test('WebKit uses an immutable matching image and verifies the preinstalled browser', () => {
+  const job = quality.replace(/\r/g, '').split('\n  webkit-smoke:\n')[1];
+  const image = job.match(/image: mcr\.microsoft\.com\/playwright:v(\d+\.\d+\.\d+)-noble@sha256:[a-f0-9]{64}/);
+  assert.ok(image);
+  const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  assert.equal(image[1], pkg.devDependencies['@playwright/test']);
+  assert.ok(job.includes(`PLAYWRIGHT_IMAGE_VERSION: ${image[1]}\n`));
+  assert.match(job, /options: --init --user 1001/);
+  assert.match(job, /name: Verify preinstalled WebKit\n\s+timeout-minutes: 2/);
+  assert.match(job, /assert\.equal\(version, process\.env\.PLAYWRIGHT_IMAGE_VERSION\)/);
+  assert.match(job, /await access\(webkit\.executablePath\(\)\)/);
+  assert.match(job, /await webkit\.launch\(\)/);
+  assert.match(job, /await browser\.close\(\)/);
+  assert.doesNotMatch(job, /install-ci-dependencies\.mjs webkit|setup-python|continue-on-error/);
+  assert.match(job, /quality-scope\.mjs run webkit/);
 });
 
 test('Pages is callable only after the fail-closed Quality Gate', () => {
