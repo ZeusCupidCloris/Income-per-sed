@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const fs = require('node:fs');
+const { backupChecksum, exportSettingsBackup, uploadSettingsBackup } = require('./helpers/settings-backup');
 async function fullDisplay(page) {
   await expect(page.locator('#currentTime')).not.toHaveText('--:--:--');
   if (await page.locator('#focusToggle').getAttribute('aria-pressed') === 'true') await page.locator('#focusToggle').click();
@@ -11,16 +11,6 @@ async function fullDisplay(page) {
 }
 async function settingsReady(page) {
   await page.waitForFunction(() => !document.getElementById('settingsDialog').hidden && !document.querySelector('[data-settings-unready],.income-shared-shell'));
-}
-function stable(value) {
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
-  return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`;
-}
-function backupChecksum(value) {
-  let hash = 2166136261;
-  for (const character of stable(value)) { hash ^= character.charCodeAt(0); hash = Math.imul(hash, 16777619); }
-  return (hash >>> 0).toString(16).padStart(8, '0');
 }
 async function hidden(page, value) {
   await page.evaluate(value => {
@@ -147,11 +137,7 @@ for (const version of ['Develop','Push']) {
     await fullDisplay(page);
     await page.locator('#incomeSettingsCard').click(); await settingsReady(page);
     const before = await page.evaluate(() => localStorage.getItem('income-per-sed-settings'));
-    await page.locator('#settingsBackupExport').click();
-    const downloading = page.waitForEvent('download');
-    await page.locator('#settingsSafetyAccept').click();
-    const download = await downloading;
-    const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
+    const backup = await exportSettingsBackup(page);
     backup.payload.settings.monthlyIncome = 8800;
     backup.checksum = backupChecksum(backup.payload);
     await page.evaluate(() => {
@@ -161,7 +147,7 @@ for (const version of ['Develop','Push']) {
         return new Promise(resolve => { window.releaseBackupRead = () => resolve(text); });
       };
     });
-    await page.locator('#settingsBackupFile').setInputFiles({ name: 'synthetic-backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+    await uploadSettingsBackup(page, backup);
     await page.waitForFunction(() => typeof window.releaseBackupRead === 'function');
     await page.locator('#incomeAmountInput').fill('9100');
     await page.evaluate(() => window.releaseBackupRead());

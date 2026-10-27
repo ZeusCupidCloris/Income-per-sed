@@ -155,6 +155,7 @@
 | [tests/helpers/background-recovery.js](../tests/helpers/background-recovery.js) | 模拟后台恢复测试辅助工具 | 维护 |
 | [tests/helpers/settings-page.js](../tests/helpers/settings-page.js) | 普通设置测试的共同页面与展开初始化 | 维护 |
 | [tests/helpers/display-state.js](../tests/helpers/display-state.js) | 通过真实显示控件准备测试，等待设置交接及确认放弃草稿 | 维护 |
+| [tests/helpers/settings-backup.js](../tests/helpers/settings-backup.js) | 完整设置备份的真实下载、上传和校验测试辅助工具 | 维护 |
 | [tests/quality-entrypoints.test.mjs](../tests/quality-entrypoints.test.mjs) | 功能分组完整性与运行入口契约检查 | 维护 |
 | [tests/input-device-motion.spec.js](../tests/input-device-motion.spec.js) | 输入设备与刷新率验收测试 | 维护 |
 | [tests/interaction-handoff.spec.js](../tests/interaction-handoff.spec.js) | 连续操作接管测试 | 维护 |
