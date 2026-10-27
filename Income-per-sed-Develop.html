@@ -9168,10 +9168,10 @@ html:root #settingsSafetyConfirm[data-backup-diff]{position:relative;inset:auto;
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v39',
-productVersion: '2.7.3',
-sourceTag: 'v2.7.3',
-buildId: 'v39-20261026.1',
-releaseDate: '2026-10-26',
+productVersion: '2.7.4',
+sourceTag: 'v2.7.4',
+buildId: 'v39-20261027.1',
+releaseDate: '2026-10-27',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
@@ -17984,9 +17984,9 @@ const bounds = panel.getBoundingClientRect();
 centerAnchor = { signature, left: x + Math.max(12,(width - bounds.width) / 2), top: y + Math.max(12,(height - bounds.height) / 2) };
 }
 // Content disclosure keeps its original anchor; only a viewport change can re-center it.
-panel.style.setProperty('--entry-left', `${centerAnchor.left}px`);
-panel.style.setProperty('--entry-top', `${centerAnchor.top}px`);
-panel.style.setProperty('--entry-max-height', `${Math.max(1,y + height - 12 - centerAnchor.top)}px`);
+setStylePropertyIfChanged(panel, '--entry-left', `${centerAnchor.left}px`);
+setStylePropertyIfChanged(panel, '--entry-top', `${centerAnchor.top}px`);
+setStylePropertyIfChanged(panel, '--entry-max-height', `${Math.max(1,y + height - 12 - centerAnchor.top)}px`);
 return;
 }
 if (!anchored) return;
@@ -18139,7 +18139,7 @@ AppLifecycle.on('destroy', () => {
 if (repositionFrame) ComponentScopes.app.cancelFrame(repositionFrame);
 release();
 });
-return Object.freeze({ show: options => move(true, options), hide: options => move(false, options), reposition, release });
+return Object.freeze({ show: options => move(true, options), hide: options => move(false, options), reposition, schedulePosition, release });
 }
 return Object.freeze({ create, desktop });
 })();
@@ -26093,15 +26093,18 @@ const visualBottom = Math.max(
 0,
 (window.innerHeight || visualHeight) - visualHeight - visualTop
 );
-body.style.setProperty(
+setStylePropertyIfChanged(
+body,
 '--history-sheet-visual-top',
 `${visualTop.toFixed(2)}px`
 );
-body.style.setProperty(
+setStylePropertyIfChanged(
+body,
 '--history-sheet-visual-height',
 `${visualHeight.toFixed(2)}px`
 );
-body.style.setProperty(
+setStylePropertyIfChanged(
+body,
 '--history-sheet-visual-bottom',
 `${visualBottom.toFixed(2)}px`
 );
@@ -26443,7 +26446,7 @@ window,
 'resize',
 () => {
 syncHistoryQuickVisualViewport();
-if (historyQuickPanelState.desktop && EntryPopovers.desktop()) historyQuickPresentation.reposition();
+if (historyQuickPanelState.desktop && EntryPopovers.desktop()) historyQuickPresentation.schedulePosition();
 else if (historyQuickPanelState.desktop || window.innerWidth > 620) setHistoryQuickPanelOpen(false);
 },
 { passive: true }

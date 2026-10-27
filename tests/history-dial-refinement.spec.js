@@ -37,6 +37,31 @@ async function visibility(page, hidden) {
   }, hidden);
 }
 
+async function observePlacement(page) {
+  await page.evaluate(() => {
+    const panel = document.getElementById('historyQuickPanel');
+    const counts = window.__historyPlacement = { positions: 0, measurements: [], writes: [] };
+    const rectangle = panel.getBoundingClientRect.bind(panel);
+    panel.getBoundingClientRect = () => {
+      counts.measurements.push({ maxHeight: panel.style.getPropertyValue('--entry-max-height') });
+      return rectangle();
+    };
+    const toggle = panel.toggleAttribute.bind(panel);
+    panel.toggleAttribute = (name, force) => {
+      if (name === 'data-entry-desktop') counts.positions++;
+      return toggle(name, force);
+    };
+    const setProperty = CSSStyleDeclaration.prototype.setProperty;
+    CSSStyleDeclaration.prototype.setProperty = function (name, value, priority) {
+      const target = this === panel.style ? 'panel' : this === document.body.style ? 'body' : '';
+      if (target && /^(--entry-(left|top|max-height)|--history-sheet-visual-(top|height|bottom))$/.test(name)) {
+        counts.writes.push({ target, name, value, previous: this.getPropertyValue(name) });
+      }
+      return setProperty.call(this, name, value, priority);
+    };
+  });
+}
+
 test.beforeEach(async ({ page }) => {
   page.__errors = [];
   page.on('pageerror', error => page.__errors.push(error.message));
@@ -185,6 +210,122 @@ for (const version of ['Develop', 'Push']) {
       await hold(page);
       await expect(track).not.toHaveAttribute('data-dragging');
       await test.info().attach('geometry', { body: JSON.stringify({ moves: 30, reads, afterResize: after }), contentType: 'application/json' });
+    });
+    test('placement skips unchanged coordinate and viewport writes', async ({ page }) => {
+      await open(page, version);
+      await page.clock.runFor(200);
+      await observePlacement(page);
+      await page.evaluate(() => {
+        window.dispatchEvent(new Event('resize'));
+        window.visualViewport.dispatchEvent(new Event('resize'));
+        window.visualViewport.dispatchEvent(new Event('scroll'));
+      });
+      await page.clock.runFor(200);
+      const counts = await page.evaluate(() => window.__historyPlacement);
+      expect(counts.measurements).toEqual([]);
+      expect(counts.writes).toEqual([]);
+      await expect(page.locator('#historyQuickPanel')).toBeVisible();
+    });
+    test('placement applies changed height limit before measurement', async ({ page }) => {
+      await open(page, version);
+      await page.clock.runFor(200);
+      await observePlacement(page);
+      await page.setViewportSize({ width: 854, height: 720 });
+      await page.clock.runFor(300);
+      const counts = await page.evaluate(() => window.__historyPlacement);
+      expect(counts.measurements).toEqual([{ maxHeight: '696px' }]);
+      expect(counts.writes.filter(write => write.previous === write.value)).toEqual([]);
+      const box = await page.locator('#historyQuickPanel').boundingBox();
+      expect(box.y).toBeGreaterThanOrEqual(12);
+      expect(box.y + box.height).toBeLessThanOrEqual(708);
+    });
+    test('placement coalesces same-viewport notification bursts', async ({ page }) => {
+      await open(page, version);
+      await page.clock.runFor(200);
+      await observePlacement(page);
+      await page.evaluate(() => {
+        window.dispatchEvent(new Event('resize'));
+        window.visualViewport.dispatchEvent(new Event('resize'));
+        window.visualViewport.dispatchEvent(new Event('scroll'));
+      });
+      await page.clock.runFor(200);
+      const counts = await page.evaluate(() => window.__historyPlacement);
+      expect(counts.positions).toBe(1);
+      expect(counts.measurements).toEqual([]);
+      expect(counts.writes).toEqual([]);
+    });
+    test('placement settles opening and closing motion during resize', async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await open(page, version);
+      await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+      await page.locator('#historyQuickClose').evaluate(node => node.click());
+      await page.clock.runFor(700);
+      await expect(page.locator('#historyQuickPanel')).toBeHidden();
+      await page.locator('#historyQuickOpen').evaluate(node => node.click());
+      await expect(page.locator('#historyQuickPanel')).toHaveAttribute('data-entry-animating', 'opening');
+      await page.setViewportSize({ width: 800, height: 760 });
+      await page.clock.runFor(700);
+      await expect(page.locator('#historyQuickPanel')).toBeVisible();
+      await expect(page.locator('#historyQuickPanel')).not.toHaveAttribute('data-entry-animating');
+      expect(await page.locator('#historyQuickPanel').evaluate(node => node.inert)).toBe(false);
+      await expect(page.locator('.entry-card-shell')).toHaveCount(0);
+      await page.locator('#historyQuickClose').evaluate(node => node.click());
+      await expect(page.locator('#historyQuickPanel')).toHaveAttribute('data-entry-animating', 'closing');
+      await page.setViewportSize({ width: 854, height: 892 });
+      await page.clock.runFor(700);
+      await expect(page.locator('#historyQuickPanel')).toBeHidden();
+      await expect(page.locator('.entry-card-shell')).toHaveCount(0);
+      await expect(page.locator('#historyQuickOpen')).not.toHaveClass(/entry-card-origin/);
+      await expect(page.locator('#historyQuickOpen')).toHaveAttribute('aria-expanded', 'false');
+    });
+    test('placement keeps breakpoint closing in both directions', async ({ page }) => {
+      await open(page, version);
+      await page.setViewportSize({ width: 620, height: 892 });
+      await page.clock.runFor(700);
+      await expect(page.locator('#historyQuickPanel')).toBeHidden();
+      await page.locator('#historyQuickOpen').click();
+      await expect(page.locator('#historyQuickPanel')).toBeVisible();
+      await page.setViewportSize({ width: 621, height: 892 });
+      await page.clock.runFor(700);
+      await expect(page.locator('#historyQuickPanel')).toBeHidden();
+      await expect(page.locator('.entry-card-shell')).toHaveCount(0);
+      await expect(page.locator('#historyQuickOpen')).not.toHaveClass(/entry-card-origin/);
+    });
+    test('placement retains anchor when validation grows content', async ({ page }) => {
+      await open(page, version);
+      const anchor = await page.locator('#historyQuickPanel').evaluate(node => ['--entry-left', '--entry-top', '--entry-max-height'].map(name => node.style.getPropertyValue(name)));
+      await page.locator('#historyDialTime').fill('25:00');
+      await page.locator('#historyDialTime').press('Enter');
+      await expect(page.locator('#historySeekError')).toBeVisible();
+      await page.clock.runFor(200);
+      await observePlacement(page);
+      await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+      await page.clock.runFor(200);
+      expect(await page.locator('#historyQuickPanel').evaluate(node => ['--entry-left', '--entry-top', '--entry-max-height'].map(name => node.style.getPropertyValue(name)))).toEqual(anchor);
+      expect(await page.evaluate(() => window.__historyPlacement.measurements)).toEqual([]);
+      const box = await page.locator('#historyQuickPanel').boundingBox();
+      expect(box.y + box.height).toBeLessThanOrEqual(880);
+      await expect(page.locator('#historyDialTime')).toHaveValue('25:00');
+      expect(await mode(page)).toBe('LIVE');
+    });
+    test('placement survives rapid reversal with a queued resize', async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await open(page, version);
+      await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+      await page.evaluate(() => {
+        document.getElementById('historyQuickClose').click();
+        window.dispatchEvent(new Event('resize'));
+        document.getElementById('historyQuickOpen').click();
+      });
+      await page.clock.runFor(800);
+      await expect(page.locator('#historyQuickPanel')).toBeVisible();
+      await expect(page.locator('#historyQuickPanel')).not.toHaveAttribute('data-entry-animating');
+      await expect(page.locator('.entry-card-shell')).toHaveCount(0);
+      await expect(page.locator('#historyQuickOpen')).toHaveAttribute('aria-expanded', 'true');
+      await page.locator('#historyQuickClose').evaluate(node => node.click());
+      await page.clock.runFor(800);
+      await expect(page.locator('#historyQuickPanel')).toBeHidden();
+      await expect(page.locator('#historyQuickOpen')).not.toHaveClass(/entry-card-origin/);
     });
     for (const playing of [false, true]) {
       test(`simulated twelve-hour background preserves ${playing ? 'playback' : 'pause'}`, async ({ page }) => {
