@@ -19,10 +19,11 @@ for (const version of ['Develop', 'Push']) {
         await page.setViewportSize({width, height: width === 390 ? 844 : 1000});
         await page.emulateMedia({colorScheme: theme, reducedMotion: 'no-preference'});
         await page.addInitScript(theme => localStorage.setItem('income-per-sed-theme-v1', theme), theme);
-        await page.clock.install({time: new Date('2026-10-20T07:44:00.000Z')});
+        // Pause the blank page before startup; no short browser round-trip deadline.
+        await page.clock.install({time: new Date('2026-10-20T06:44:00.000Z')});
+        await page.clock.pauseAt(new Date('2026-10-20T07:44:00.000Z'));
         await page.goto(`/Income-per-sed-${version}.html`);
-        await fullDisplay(page);
-        await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
+        await fullDisplay(page, {paused: true});
         await page.clock.runFor(1200);
         const reference = page.locator('#dialRealMarker');
         const mark = reference.locator('span');
