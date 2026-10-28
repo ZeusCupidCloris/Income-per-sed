@@ -27674,7 +27674,8 @@ rollerMotion.lastSampleValue = value;
 lastRenderedLiveIncome = liveIncome;
 lastVisualStatus = status;
 lastDialWholeSecond = Math.floor(workSeconds);
-setDialAngleDirect(lastDialWholeSecond * 6);
+// Rebase full turns without discarding the visible sub-second phase.
+setDialAngleDirect(workSeconds * 6);
 body.classList.remove('foreground-catchup-active');
 }
 // Claiming LIVE cancels queued writes, so commit after the ownership change.

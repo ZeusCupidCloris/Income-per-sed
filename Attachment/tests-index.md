@@ -30,7 +30,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 拨盘输入与恢复 | history-dial-refinement.spec.js | Develop/Push 的失焦、回车、Tab、日期定位、无效草稿、鼠标/键盘播放、坐标缓存和模拟十二小时恢复；Edge 与 WebKit，不等于整夜驻留 |
 | 回溯实时参考线 | live-reference-marker.spec.js | Develop/Push 明暗主题与两种宽度下的边框底色、实时位置跟随及返回实时后隐藏；不改变表盘计算 |
 | 拨盘触摸 | history-dial-touch.spec.js | 按原生事件实际坐标验证点选分钟；Edge 注入原生拖动，WebKit 对不支持的多事件注入明确跳过，不替代真机 |
-| 前台恢复 | foreground-resume.spec.js | 同日、跨日、上午开工及午休结束；模拟后台，不代表系统休眠 |
+| 前台恢复 | foreground-resume.spec.js | 同日、跨日、上午开工及午休结束；双版本使用真实主针 transform 检查收尾壁钟毫秒取整不回退及下一整秒接管，Edge/WebKit；模拟后台，不代表系统休眠 |
 | 恢复进度 | foreground-progress.spec.js | 两段工作轨道、拨钮位置及恢复交接的同帧边界 |
 | 读数同步 | readout-sync.spec.js | 主针、金额、工时、剩余时间及月收入共同使用统一显示时间；Develop/Push 的顶部标签去重、同秒状态切换、错误标签恢复与毫秒 datetime 更新；不代替读屏实机验收 |
 | 跨日期月收入 | cross-date-month.spec.js | Develop/Push、三种工资模式、次日和工作日/休息日跨月；独立算式校验最终金额；Edge 与 WebKit |
