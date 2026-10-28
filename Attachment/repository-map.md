@@ -89,6 +89,7 @@
 | [docs/acceptance/fourfile-20261023.md](../docs/acceptance/fourfile-20261023.md) | 2.7.2 拨盘四文件同步与发布验收 | 维护与验收 |
 | [docs/acceptance/fourfile-20261026.md](../docs/acceptance/fourfile-20261026.md) | 2.7.3 累计精简四文件、桌面及仓库交付验收 | 维护与验收 |
 | [docs/acceptance/fourfile-20261027.md](../docs/acceptance/fourfile-20261027.md) | 2.7.4 定位优化、全量业务与备份恢复本地补丁验收 | 维护与验收 |
+| [docs/acceptance/fourfile-20261028.md](../docs/acceptance/fourfile-20261028.md) | 2.7.5 午休进度衔接与四文件补丁验收 | 维护与验收 |
 | [docs/acceptance/grid-idle-20260930.md](../docs/acceptance/grid-idle-20260930.md) | 09-30 背景空闲重绘修复证据 | 维护与历史 |
 | [docs/acceptance/grid-recovery-20260930.md](../docs/acceptance/grid-recovery-20260930.md) | 09-30 模拟后台绘制循环检查证据 | 维护与历史 |
 | [docs/acceptance/maintenance-20260915.md](../docs/acceptance/maintenance-20260915.md) | 09-15 仓库维护验收证据 | 维护与历史 |
@@ -114,6 +115,7 @@
 | [docs/releases/v2.7.2.md](../docs/releases/v2.7.2.md) | 2.7.2 拨盘与输入修复交付说明 | 用户与维护 |
 | [docs/releases/v2.7.3.md](../docs/releases/v2.7.3.md) | 2.7.3 累计轻量化补丁交付说明与风险边界 | 用户与维护 |
 | [docs/releases/v2.7.4.md](../docs/releases/v2.7.4.md) | 2.7.4 回溯定位优化本地补丁说明与交付边界 | 用户与维护 |
+| [docs/releases/v2.7.5.md](../docs/releases/v2.7.5.md) | 2.7.5 午休进度衔接补丁说明 | 用户与维护 |
 | [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本

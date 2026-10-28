@@ -62,3 +62,56 @@ for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 864000
     expect(excess.at(-1)).toBeLessThan(Math.max(...excess) * 0.25);
   });
 }
+
+for (const channel of ['Develop', 'Push']) {
+  test(`${channel}: quantized wall time at resume completion never rewinds the main hand`, async ({ page }, testInfo) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.clock.install({ time: new Date('2026-09-07T02:30:00Z') });
+    await page.clock.pauseAt(new Date('2026-09-07T02:30:01Z'));
+    await page.goto(`/Income-per-sed-${channel}.html`);
+    await fullDisplay(page, { paused: true });
+    await page.clock.runFor(2400);
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
+      Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await page.clock.fastForward(86400000);
+    await page.clock.setSystemTime(new Date('2026-09-08T05:29:59.500Z'));
+    await page.evaluate(() => {
+      window.quantizedResumeFrames = [];
+      const hand = document.getElementById('dialHand');
+      const start = performance.now();
+      function sample() {
+        const matrix = new DOMMatrixReadOnly(getComputedStyle(hand).transform);
+        window.quantizedResumeFrames.push({ t: performance.now() - start, now: Date.now(), angle: Math.atan2(matrix.b, matrix.a) * 180 / Math.PI, active: document.body.classList.contains('foreground-catchup-active') });
+        if (performance.now() - start < 2200) requestAnimationFrame(sample);
+      }
+      sample();
+      delete document.hidden;
+      delete document.visibilityState;
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    await page.clock.runFor(1480);
+    // Reproduce the captured wall-clock millisecond while rAF crosses its deadline.
+    await page.clock.setFixedTime(new Date('2026-09-08T05:30:00.999Z'));
+    await page.clock.runFor(96);
+    const frames = await page.evaluate(() => window.quantizedResumeFrames);
+    await testInfo.attach('quantized-resume-frames.json', { body: JSON.stringify(frames), contentType: 'application/json' });
+    const end = frames.findIndex((frame, index) => index > 0 && !frame.active && frames[index - 1].active);
+    expect(end).toBeGreaterThan(0);
+    const delta = (frames[end].angle - frames[end - 1].angle + 540) % 360 - 180;
+    expect(delta, JSON.stringify({ before: frames[end - 1], after: frames[end] })).toBeGreaterThanOrEqual(-0.1);
+    await page.clock.setSystemTime(new Date('2026-09-08T05:30:01.064Z'));
+    await page.clock.runFor(500);
+    const settled = await page.locator('#dialHand').evaluate(hand => {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(hand).transform);
+      return Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+    });
+    expect(Math.abs(settled - 6)).toBeLessThan(0.1);
+    expect(await page.locator('body').evaluate(body => body.classList.contains('foreground-catchup-active'))).toBe(false);
+    expect(errors).toEqual([]);
+  });
+}
