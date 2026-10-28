@@ -59,7 +59,7 @@
 
 2.7.5 修复回溯后返回实时经过午休时，进度填充与游标短暂分离的问题，并修复前台恢复收尾的主针短暂回退。保留字体、布局、计薪规则、正常跳针、机械滚轮与小组件功能，不新增缓存或产品依赖。
 
-本批四文件已统一并先备份、替换桌面；[PR #66](https://github.com/ZeusCupidCloris/Income-per-sed/pull/66) 已合并 main，[main 完整检查与 Pages 部署](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40450019386)通过。PR 与 main 各自实际完成 Edge 310 项、WebKit 217 项通过及 4 项既定跳过，无失败或测试重试。完整备份恢复另做 8 组、96 项验收；配套检查、重复构建、手册及本地文件验收均通过。2026-10-27 13:07（北京时间）独立核对线上两入口的完整字节及窄屏、宽屏操作，范围见[本批验收](docs/acceptance/fourfile-20261027.md)。不创建 Release 或标签；历史 WebKit 偶发崩溃仍未归因，真实手机与真实整夜验收暂缓。
+四文件已统一，桌面旧文件已备份后替换；[PR #71](https://github.com/ZeusCupidCloris/Income-per-sed/pull/71) 已合并 main。完整 PR 检查为 Edge 350 项、WebKit 263 项通过及 4 项既定跳过，无测试重试；[main 完整检查与 Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40615154332)亦通过，其中 WebKit 为 262 项直接通过、1 项既有高度测量用例重试通过、4 项跳过，不冒称全程零重试。另完成 96 项备份恢复和仓库、实际桌面各 8 组离线文件操作。2026-10-28 10:13（北京时间）独立核对线上两入口字节与宽窄屏操作通过，见[本批验收](docs/acceptance/fourfile-20261028.md)。不创建 Release 或标签，历史 WebKit 风险、真实手机与真实跨夜验收边界仍保留。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 

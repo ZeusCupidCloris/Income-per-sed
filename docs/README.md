@@ -4,11 +4,11 @@
 
 ## 当前交付
 
-产品与小组件统一为 **2.7.5**，交付 **20261028.1**，当前处于补丁验收阶段。修复午休回到实时的进度衔接，以及首轮完整验收捕获的前台恢复主针收尾回退；桌面替换、PR、main 及 Pages 结果仅在实际完成后记录，不能从候选版本号推定已经上线。见[本批验收](acceptance/fourfile-20261028.md)与[版本说明](releases/v2.7.5.md)。不创建 Release 或标签，实体手机和真实跨夜继续暂缓。
+产品与小组件统一为 **2.7.5**，交付 **20261028.1**。[PR #71](https://github.com/ZeusCupidCloris/Income-per-sed/pull/71) 已合并为 `5821350`，修复午休返回进度与前台恢复主针收尾。精确头提交的[完整 PR 检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40610052349)实际为 Edge 350 项、WebKit 263 项通过和 4 项既定跳过，首次工作流尝试、无测试重试；首轮本地完整失败与修复过程保留，不覆盖为通过。[main 完整检查与 Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40615154332)首次工作流尝试通过：Edge 350 项直接通过；WebKit 262 项直接通过、1 项既有高度测量用例重试通过、4 项既定跳过。最终本地专项各 51 项、8 组 96 项备份，以及仓库和实际桌面各 8 组离线文件操作通过；桌面旧四文件已先备份再替换，手册九页核对。2026-10-28 10:13（北京时间）线上首页与命名 Push 文件字节一致，390/1440 宽度独立操作及截图核对通过。见[本批验收](acceptance/fourfile-20261028.md)与[版本说明](releases/v2.7.5.md)；不创建 Release 或标签，实体手机、真实跨夜及实际读屏继续暂缓。
 
 ### 2.7.4 历史交付
 
-产品与小组件统一为 **2.7.4**，交付 **20261027.1**，以[清单](../release-manifest.json)和[校验值](../SHA256SUMS.txt)为准。[PR #66](https://github.com/ZeusCupidCloris/Income-per-sed/pull/66) 已合并为 `9f0dfaa`；[PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40445825030)与 [main 完整检查 / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40450019386)各自实际完成 Edge 310 项、WebKit 217 项通过及 4 项既定跳过，零失败、零重试。另完成 8 组、96 项完整备份恢复验收，57 项配套检查、159 文件目录与两次六文件重复构建通过；手册九页逐页查看，仅封面和末页变化。桌面四文件已先备份、替换并校验，2026-10-27 13:07（北京时间）独立核对线上两入口字节与窄屏、宽屏操作通过。详见[本批验收](acceptance/fourfile-20261027.md)与[版本说明](releases/v2.7.4.md)。不创建 Release 或标签；历史偶发 WebKit 崩溃仍未归因，真机和真实整夜验收继续暂缓。
+当时产品与小组件统一为 **2.7.4**，交付 **20261027.1**，历史[清单](https://github.com/ZeusCupidCloris/Income-per-sed/blob/c51b0428a4bf5afa691954162ec9f3099ff4c3e7/release-manifest.json)和[校验值](https://github.com/ZeusCupidCloris/Income-per-sed/blob/c51b0428a4bf5afa691954162ec9f3099ff4c3e7/SHA256SUMS.txt)固定在对应基线，不与当前版本混用。[PR #66](https://github.com/ZeusCupidCloris/Income-per-sed/pull/66) 已合并为 `9f0dfaa`；[PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40445825030)与 [main 完整检查 / Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40450019386)各自实际完成 Edge 310 项、WebKit 217 项通过及 4 项既定跳过，零失败、零重试。另完成 8 组、96 项完整备份恢复验收，57 项配套检查、159 文件目录与两次六文件重复构建通过；手册九页逐页查看，仅封面和末页变化。桌面四文件已先备份、替换并校验，2026-10-27 13:07（北京时间）独立核对线上两入口字节与窄屏、宽屏操作通过。详见[该批验收](acceptance/fourfile-20261027.md)与[版本说明](releases/v2.7.4.md)。不创建 Release 或标签；历史偶发 WebKit 崩溃仍未归因，真机和真实整夜验收继续暂缓。
 
 ### 2.7.3 历史交付
 
