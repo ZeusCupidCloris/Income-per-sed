@@ -232,6 +232,8 @@ for (const version of ['Develop', 'Push']) {
       await observePlacement(page);
       await page.setViewportSize({ width: 854, height: 720 });
       await page.clock.runFor(300);
+      // Browser resize delivery can follow the emulated frame advance.
+      await expect.poll(() => page.evaluate(() => window.__historyPlacement.measurements)).toEqual([{ maxHeight: '696px' }]);
       const counts = await page.evaluate(() => window.__historyPlacement);
       expect(counts.measurements).toEqual([{ maxHeight: '696px' }]);
       expect(counts.writes.filter(write => write.previous === write.value)).toEqual([]);
