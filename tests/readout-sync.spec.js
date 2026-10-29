@@ -236,3 +236,96 @@ for (const version of ['Develop', 'Push']) {
     await testInfo.attach('same-second-timeline-labels.json', { body: JSON.stringify(samples), contentType: 'application/json' });
   });
 }
+
+test.describe('same-frame Beijing parts reuse', () => {
+  test.use({ timezoneId: 'America/New_York' });
+
+  for (const version of ['Develop', 'Push']) {
+    for (const panelOpen of [false, true]) {
+      test(`${version}: bounded parts reads remain fresh with history ${panelOpen ? 'open' : 'closed'}`, async ({ page }, testInfo) => {
+        await page.setViewportSize({ width: 1440, height: 1000 });
+        await page.emulateMedia({ reducedMotion: 'no-preference' });
+        await page.addInitScript(now => {
+          window.__readoutWallMs = now;
+          Date.now = () => window.__readoutWallMs;
+        }, LABEL_TIME.getTime());
+        await page.goto(`/Income-per-sed-${version}.html`);
+        await fullDisplay(page);
+        await expect(page.locator('body')).not.toHaveClass(/startup-presentation-active/);
+        if (panelOpen) {
+          await page.locator('#historyQuickOpen').click();
+          await expect(page.locator('#historyQuickPanel')).not.toHaveAttribute('data-entry-animating');
+        }
+        expect(await page.evaluate(() => !window.__pwClock && Function.prototype.toString.call(requestAnimationFrame).includes('[native code]'))).toBe(true);
+        await page.evaluate(() => {
+          const original = Intl.DateTimeFormat.prototype.formatToParts;
+          const count = { calls: 0, frames: 0 };
+          window.__framePartsCounter = count;
+          Intl.DateTimeFormat.prototype.formatToParts = function (...args) {
+            count.calls++;
+            return Reflect.apply(original, this, args);
+          };
+          let raf;
+          const observe = () => { count.frames++; raf = requestAnimationFrame(observe); };
+          raf = requestAnimationFrame(observe);
+          window.__stopFramePartsCount = () => {
+            cancelAnimationFrame(raf);
+            Intl.DateTimeFormat.prototype.formatToParts = original;
+            delete window.__stopFramePartsCount;
+            return { ...count };
+          };
+        });
+        let count;
+        try {
+          await expect.poll(() => page.evaluate(() => window.__framePartsCounter.frames)).toBeGreaterThanOrEqual(12);
+          count = await page.evaluate(() => window.__stopFramePartsCount());
+        } finally {
+          await page.evaluate(() => window.__stopFramePartsCount?.());
+        }
+        await testInfo.attach('frame-parts-count.json', { body: JSON.stringify(count), contentType: 'application/json' });
+        expect(count.frames).toBeGreaterThanOrEqual(8);
+        expect(count.calls).toBeGreaterThanOrEqual(Math.floor(count.frames * .75));
+        expect(count.calls).toBeLessThanOrEqual(count.frames * (panelOpen ? 8 : 3) + 8);
+        const readClock = () => ({
+          datetime: document.getElementById('currentTime').dateTime,
+          minute: Number(/rotate\(([-\d.]+)deg\)/.exec(document.getElementById('dialDayHand').style.transform)?.[1]),
+          hour: Number(/rotate\(([-\d.]+)deg\)/.exec(document.getElementById('dialMonthHand').style.transform)?.[1]),
+        });
+        const before = await page.evaluate(readClock);
+        await page.evaluate(() => { window.__readoutWallMs += 200; });
+        await expect(page.locator('#currentTime')).toHaveAttribute('datetime', new Date(LABEL_TIME.getTime() + 200).toISOString());
+        const after = await page.evaluate(readClock);
+        expect(Date.parse(after.datetime) - Date.parse(before.datetime)).toBe(200);
+        expect(after.minute - before.minute).toBeCloseTo(.02, 3);
+        expect(after.hour).toBeGreaterThan(before.hour);
+      });
+    }
+
+    test(`${version}: selected and live instants retain distinct Beijing components`, async ({ page }) => {
+      await prepareTimelineLabels(page, version);
+      await page.clock.setFixedTime(new Date('2026-10-20T14:31:23.456+08:00'));
+      await page.clock.runFor(64);
+      await page.locator('#historyQuickOpen').dispatchEvent('click');
+      await page.clock.runFor(600);
+      for (const [part, value] of [['month', '03'], ['day', '08']]) {
+        const wheel = page.locator(`#historySeekWheels [data-date-part="${part}"]`);
+        await wheel.press('Enter');
+        const editor = page.locator('#historySeekWheels .time-wheel-direct input');
+        await editor.fill(value);
+        await editor.press('Enter');
+        await expect(wheel).toHaveAttribute('aria-valuetext', value);
+      }
+      await page.locator('#historyDialTime').fill('02:30:00');
+      await page.locator('#historyDialTime').press('Enter');
+      await page.clock.runFor(2400);
+      await expect(page.locator('body')).toHaveAttribute('data-timeline-state', 'history-hold');
+      await expect(page.locator('#currentTime')).toHaveText('02:30:00');
+      await expect(page.locator('#currentTime')).toHaveAttribute('datetime', '2026-03-07T18:30:00.000Z');
+      await expect(page.locator('#historyDialDate')).toHaveText('2026-03-08');
+      await expect(page.locator('#monthSummaryCard')).toHaveAttribute('aria-label', '2026 年 3 月累计收入');
+      await expect(page.locator('#workedTime')).toHaveText('0时0分0秒');
+      const liveMarker = await page.locator('#dialRealMarker').evaluate(node => node.style.transform);
+      expect(liveMarker).toBe('rotate(138deg)');
+    });
+  }
+});

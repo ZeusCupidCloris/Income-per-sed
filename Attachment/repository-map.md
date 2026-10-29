@@ -172,16 +172,16 @@
 | [tests/settings-frame-budget.spec.js](../tests/settings-frame-budget.spec.js) | 设置卡片实际帧间隔与样式计算开销观察 | 维护 |
 | [tests/release-naming.test.mjs](../tests/release-naming.test.mjs) | 对外名称与版本对应测试 | 维护 |
 | [tests/readme-preview-validation.test.mjs](../tests/readme-preview-validation.test.mjs) | 首页图片检查器测试 | 维护 |
-| [tests/readout-sync.spec.js](../tests/readout-sync.spec.js) | 表盘与金额工时读数同步测试 | 维护 |
+| [tests/readout-sync.spec.js](../tests/readout-sync.spec.js) | 表盘与金额工时读数、同帧北京时间复用及历史日期隔离测试 | 维护 |
 | [tests/recovery-combinations.spec.js](../tests/recovery-combinations.spec.js) | 多状态后台恢复组合测试 | 维护 |
-| [tests/release-behavior.spec.js](../tests/release-behavior.spec.js) | 开发版与发布版业务一致性测试 | 维护 |
+| [tests/release-behavior.spec.js](../tests/release-behavior.spec.js) | 双版本业务一致性、设备时区与夏令时边界 | 维护 |
 | [tests/release-channel.test.mjs](../tests/release-channel.test.mjs) | 发布标签识别测试 | 维护 |
-| [tests/storage-resilience.spec.js](../tests/storage-resilience.spec.js) | 异常存储与页面恢复测试 | 维护 |
+| [tests/storage-resilience.spec.js](../tests/storage-resilience.spec.js) | 异常存储、多窗口失败回滚与草稿恢复 | 维护 |
 | [docs/acceptance/storage-runtime-20261003.md](../docs/acceptance/storage-runtime-20261003.md) | 保存可靠性与长时资源验收记录 | 维护 |
 | [docs/acceptance/settings-delivery-20261005.md](../docs/acceptance/settings-delivery-20261005.md) | 设置局部反馈、输入安全与四文件交付验收 | 维护 |
 | [docs/acceptance/runtime-observation-20261003.json](../docs/acceptance/runtime-observation-20261003.json) | 30 分钟资源观察原始采样证据 | 维护 |
 | [tests/startup-history-playback.spec.js](../tests/startup-history-playback.spec.js) | 启动与历史播放运动测试 | 维护 |
-| [tests/history-dial-refinement.spec.js](../tests/history-dial-refinement.spec.js) | 拨盘时间输入、统一入口、坐标缓存与模拟恢复 | 维护 |
+| [tests/history-dial-refinement.spec.js](../tests/history-dial-refinement.spec.js) | 拨盘输入、模态焦点、坐标缓存与模拟恢复 | 维护 |
 | [tests/live-reference-marker.spec.js](../tests/live-reference-marker.spec.js) | 回溯实时参考线的主题颜色、跟随实时和返回隐藏 | 维护 |
 | [tests/history-dial-touch.spec.js](../tests/history-dial-touch.spec.js) | 拨盘原生触摸坐标映射与拖动模拟 | 维护 |
 | [tests/test_prepare_delivery.py](../tests/test_prepare_delivery.py) | 交付生成与手册书签测试 | 维护 |

@@ -27,12 +27,12 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 范围 | 文件 | 边界 |
 | --- | --- | --- |
 | 启动与历史运动 | startup-history-playback.spec.js | 后台是模拟，不代表实机锁屏 |
-| 拨盘输入与恢复 | history-dial-refinement.spec.js | Develop/Push 的失焦、回车、Tab、日期定位、无效草稿、鼠标/键盘播放、坐标缓存和模拟十二小时恢复；Edge 与 WebKit，不等于整夜驻留 |
+| 拨盘输入与恢复 | history-dial-refinement.spec.js | Develop/Push 的失焦、回车、Tab、日期定位、无效草稿、鼠标/键盘播放、坐标缓存和模拟十二小时恢复；窄屏初始容器焦点的正反向 Tab、背景焦点隔离与桌面非模态行为；Edge 与 WebKit，不等于整夜驻留 |
 | 回溯实时参考线 | live-reference-marker.spec.js | Develop/Push 明暗主题与两种宽度下的边框底色、实时位置跟随及返回实时后隐藏；不改变表盘计算 |
 | 拨盘触摸 | history-dial-touch.spec.js | 按原生事件实际坐标验证点选分钟；Edge 注入原生拖动，WebKit 对不支持的多事件注入明确跳过，不替代真机 |
-| 前台恢复 | foreground-resume.spec.js | 同日、跨日、上午开工及午休结束；双版本使用真实主针 transform 检查收尾壁钟毫秒取整不回退及下一整秒接管，Edge/WebKit；模拟后台，不代表系统休眠 |
+| 前台恢复 | foreground-resume.spec.js | 同日、跨日、上午开工及午休结束；恢复速度按已提交帧的时间与角度配对，保留观察时间及原阈值，固定错位样本自检；双版本使用真实主针 transform 检查收尾壁钟毫秒取整不回退及下一整秒接管，Edge/WebKit；模拟后台，不代表系统休眠 |
 | 恢复进度 | foreground-progress.spec.js | 两段工作轨道、拨钮位置及恢复交接的同帧边界 |
-| 读数同步 | readout-sync.spec.js | 主针、金额、工时、剩余时间及月收入共同使用统一显示时间；Develop/Push 的顶部标签去重、同秒状态切换、错误标签恢复与毫秒 datetime 更新；不代替读屏实机验收 |
+| 读数同步 | readout-sync.spec.js | 主针、金额、工时、剩余时间及月收入共同使用统一显示时间；Develop/Push 的顶部标签去重、同秒状态切换、错误标签恢复、毫秒 datetime 更新、帧内北京时间分量复用次数及实时／历史日期隔离；不代替读屏实机验收 |
 | 跨日期月收入 | cross-date-month.spec.js | Develop/Push、三种工资模式、次日和工作日/休息日跨月；独立算式校验最终金额；Edge 与 WebKit |
 | 恢复组合 | recovery-combinations.spec.js | 恢复中再次隐藏、跨日恢复中回溯后返回实时；三种工资模式及双版本；模拟后台，不代表实机 |
 | 连续接管 | interaction-handoff.spec.js | 前台恢复、历史播放、返回实时途中滚轮接管与显示值连续性 |
@@ -45,13 +45,13 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 设置输入安全 | settings-input-safety.spec.js | 展开早期防误触、关闭接管、触屏意图及停靠后摘要播报；可用 SETTINGS_RELEASE_CHANNEL=push 检查 Push；模拟不替代 iPhone 和 VoiceOver 实机验收 |
 | 设置帧开销观察 | settings-frame-budget.spec.js | Edge 中实际采样两种设置卡片的帧间隔与布局、样式计算开销；用于同机对比，不用固定帧率阈值判断所有设备 |
 | 交叉操作 | recovery-cross-actions.spec.js | 恢复过程中设置与主题切换、历史播放保存设置、码表跨零点；模拟时间 |
-| 双版本行为 | release-behavior.spec.js | 实际 Develop 与 Push 启动、有效预设与日期回溯、两种设置展开轨迹；三种工资模式分别使用独立页面与每例 45 秒预算，保存刷新后检查金额、选中状态及存储模式；保留三模式连续切换计算对照、移动端恢复、异步备份草稿保护与旧错误清除；Edge 与 WebKit |
+| 双版本行为 | release-behavior.spec.js | 实际 Develop 与 Push 启动、有效预设与日期回溯、两种设置展开轨迹；三种工资模式分别使用独立页面与每例 45 秒预算，保存刷新后检查金额、选中状态及存储模式；保留三模式连续切换计算对照、移动端恢复、异步备份草稿保护与旧错误清除；上海、UTC、纽约和柏林设备时区下的北京时间戳、夏令时跳时与重叠、跨月计薪及日期输入；Edge 与 WebKit |
 | 小组件异常配置 | widget-settings.cjs | 缺失与损坏配置、保存和下载失败、标准文件名、刷新边界；使用 Scriptable 替身 |
 | 长内容布局 | long-amount-layout.spec.js | 真实设置驱动 8、9、10 位整数金额；双版本、浅深主题、390/1440px，检查窗格边缘；Edge 与 WebKit |
 | 小组件一致性 | widget-parity.spec.js | 三种工资模式、完整内置日历、金额缩写；Scriptable 日期接口使用测试适配 |
 | 输入设备与刷新率 | input-device-motion.spec.js | 固定工作日业务时间，动画时钟继续 |
 | 背景 | background-grid.spec.js | 空闲绘制、鼠标画布变化、降级；Develop/Push 十轮模拟后台恢复，检查后台零绘制、最多一个待执行帧、恢复交互与自然静止；Edge 与 WebKit |
-| 异常存储 | storage-resilience.spec.js | 浏览器存储不可用与损坏；Develop/Push 临时键及主键写入失败时保留旧配置、清理临时键并允许重试；完整备份导入在两种写入失败下核对日历原键恢复或移除及重试；实际下载的备份恢复工资、工时与日历后刷新，保留暂停任务和隐私状态，不以初始化脚本重置数据；收入/工时保存中关闭或模拟后台恢复；多窗口保存后刷新核对；Edge 与 WebKit，不代表实机后台 |
+| 异常存储 | storage-resilience.spec.js | 浏览器存储不可用与损坏；Develop/Push 临时键及主键写入失败时保留旧配置、清理临时键并允许重试；完整备份导入在两种写入失败下核对日历原键恢复或移除及重试；实际下载的备份恢复工资、工时与日历后刷新，保留暂停任务和隐私状态，不以初始化脚本重置数据；收入/工时保存中关闭或模拟后台恢复；多窗口转发写入失败不广播新设置或成功确认，保留草稿并验证恢复、重试和刷新，Develop 另核对远程恢复默认的失败回滚；Edge 与 WebKit，不代表实机后台 |
 | 页面视觉 | visual.spec.js | 既有截图基线，不随测试失败重建 |
 | 全局反馈样式 | global-css-feedback.spec.js | Develop/Push 存储成功与失败提示的显隐生命周期、键盘与高对比度焦点、粗指针隐私解锁尺寸及重开恢复；不修改产品逻辑或截图基线 |
 | WebKit 冒烟 | webkit-mobile.spec.js | WebKit 专属基础启动和手机回溯面板边界；其余文件的浏览器范围以 config/playwright-webkit.config.js 中的 testMatch 为唯一来源，避免维护第二份容易遗漏的名单；默认发布与 Develop 预览范围不同，不等于真实 iPhone |

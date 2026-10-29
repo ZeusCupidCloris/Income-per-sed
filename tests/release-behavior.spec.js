@@ -203,3 +203,71 @@ test('Develop and Push expose equal calculation results for work and rest dates'
   expect(results[0]).toEqual(results[1]);
   expect(results[0].every(row=>row.income.length>0)).toBe(true);
 });
+
+const timezoneWorkdays = ['2026-03-08', '2026-03-29', '2026-10-25', '2026-11-01'];
+const timezoneScenarios = [
+  ['Shanghai control', 'Asia/Shanghai', '2026-03-08', '02:30:00'],
+  ['UTC control', 'UTC', '2026-03-08', '02:30:00'],
+  ['New York spring gap', 'America/New_York', '2026-03-08', '02:30:00'],
+  ['Berlin spring gap', 'Europe/Berlin', '2026-03-29', '02:30:00'],
+  ['New York autumn overlap', 'America/New_York', '2026-11-01', '01:30:00'],
+  ['Berlin autumn overlap', 'Europe/Berlin', '2026-10-25', '02:30:00'],
+  ['New York Beijing month boundary', 'America/New_York', '2026-04-01', '00:05:00'],
+  ['Berlin Beijing month boundary', 'Europe/Berlin', '2026-04-01', '00:05:00'],
+];
+const timezoneSeconds = clock => clock.split(':').reduce((total, part) => total * 60 + Number(part), 0);
+const timezoneDuration = seconds => `${Math.floor(seconds / 3600)}时${Math.floor(seconds % 3600 / 60)}分${seconds % 60}秒`;
+const timezoneCurrency = value => new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(value);
+function timezoneMonthIncome(day, seconds) {
+  const [year, month, today] = day.split('-').map(Number);
+  let completed = 0;
+  for (let date = 1; date < today; date++) {
+    const value = new Date(Date.UTC(year, month - 1, date));
+    if (timezoneWorkdays.includes(value.toISOString().slice(0, 10)) || ![0, 6].includes(value.getUTCDay())) completed++;
+  }
+  return completed * 100 + seconds / 18000 * 100;
+}
+for (const artifact of ['Develop', 'Push']) for (const [label, timezoneId, day, clock] of timezoneScenarios) {
+  test(`${artifact}: Beijing accounting and date entry ignore device timezone: ${label}`, async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, timezoneId, reducedMotion: 'reduce', viewport: { width: 1440, height: 1000 } });
+    try {
+      await context.addInitScript(workdays => {
+        localStorage.setItem('income-per-sed-settings', JSON.stringify({
+          incomeMode: 'fixed-daily', monthlyIncome: 10000, dailyIncome: 100, annualWorkDays: 250,
+          schedule: { morningStart: '00:00', morningEnd: '04:00', afternoonStart: '05:00', afternoonEnd: '06:00' },
+        }));
+        localStorage.setItem('income-per-sed-calendar-data-v1', JSON.stringify({ schemaVersion: 1, savedAt: '2026-01-01T00:00:00Z', calendarData: {
+          coverage: { start: '2026-01-01', end: '2026-12-31', label: 'Synthetic timezone regression', version: 'timezone-v1', timeZone: 'Asia/Shanghai', generatedAt: '2026-01-01', source: 'Synthetic regression fixture' },
+          holidays: [], specialWorkdays: workdays,
+        } }));
+      }, timezoneWorkdays);
+      const page = await context.newPage();
+      const errors = [];
+      page.on('pageerror', error => errors.push(error.message));
+      const instant = new Date(`${day}T${clock}+08:00`);
+      await page.clock.setFixedTime(instant);
+      await page.goto(`/Income-per-sed-${artifact}.html`);
+      await fullDisplay(page);
+      const seconds = timezoneSeconds(clock);
+      await expect(page.locator('#currentTime')).toHaveText(clock);
+      await expect(page.locator('#currentTime')).toHaveAttribute('datetime', instant.toISOString());
+      await expect(page.locator('#workedTime')).toHaveText(timezoneDuration(seconds));
+      await expect(page.locator('#incomeAccessible')).toContainText(timezoneCurrency(seconds / 18000 * 100));
+      await expect(page.locator('#monthIncome')).toHaveText(timezoneCurrency(timezoneMonthIncome(day, seconds)));
+      await page.locator('#historyQuickOpen').click();
+      await expect(page.locator('#historyQuickPanel')).not.toHaveAttribute('data-entry-animating');
+      await expect(page.locator('#historyDialDate')).toHaveText(day);
+      const seekClock = seconds < 3600 ? '00:04:00' : clock.startsWith('01') ? '01:15:00' : '02:15:00';
+      await page.locator('#historyDialTime').fill(seekClock);
+      await page.locator('#historyDialTime').press('Enter');
+      await expect(page.locator('body')).toHaveAttribute('data-timeline-state', 'history-hold');
+      await expect(page.locator('#currentTime')).toHaveText(seekClock);
+      await expect(page.locator('#historySeekError')).toBeHidden();
+      await page.locator('#historySeekSubmit').click();
+      await expect(page.locator('#historySeekError')).toBeHidden();
+      await expect(page.locator('#historyQuickClock')).toHaveAttribute('datetime', new Date(`${day}T${seekClock}+08:00`).toISOString());
+      await expect(page.locator('#workedTime')).toHaveText(timezoneDuration(timezoneSeconds(seekClock)));
+      expect(errors).toEqual([]);
+    } finally { await context.close(); }
+  });
+}

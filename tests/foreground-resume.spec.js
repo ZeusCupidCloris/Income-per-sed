@@ -1,6 +1,45 @@
 const { fullDisplay } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
+function committedRecoveryFrames(frames) {
+  const committed = [];
+  for (const frame of frames) {
+    expect(Number.isFinite(frame.renderedAt)).toBe(true);
+    if (frame.renderedAt < 0) continue;
+    const previous = committed.at(-1);
+    if (previous && frame.renderedAt === previous.renderedAt) {
+      expect(frame.minuteAngle).toBe(previous.minuteAngle);
+      continue;
+    }
+    if (previous) expect(frame.renderedAt).toBeGreaterThan(previous.renderedAt);
+    committed.push(frame);
+  }
+  expect(committed.length).toBeGreaterThan(2);
+  return committed;
+}
+
+test('recovery speed sampling pairs each angle with its committed frame time', () => {
+  const frames = [
+    { t: 10, renderedAt: 0, minuteAngle: 180 },
+    { t: 26, renderedAt: 16, minuteAngle: 180.0032 },
+    { t: 43, renderedAt: 33, minuteAngle: 180.00524 },
+    { t: 56, renderedAt: 50, minuteAngle: 180.00694 },
+  ];
+  const excessFor = (rows, key) => rows.slice(1).map((frame, index) =>
+    Math.abs(Math.abs(frame.minuteAngle - rows[index].minuteAngle) / Math.max(1, frame[key] - rows[index][key]) - 0.0001));
+  const observerExcess = excessFor(frames, 't');
+  expect(observerExcess.at(-1)).toBeGreaterThanOrEqual(Math.max(...observerExcess) * 0.25);
+  const committed = committedRecoveryFrames(frames);
+  const renderedExcess = excessFor(committed, 'renderedAt');
+  expect(renderedExcess.at(-1)).toBeLessThan(Math.max(...renderedExcess) * 0.25);
+  expect(committedRecoveryFrames([
+    { t: 0, renderedAt: -16, minuteAngle: 179.9 },
+    ...frames.slice(0, 3),
+    { ...frames[2], t: 44 },
+    frames[3],
+  ])).toEqual(committed);
+});
+
 for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 86400000], ['next-afternoon', 100800000], ['morning-start', 86400000, '2026-09-08T00:59:59.500Z'], ['afternoon-start', 86400000, '2026-09-08T05:29:59.500Z'], ['afternoon-fractional', 86400000, '2026-09-08T05:29:59.517Z']]) {
   test(`${label} foreground recovery is continuous without replaying midnight`, async ({ page }, testInfo) => {
     const errors = [];
@@ -23,10 +62,12 @@ for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 864000
     await page.evaluate(() => {
       window.resumeFrames = [];
       const start = performance.now();
-      // Match the animation's rAF clock; callback execution time includes host scheduling delay.
+      // The observer can run before the next render, so retain the committed frame's clock too.
       function sample(frameTime = performance.now()) {
+        const diagnostics = window.__incomeClockDiagnostics;
         window.resumeFrames.push({ t: frameTime - start, sampledAt: performance.now() - start, now: Date.now(),
-          ...window.__incomeClockDiagnostics.getUnifiedMotionState().displayed,
+          renderedAt: diagnostics.getSchedulerState().lastSuccessfulRenderAt - start,
+          ...diagnostics.getUnifiedMotionState().displayed,
           midnight: document.body.classList.contains('midnight-reset-active'),
           catchup: document.body.classList.contains('foreground-catchup-active') });
         if (frameTime - start < 5000) requestAnimationFrame(sample);
@@ -56,7 +97,8 @@ for (const [label, gap, resumeAt] of [['same-day', 4500000], ['next-day', 864000
     }
     expect(frames.at(-1).catchup).toBe(false);
     expect(errors).toEqual([]);
-    const speeds = active.slice(1).map((f, i) => Math.abs(delta(f.minuteAngle, active[i].minuteAngle)) / Math.max(1, f.t - active[i].t));
+    const committed = committedRecoveryFrames(active);
+    const speeds = committed.slice(1).map((f, i) => Math.abs(delta(f.minuteAngle, committed[i].minuteAngle)) / Math.max(1, f.renderedAt - committed[i].renderedAt));
     // Decelerate to the minute hand's LIVE speed (0.1 deg/s), not to zero.
     const excess = speeds.map(speed => Math.abs(speed - 0.0001));
     expect(excess.at(-1)).toBeLessThan(Math.max(...excess) * 0.25);
