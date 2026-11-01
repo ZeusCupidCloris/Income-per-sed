@@ -1,6 +1,120 @@
 const { fullDisplay, selectTheme } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
+async function monthSummaryLayout(page) {
+  return page.locator('#monthSummaryCard').evaluate(card => {
+    const box = node => {
+      const rect = node.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+    };
+    return {
+      card: box(card),
+      groups: [...card.children].map(box),
+      overflow: document.documentElement.scrollWidth - innerWidth,
+      overflowNodes: document.documentElement.scrollWidth > innerWidth + 1
+        ? [...document.querySelectorAll('.main-container,.card,.info-value,.info-sub,.month-value,.month-projection-value,#funFact,.fun-item')].map(node => ({
+          id: node.id, classes: node.className, ...box(node), scrollWidth: node.scrollWidth, clientWidth: node.clientWidth
+        })).filter(node => node.right > innerWidth + 1 || node.left < -1 || node.scrollWidth > node.clientWidth + 1)
+        : [],
+      amounts: ['monthIncome', 'estMonth'].map(id => {
+        const node = document.getElementById(id);
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const style = getComputedStyle(node);
+        return {
+          id, text: node.textContent, box: box(node),
+          lines: [...range.getClientRects()].filter(rect => rect.width > 0).map(rect => ({ left: rect.left, right: rect.right })),
+          font: { family: style.fontFamily, weight: style.fontWeight, size: style.fontSize }
+        };
+      })
+    };
+  });
+}
+
+function expectWholeMonthAmounts(layout) {
+  expect(layout.overflow, JSON.stringify(layout)).toBeLessThanOrEqual(1);
+  for (const amount of layout.amounts) {
+    expect(amount.lines, `${amount.id}: ${amount.text}`).toHaveLength(1);
+    expect(amount.lines[0].left).toBeGreaterThanOrEqual(layout.card.left - 1);
+    expect(amount.lines[0].right).toBeLessThanOrEqual(layout.card.right + 1);
+  }
+}
+
+for (const channel of ['Develop', 'Push']) {
+  for (const width of [320, 390, 1440]) {
+    for (const theme of ['light', 'dark']) {
+      test(`${channel}: month summary keeps whole amounts at ${width} ${theme}`, async ({ page }, testInfo) => {
+        const errors = [];
+        page.on('pageerror', error => errors.push(error.message));
+        await page.setViewportSize({ width, height: 1000 });
+        await page.clock.setFixedTime(new Date('2026-10-20T08:30:00Z'));
+        await page.addInitScript(theme => localStorage.setItem('income-per-sed-theme-v1', theme), theme);
+        await page.goto(`/Income-per-sed-${channel}.html`);
+        await fullDisplay(page);
+        await page.evaluate(() => document.fonts.ready);
+        // Advance fixed time so both builds settle their normal periodic pressure measurements before recording fonts.
+        for (const second of [1, 2, 3]) {
+          await page.clock.setFixedTime(new Date(Date.parse('2026-10-20T08:30:00Z') + second * 1000));
+          await expect(page.locator('#currentTime')).toHaveText(`16:30:0${second}`);
+          await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
+        }
+        await expect(page.locator('#monthSummaryCard')).toHaveAttribute('data-content-pressure', /^(normal|compact|critical)$/);
+        const normal = await monthSummaryLayout(page);
+        expectWholeMonthAmounts(normal);
+        expect(normal.groups[1].top).toBeLessThan(normal.groups[0].bottom);
+
+        await page.locator('#incomeSettingsCard').click();
+        await page.waitForFunction(() => !document.querySelector('[data-settings-unready],.income-shared-shell'));
+        await page.locator('[data-income-mode="annual-average"]').click();
+        await page.locator('#incomeAmountInput').fill('1000000000');
+        await page.locator('#annualWorkDaysInput').fill('1');
+        await page.locator('#settingsSaveButton').click();
+        await expect(page.locator('#settingsDialog')).toBeHidden();
+        await expect(page.locator('#estMonth')).toContainText(',000,000,000.00');
+        const long = await monthSummaryLayout(page);
+        expectWholeMonthAmounts(long);
+        if (width <= 390) expect(long.groups[1].top).toBeGreaterThanOrEqual(long.groups[0].bottom - 1);
+        for (let index = 0; index < long.amounts.length; index++) {
+          expect(long.amounts[index].font.family).toBe(normal.amounts[index].font.family);
+          expect(long.amounts[index].font.weight).toBe(normal.amounts[index].font.weight);
+        }
+        for (const nextWidth of [width <= 390 ? 1440 : 390, width]) {
+          await page.setViewportSize({ width: nextWidth, height: 1000 });
+          await expect.poll(async () => {
+            const layout = await monthSummaryLayout(page);
+            return layout.overflow <= 1 && layout.amounts.every(amount => amount.lines.length === 1
+              && amount.lines[0].left >= layout.card.left - 1 && amount.lines[0].right <= layout.card.right + 1);
+          }).toBe(true);
+        }
+        await page.waitForTimeout(2200);
+        expectWholeMonthAmounts(await monthSummaryLayout(page));
+        await page.screenshot({ path: testInfo.outputPath('month-long-amount.png'), fullPage: true });
+
+        await page.locator('#incomeSettingsCard').click();
+        await page.waitForFunction(() => !document.querySelector('[data-settings-unready],.income-shared-shell'));
+        await page.locator('[data-income-mode="fixed-monthly"]').click();
+        await page.locator('#incomeAmountInput').fill('7296.70');
+        await page.locator('#settingsSaveButton').click();
+        await expect(page.locator('#settingsDialog')).toBeHidden();
+        await expect(page.locator('#estMonth')).toHaveText('¥7,296.70');
+        await expect.poll(async () => {
+          const layout = await monthSummaryLayout(page);
+          return layout.groups[1].top < layout.groups[0].bottom;
+        }).toBe(true);
+        await expect.poll(async () => (await monthSummaryLayout(page)).amounts.map(amount => amount.font))
+          .toEqual(normal.amounts.map(amount => amount.font));
+        const restored = await monthSummaryLayout(page);
+        expectWholeMonthAmounts(restored);
+        expect(restored.amounts.map(amount => amount.font)).toEqual(normal.amounts.map(amount => amount.font));
+        await page.locator('#privacyToggle').click();
+        await expect(page.locator('#monthIncome')).toHaveCSS('visibility', 'hidden');
+        await expect(page.locator('#estMonth')).toHaveCSS('visibility', 'hidden');
+        expect(errors).toEqual([]);
+      });
+    }
+  }
+}
+
 test('progress rendering refreshes geometry when resize notifications are delayed', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -175,5 +289,144 @@ for (const width of [390, 1440]) {
       await page.screenshot({path:testInfo.outputPath('long-money-motion.png')});
       expect(errors).toEqual([]);
     });
+  }
+}
+
+async function funSummaryLayout(page) {
+  return page.locator('#funSummaryCard').evaluate(card => {
+    const box = node => {
+      const rect = node.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, height: rect.height };
+    };
+    const lines = node => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      return [...range.getClientRects()].filter(rect => rect.width > 0).map(rect => ({ left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom }));
+    };
+    const font = node => {
+      const style = getComputedStyle(node);
+      return { family: style.fontFamily, weight: style.fontWeight, size: style.fontSize };
+    };
+    const fact = card.querySelector('#funFact');
+    return {
+      card: box(card), fact: box(fact), overflow: document.documentElement.scrollWidth - innerWidth,
+      rowGap: getComputedStyle(fact).rowGap, columnGap: getComputedStyle(fact).columnGap, pressure: card.dataset.contentPressure,
+      items: [...fact.children].map(node => {
+        const copy = node.querySelector('.fun-copy');
+        const count = node.querySelector('.fun-count');
+        return {
+          box: box(node), copy: box(copy), name: copy.lastChild.textContent.trim(), count: count.textContent,
+          nameLines: lines(copy.lastChild), countLines: lines(count), lineHeight: parseFloat(getComputedStyle(copy).lineHeight),
+          copyFont: font(copy), countFont: font(count),
+        };
+      }),
+    };
+  });
+}
+
+function wholeFunItems(layout) {
+  return layout.overflow <= 1 && layout.items.length === 4 && layout.items.every(item => item.nameLines.length === 1
+    && item.countLines.length === 1 && item.copy.height <= item.lineHeight + 1
+    && item.box.left >= layout.fact.left - 1 && item.box.right <= layout.fact.right + 1
+    && item.copy.left >= item.box.left - 1 && item.copy.right <= item.box.right + 1);
+}
+
+function expectWholeFunItems(layout) {
+  expect(layout.overflow, JSON.stringify(layout)).toBeLessThanOrEqual(1);
+  expect(layout.items).toHaveLength(4);
+  for (const item of layout.items) {
+    expect(item.nameLines, item.name).toHaveLength(1);
+    expect(item.countLines, item.count).toHaveLength(1);
+  }
+  expect(wholeFunItems(layout), JSON.stringify(layout)).toBe(true);
+}
+
+function expectTwoFunColumns(layout) {
+  expect(Math.abs(layout.items[0].box.top - layout.items[1].box.top)).toBeLessThanOrEqual(1);
+  expect(Math.abs(layout.items[2].box.top - layout.items[3].box.top)).toBeLessThanOrEqual(1);
+  expect(layout.items[2].box.top).toBeGreaterThan(layout.items[0].box.top);
+}
+
+async function saveFunIncome(page, amount, days) {
+  await page.locator('#incomeSettingsCard').click();
+  await page.waitForFunction(() => !document.querySelector('[data-settings-unready],.income-shared-shell'));
+  await page.locator(`[data-income-mode="${days ? 'annual-average' : 'fixed-monthly'}"]`).click();
+  await page.locator('#incomeAmountInput').fill(amount);
+  if (days) await page.locator('#annualWorkDaysInput').fill(String(days));
+  await page.locator('#settingsSaveButton').click();
+  await expect(page.locator('#settingsDialog')).toBeHidden();
+  await page.locator('#funSummaryCard').scrollIntoViewIfNeeded();
+}
+
+for (const channel of ['Develop', 'Push']) {
+  for (const width of [320, 390, 1440]) {
+    for (const theme of ['light', 'dark']) {
+      test(`${channel}: fun conversions keep whole items at ${width} ${theme}`, async ({ page }, testInfo) => {
+        const errors = [];
+        page.on('pageerror', error => errors.push(error.message));
+        await page.setViewportSize({ width, height: 1000 });
+        const baseTime = Date.parse('2026-10-20T08:30:00Z');
+        let second = 0;
+        await page.clock.setFixedTime(new Date(baseTime));
+        async function settleMeasurements() {
+          for (let pass = 0; pass < 3; pass++) {
+            second++;
+            // Stats run just after the second boundary; leave them due while native frames continue.
+            await page.clock.setFixedTime(new Date(baseTime + second * 1000 + 500));
+            await expect(page.locator('#currentTime')).toHaveText(`16:30:${String(second).padStart(2, '0')}`);
+            await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
+          }
+        }
+        await page.addInitScript(theme => localStorage.setItem('income-per-sed-theme-v1', theme), theme);
+        await page.goto(`/Income-per-sed-${channel}.html`);
+        await fullDisplay(page);
+        await page.evaluate(() => document.fonts.ready);
+        await page.locator('#funSummaryCard').scrollIntoViewIfNeeded();
+        await expect(page.locator('#funFact .fun-count')).toHaveCount(4);
+        await settleMeasurements();
+        const normal = await funSummaryLayout(page);
+        expectWholeFunItems(normal);
+        expectTwoFunColumns(normal);
+        const fonts = layout => layout.items.map(item => ({ copy: item.copyFont, count: item.countFont }));
+        const prices = [9.9, 4, 39, 69];
+
+        for (const days of [12, 1]) {
+          await saveFunIncome(page, '1000000000', days);
+          await settleMeasurements();
+          const expected = prices.map(price => String(Math.floor((19800 + second + 0.5) * (12000000000 / days / 23400) / price)));
+          await expect.poll(() => page.locator('#funFact .fun-count').allTextContents()).toEqual(expected);
+          const long = await funSummaryLayout(page);
+          expectWholeFunItems(long);
+          expect(fonts(long)).toEqual(fonts(normal));
+        }
+        await page.locator('#funSummaryCard').screenshot({ path: testInfo.outputPath('fun-long-counts.png') });
+        for (const nextWidth of [width <= 390 ? 1440 : 320, width]) {
+          await page.setViewportSize({ width: nextWidth, height: 1000 });
+          await page.locator('#funSummaryCard').scrollIntoViewIfNeeded();
+          await expect.poll(async () => wholeFunItems(await funSummaryLayout(page))).toBe(true);
+        }
+
+        await saveFunIncome(page, '0.01');
+        await settleMeasurements();
+        await expect.poll(() => page.locator('#funFact .fun-count').allTextContents()).toEqual(['0', '0', '0', '0']);
+        const zero = await funSummaryLayout(page);
+        expectWholeFunItems(zero);
+        expectTwoFunColumns(zero);
+        await saveFunIncome(page, '7296.70');
+        await settleMeasurements();
+        await expect.poll(() => page.locator('#funFact .fun-count').allTextContents())
+          .toEqual(normal.items.map(item => item.count));
+        const restored = await funSummaryLayout(page);
+        expectWholeFunItems(restored);
+        expectTwoFunColumns(restored);
+        expect(fonts(restored)).toEqual(fonts(normal));
+        expect({ rowGap: restored.rowGap, columnGap: restored.columnGap })
+          .toEqual({ rowGap: normal.rowGap, columnGap: normal.columnGap });
+        await page.locator('#funSummaryCard').screenshot({ path: testInfo.outputPath('fun-normal-counts.png') });
+        await page.locator('#privacyToggle').click();
+        await expect(page.locator('#funFact')).toHaveCSS('visibility', 'hidden');
+        expect(errors).toEqual([]);
+      });
+    }
   }
 }

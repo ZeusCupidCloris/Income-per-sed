@@ -8236,10 +8236,10 @@ html:root .status-tools .view-button[aria-pressed="true"]{background:transparent
 .status-tools .view-button svg,.status-tools .theme-cycle::before{position:relative;z-index:1;}
 .status-tools .theme-cycle::before{width:16px;height:16px;}
 @media(hover:hover) and (pointer:fine){html:root .status-tools .view-button:hover{background:transparent;}.status-tools .view-button:hover::before,.status-tools .theme-cycle:hover::after{background:var(--material-selected);}}
-#funSummaryCard{text-align:center;}
-#funSummaryCard .fun-fact{justify-items:center;align-items:center;}
-#funSummaryCard .fun-item{display:inline-flex;justify-content:center;align-items:baseline;gap:5px;text-align:center;width:100%;}
-#funSummaryCard .fun-copy{flex:0 1 auto;}
+#funSummaryCard{text-align:center;content-visibility:visible;}
+#funSummaryCard .fun-fact{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;}
+#funSummaryCard .fun-item{display:inline-flex;flex:0 1 calc(50% - 7px);min-width:max-content;justify-content:center;align-items:baseline;gap:5px;text-align:center;width:auto;}
+#funSummaryCard .fun-copy{flex:0 1 auto;white-space:nowrap;overflow-wrap:normal;}
 html[data-privacy="hidden"] #funSummaryCard #funFact::after{left:50%;transform:translate(-50%,-50%);}
 #scheduleSettingsCard .progress-header-copy{gap:0;}
 #scheduleSettingsCard .progress-phase{display:none;}
@@ -8561,11 +8561,12 @@ html:root #calendarDataSection{display:flex;align-items:center;gap:10px;flex-wra
 <style id="rc37-layout-compat">
 /* Later information fields keep their layout; RC37 owns all typography. */
 .main-container :is(.info-sub,.month-detail){white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;}
-#monthSummaryCard{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:20px;align-items:center;}
-#monthSummaryCard>div{min-width:0;}
-#monthSummaryCard .month-value{white-space:normal;overflow-wrap:anywhere;}
+#monthSummaryCard{display:flex;flex-wrap:wrap;column-gap:20px;row-gap:12px;align-items:center;}
+#monthSummaryCard>div{flex:1 1 0;min-width:min-content;max-width:100%;}
+#monthSummaryCard>div:first-child{flex-grow:1.5;}
+#monthSummaryCard .month-value{white-space:nowrap;overflow-wrap:normal;}
 .month-projection{text-align:right;}
-.month-projection-value{display:block;overflow-wrap:anywhere;}
+.month-projection-value{display:block;white-space:nowrap;overflow-wrap:normal;}
 html[data-privacy="hidden"] #estMonth::after{left:auto;right:0;}
 @media(min-width:721px){
  .info-cards-row > .card{justify-content:flex-start;}

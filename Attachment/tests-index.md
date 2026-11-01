@@ -47,7 +47,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 交叉操作 | recovery-cross-actions.spec.js | 恢复过程中设置与主题切换、历史播放保存设置、码表跨零点；模拟时间 |
 | 双版本行为 | release-behavior.spec.js | 实际 Develop 与 Push 启动、有效预设与日期回溯、两种设置展开轨迹；三种工资模式分别使用独立页面与每例 45 秒预算，保存刷新后检查金额、选中状态及存储模式；保留三模式连续切换计算对照、移动端恢复、异步备份草稿保护与旧错误清除；上海、UTC、纽约和柏林设备时区下的北京时间戳、夏令时跳时与重叠、跨月计薪及日期输入；Edge 与 WebKit |
 | 小组件异常配置 | widget-settings.cjs | 缺失与损坏配置、保存和下载失败、标准文件名、刷新边界；使用 Scriptable 替身 |
-| 长内容布局 | long-amount-layout.spec.js | 真实设置驱动 8、9、10 位整数金额；双版本、浅深主题、390/1440px，检查窗格边缘；Edge 与 WebKit |
+| 长内容布局 | long-amount-layout.spec.js | 真实设置驱动 8、9、10 位整数金额；双版本、浅深主题、390/1440px 检查窗格边缘；320/390/1440px 月累计及预计金额完整显示、预计块换行、缩放往返、普通金额恢复及隐私遮蔽；趣味换算数量与商品名称完整、逐项计算对照、整项换行、尺寸往返后内容可见、零值及普通数量恢复、原间距与字体不变和隐私遮蔽；Edge 与 WebKit |
 | 小组件一致性 | widget-parity.spec.js | 三种工资模式、完整内置日历、金额缩写；Scriptable 日期接口使用测试适配 |
 | 输入设备与刷新率 | input-device-motion.spec.js | 固定工作日业务时间，动画时钟继续 |
 | 背景 | background-grid.spec.js | 空闲绘制、鼠标画布变化、降级；Develop/Push 十轮模拟后台恢复，检查后台零绘制、最多一个待执行帧、恢复交互与自然静止；Edge 与 WebKit |
