@@ -47,17 +47,24 @@ for (const channel of ['Develop', 'Push']) {
         const errors = [];
         page.on('pageerror', error => errors.push(error.message));
         await page.setViewportSize({ width, height: 1000 });
-        await page.clock.setFixedTime(new Date('2026-10-20T08:30:00Z'));
+        const baseTime = Date.parse('2026-10-20T08:30:00Z');
+        let second = 0;
+        await page.clock.setFixedTime(new Date(baseTime));
+        async function settleMeasurements() {
+          for (let pass = 0; pass < 3; pass++) {
+            second++;
+            await page.clock.setFixedTime(new Date(baseTime + second * 1000));
+            await expect(page.locator('#currentTime')).toHaveText(`16:30:${String(second).padStart(2, '0')}`);
+            await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
+          }
+        }
         await page.addInitScript(theme => localStorage.setItem('income-per-sed-theme-v1', theme), theme);
         await page.goto(`/Income-per-sed-${channel}.html`);
         await fullDisplay(page);
         await page.evaluate(() => document.fonts.ready);
-        // Advance fixed time so both builds settle their normal periodic pressure measurements before recording fonts.
-        for (const second of [1, 2, 3]) {
-          await page.clock.setFixedTime(new Date(Date.parse('2026-10-20T08:30:00Z') + second * 1000));
-          await expect(page.locator('#currentTime')).toHaveText(`16:30:0${second}`);
-          await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
-        }
+        await page.locator('#monthSummaryCard').scrollIntoViewIfNeeded();
+        // Fixed wall time must advance after each layout change, not only at startup.
+        await settleMeasurements();
         await expect(page.locator('#monthSummaryCard')).toHaveAttribute('data-content-pressure', /^(normal|compact|critical)$/);
         const normal = await monthSummaryLayout(page);
         expectWholeMonthAmounts(normal);
@@ -70,6 +77,7 @@ for (const channel of ['Develop', 'Push']) {
         await page.locator('#annualWorkDaysInput').fill('1');
         await page.locator('#settingsSaveButton').click();
         await expect(page.locator('#settingsDialog')).toBeHidden();
+        await settleMeasurements();
         await expect(page.locator('#estMonth')).toContainText(',000,000,000.00');
         const long = await monthSummaryLayout(page);
         expectWholeMonthAmounts(long);
@@ -80,11 +88,19 @@ for (const channel of ['Develop', 'Push']) {
         }
         for (const nextWidth of [width <= 390 ? 1440 : 390, width]) {
           await page.setViewportSize({ width: nextWidth, height: 1000 });
-          await expect.poll(async () => {
-            const layout = await monthSummaryLayout(page);
-            return layout.overflow <= 1 && layout.amounts.every(amount => amount.lines.length === 1
-              && amount.lines[0].left >= layout.card.left - 1 && amount.lines[0].right <= layout.card.right + 1);
-          }).toBe(true);
+          await page.locator('#monthSummaryCard').scrollIntoViewIfNeeded();
+          await settleMeasurements();
+          let layout;
+          try {
+            await expect.poll(async () => {
+              layout = await monthSummaryLayout(page);
+              return layout.overflow <= 1 && layout.amounts.every(amount => amount.lines.length === 1
+                && amount.lines[0].left >= layout.card.left - 1 && amount.lines[0].right <= layout.card.right + 1);
+            }).toBe(true);
+          } catch (error) {
+            console.log('month-resize-layout', JSON.stringify({ width: nextWidth, layout }));
+            throw error;
+          }
         }
         await page.waitForTimeout(2200);
         expectWholeMonthAmounts(await monthSummaryLayout(page));
@@ -96,6 +112,7 @@ for (const channel of ['Develop', 'Push']) {
         await page.locator('#incomeAmountInput').fill('7296.70');
         await page.locator('#settingsSaveButton').click();
         await expect(page.locator('#settingsDialog')).toBeHidden();
+        await settleMeasurements();
         await expect(page.locator('#estMonth')).toHaveText('¥7,296.70');
         await expect.poll(async () => {
           const layout = await monthSummaryLayout(page);
@@ -361,72 +378,97 @@ async function saveFunIncome(page, amount, days) {
 for (const channel of ['Develop', 'Push']) {
   for (const width of [320, 390, 1440]) {
     for (const theme of ['light', 'dark']) {
-      test(`${channel}: fun conversions keep whole items at ${width} ${theme}`, async ({ page }, testInfo) => {
-        const errors = [];
-        page.on('pageerror', error => errors.push(error.message));
-        await page.setViewportSize({ width, height: 1000 });
-        const baseTime = Date.parse('2026-10-20T08:30:00Z');
-        let second = 0;
-        await page.clock.setFixedTime(new Date(baseTime));
-        async function settleMeasurements() {
-          for (let pass = 0; pass < 3; pass++) {
-            second++;
-            // Stats run just after the second boundary; leave them due while native frames continue.
-            await page.clock.setFixedTime(new Date(baseTime + second * 1000 + 500));
-            await expect(page.locator('#currentTime')).toHaveText(`16:30:${String(second).padStart(2, '0')}`);
-            await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
+      // Wide-screen actions need independent budgets; narrow screens keep the complete sequence.
+      for (const phase of (width === 1440 ? ['long', 'restore'] : ['complete'])) {
+        const subject = phase === 'restore' ? 'restore zero and normal layout' : 'keep whole items';
+        test(`${channel}: fun conversions ${subject} at ${width} ${theme}`, async ({ page }, testInfo) => {
+          const errors = [];
+          page.on('pageerror', error => errors.push(error.message));
+          await page.setViewportSize({ width, height: 1000 });
+          const baseTime = Date.parse('2026-10-20T08:30:00Z');
+          let second = 0;
+          await page.clock.setFixedTime(new Date(baseTime));
+          async function settleMeasurements() {
+            for (let pass = 0; pass < 3; pass++) {
+              second++;
+              // Stats run just after the second boundary; leave them due while native frames continue.
+              await page.clock.setFixedTime(new Date(baseTime + second * 1000 + 500));
+              await expect(page.locator('#currentTime')).toHaveText(`16:30:${String(second).padStart(2, '0')}`);
+              await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
+            }
           }
-        }
-        await page.addInitScript(theme => localStorage.setItem('income-per-sed-theme-v1', theme), theme);
-        await page.goto(`/Income-per-sed-${channel}.html`);
-        await fullDisplay(page);
-        await page.evaluate(() => document.fonts.ready);
-        await page.locator('#funSummaryCard').scrollIntoViewIfNeeded();
-        await expect(page.locator('#funFact .fun-count')).toHaveCount(4);
-        await settleMeasurements();
-        const normal = await funSummaryLayout(page);
-        expectWholeFunItems(normal);
-        expectTwoFunColumns(normal);
-        const fonts = layout => layout.items.map(item => ({ copy: item.copyFont, count: item.countFont }));
-        const prices = [9.9, 4, 39, 69];
-
-        for (const days of [12, 1]) {
-          await saveFunIncome(page, '1000000000', days);
-          await settleMeasurements();
-          const expected = prices.map(price => String(Math.floor((19800 + second + 0.5) * (12000000000 / days / 23400) / price)));
-          await expect.poll(() => page.locator('#funFact .fun-count').allTextContents()).toEqual(expected);
-          const long = await funSummaryLayout(page);
-          expectWholeFunItems(long);
-          expect(fonts(long)).toEqual(fonts(normal));
-        }
-        await page.locator('#funSummaryCard').screenshot({ path: testInfo.outputPath('fun-long-counts.png') });
-        for (const nextWidth of [width <= 390 ? 1440 : 320, width]) {
-          await page.setViewportSize({ width: nextWidth, height: 1000 });
+          await page.addInitScript(theme => localStorage.setItem('income-per-sed-theme-v1', theme), theme);
+          await page.goto(`/Income-per-sed-${channel}.html`);
+          await fullDisplay(page);
+          await page.evaluate(() => document.fonts.ready);
           await page.locator('#funSummaryCard').scrollIntoViewIfNeeded();
-          await expect.poll(async () => wholeFunItems(await funSummaryLayout(page))).toBe(true);
-        }
+          await expect(page.locator('#funFact .fun-count')).toHaveCount(4);
+          await settleMeasurements();
+          const normal = await funSummaryLayout(page);
+          expectWholeFunItems(normal);
+          expectTwoFunColumns(normal);
+          const fonts = layout => layout.items.map(item => ({ copy: item.copyFont, count: item.countFont }));
+          const prices = [9.9, 4, 39, 69];
+          const expectedCounts = days => prices.map(price => String(Math.floor((19800 + second + 0.5) * (12000000000 / days / 23400) / price)));
 
-        await saveFunIncome(page, '0.01');
-        await settleMeasurements();
-        await expect.poll(() => page.locator('#funFact .fun-count').allTextContents()).toEqual(['0', '0', '0', '0']);
-        const zero = await funSummaryLayout(page);
-        expectWholeFunItems(zero);
-        expectTwoFunColumns(zero);
-        await saveFunIncome(page, '7296.70');
-        await settleMeasurements();
-        await expect.poll(() => page.locator('#funFact .fun-count').allTextContents())
-          .toEqual(normal.items.map(item => item.count));
-        const restored = await funSummaryLayout(page);
-        expectWholeFunItems(restored);
-        expectTwoFunColumns(restored);
-        expect(fonts(restored)).toEqual(fonts(normal));
-        expect({ rowGap: restored.rowGap, columnGap: restored.columnGap })
-          .toEqual({ rowGap: normal.rowGap, columnGap: normal.columnGap });
-        await page.locator('#funSummaryCard').screenshot({ path: testInfo.outputPath('fun-normal-counts.png') });
-        await page.locator('#privacyToggle').click();
-        await expect(page.locator('#funFact')).toHaveCSS('visibility', 'hidden');
-        expect(errors).toEqual([]);
-      });
+          if (phase !== 'restore') {
+            for (const days of [12, 1]) {
+              await saveFunIncome(page, '1000000000', days);
+              await settleMeasurements();
+              await expect.poll(() => page.locator('#funFact .fun-count').allTextContents()).toEqual(expectedCounts(days));
+              const long = await funSummaryLayout(page);
+              expectWholeFunItems(long);
+              expect(fonts(long)).toEqual(fonts(normal));
+            }
+            await page.locator('#funSummaryCard').screenshot({ path: testInfo.outputPath('fun-long-counts.png') });
+          } else {
+            await saveFunIncome(page, '1000000000', 1);
+            await settleMeasurements();
+            await expect.poll(() => page.locator('#funFact .fun-count').allTextContents()).toEqual(expectedCounts(1));
+            const long = await funSummaryLayout(page);
+            expectWholeFunItems(long);
+            expect(fonts(long)).toEqual(fonts(normal));
+          }
+          if (phase !== 'long') {
+            for (const nextWidth of [width <= 390 ? 1440 : 320, width]) {
+              await page.setViewportSize({ width: nextWidth, height: 1000 });
+              await page.locator('#funSummaryCard').scrollIntoViewIfNeeded();
+              await settleMeasurements();
+              let layout;
+              try {
+                await expect.poll(async () => {
+                  layout = await funSummaryLayout(page);
+                  return wholeFunItems(layout);
+                }).toBe(true);
+              } catch (error) {
+                console.log('fun-resize-layout', JSON.stringify({ width: nextWidth, layout }));
+                throw error;
+              }
+            }
+
+            await saveFunIncome(page, '0.01');
+            await settleMeasurements();
+            await expect.poll(() => page.locator('#funFact .fun-count').allTextContents()).toEqual(['0', '0', '0', '0']);
+            const zero = await funSummaryLayout(page);
+            expectWholeFunItems(zero);
+            expectTwoFunColumns(zero);
+            await saveFunIncome(page, '7296.70');
+            await settleMeasurements();
+            await expect.poll(() => page.locator('#funFact .fun-count').allTextContents())
+              .toEqual(normal.items.map(item => item.count));
+            const restored = await funSummaryLayout(page);
+            expectWholeFunItems(restored);
+            expectTwoFunColumns(restored);
+            expect(fonts(restored)).toEqual(fonts(normal));
+            expect({ rowGap: restored.rowGap, columnGap: restored.columnGap })
+              .toEqual({ rowGap: normal.rowGap, columnGap: normal.columnGap });
+            await page.locator('#funSummaryCard').screenshot({ path: testInfo.outputPath('fun-normal-counts.png') });
+          }
+          await page.locator('#privacyToggle').click();
+          await expect(page.locator('#funFact')).toHaveCSS('visibility', 'hidden');
+          expect(errors).toEqual([]);
+        });
+      }
     }
   }
 }
