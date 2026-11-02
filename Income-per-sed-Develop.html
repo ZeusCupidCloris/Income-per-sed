@@ -5378,8 +5378,8 @@ body{
 }
 
 .work-timeline .work-segment > .progress-marker{
-    visibility:hidden !important;
-    opacity:0 !important;
+    /* Legacy helpers must not retain scrollable bounds when visual writes defer. */
+    display:none;
 }
 
 .timeline-handoff-marker{

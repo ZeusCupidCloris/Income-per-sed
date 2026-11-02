@@ -132,6 +132,61 @@ for (const channel of ['Develop', 'Push']) {
   }
 }
 
+for (const width of [320, 390]) {
+  for (const time of ['02:30:00', '08:30:00']) {
+    test(`offscreen helper markers cannot widen ${width}px progress layout at ${time}`, async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 1000 });
+      await page.clock.setFixedTime(new Date(`2026-10-20T${time}Z`));
+      await page.addInitScript(() => {
+        const NativeObserver = window.IntersectionObserver;
+        let deferred = true;
+        const callbacks = [];
+        window.IntersectionObserver = class extends NativeObserver {
+          constructor(callback, options) {
+            super((entries, observer) => {
+              for (const entry of entries) {
+                if (entry.target.id === 'scheduleSettingsCard') callbacks.push({ callback, entry, observer });
+              }
+              callback(entries.map(entry => deferred && entry.target.id === 'scheduleSettingsCard'
+                ? { target: entry.target, boundingClientRect: entry.boundingClientRect, isIntersecting: false, intersectionRatio: 0 }
+                : entry), observer);
+            }, options);
+          }
+        };
+        window.restoreTimelineObservation = () => {
+          deferred = false;
+          for (const { callback, entry, observer } of callbacks) callback([{
+            target: entry.target, boundingClientRect: entry.target.getBoundingClientRect(),
+            isIntersecting: true, intersectionRatio: 1,
+          }], observer);
+        };
+      });
+      await page.goto('/Income-per-sed-Develop.html');
+      await fullDisplay(page);
+      await expect.poll(() => page.evaluate(() => window.__incomeClockDiagnostics.getVisualComponentState().states.timeline)).toBe('hidden');
+      await page.setViewportSize({ width, height: 1000 });
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+      const hiddenGeometry = await page.locator('#progressTrack').evaluate(track => {
+        return {
+          helpers: [...track.querySelectorAll('.progress-marker')].map(marker => {
+            const rect = marker.getBoundingClientRect(), parent = marker.parentElement.getBoundingClientRect();
+            return !marker.getClientRects().length || (rect.left >= parent.left - 4 && rect.right <= parent.right + 4);
+          }),
+        };
+      });
+      expect(hiddenGeometry.helpers).toEqual([true, true]);
+      await expect.poll(() => page.locator('#progressTrack').evaluate(track => {
+        const bounds = track.getBoundingClientRect(), cursor = track.querySelector('.timeline-handoff-marker').getBoundingClientRect();
+        return Math.abs(cursor.left + cursor.width / 2 - bounds.left - parseFloat(track.style.getPropertyValue('--timeline-cursor-x')));
+      })).toBeLessThan(2.5);
+      await page.evaluate(() => window.restoreTimelineObservation());
+      await expect.poll(() => page.evaluate(() => window.__incomeClockDiagnostics.getVisualComponentState().states.timeline)).toBe('visible');
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+      await expect(page.locator('.timeline-handoff-marker')).toBeVisible();
+    });
+  }
+}
+
 test('progress rendering refreshes geometry when resize notifications are delayed', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
