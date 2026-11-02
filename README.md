@@ -54,12 +54,12 @@
 
 | 项目 | 标识 |
 | --- | --- |
-| 产品与四文件版本 | `2.7.5` |
-| 交付编号 | `20261028.1` |
+| 产品与四文件版本 | `2.7.6`（交付候选） |
+| 交付编号 | `20261101.1` |
 
-2.7.5 修复回溯后返回实时经过午休时，进度填充与游标短暂分离的问题，并修复前台恢复收尾的主针短暂回退。保留字体、布局、计薪规则、正常跳针、机械滚轮与小组件功能，不新增缓存或产品依赖。
+2.7.6 收尾保存反馈、北京时间、窄屏键盘焦点与长数字排版：保存失败不会再被其他窗口误认成成功；设备时区与夏令时不改变北京时间口径；月收入和趣味数量完整显示。保留 RC37 字体、计薪公式与机械动效，不新增跨帧缓存或产品依赖。
 
-四文件已统一，桌面旧文件已备份后替换；[PR #71](https://github.com/ZeusCupidCloris/Income-per-sed/pull/71) 已合并 main。完整 PR 检查为 Edge 350 项、WebKit 263 项通过及 4 项既定跳过，无测试重试；[main 完整检查与 Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40615154332)亦通过，其中 WebKit 为 262 项直接通过、1 项既有高度测量用例重试通过、4 项跳过，不冒称全程零重试。另完成 96 项备份恢复和仓库、实际桌面各 8 组离线文件操作。2026-10-28 10:13（北京时间）独立核对线上两入口字节与宽窄屏操作通过，见[本批验收](docs/acceptance/fourfile-20261028.md)。不创建 Release 或标签，历史 WebKit 风险、真实手机与真实跨夜验收边界仍保留。
+当前为交付候选，尚不代表桌面、main 或 Pages 已更新。检查、备份与最终交付分别记录在[本批验收](docs/acceptance/fourfile-20261101.md)。此前自动化 WebKit 原生崩溃仍列为未解决风险，不用专项通过替代完整检查；不创建 Release 或标签。上批交付证据保留在[2.7.5 验收记录](docs/acceptance/fourfile-20261028.md)。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 
@@ -76,6 +76,7 @@
 | 命名、日历、手册与发布规则 | [维护策略](docs/REPOSITORY_POLICY.md) |
 | CI 的作用与重复检查评估 | [工作流评估](docs/maintainer/workflow-review.md) |
 | 已完成卡片整理与分批记录 | [分批整理方案](docs/maintainer/card-css-plan.md) |
+| 2.8.x 分组件重构目标与边界 | [组件维护计划](docs/maintainer/component-architecture-2.8.md) |
 
 `scripts/`、`tests/`、`config/` 和 `.github/` 服务于构建与自动检查，日常使用无需安装这些工具。历史资料保留原地址。
 

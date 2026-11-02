@@ -4,6 +4,10 @@
 
 ## 当前交付
 
+产品与小组件统一为 **2.7.6**，交付 **20261101.1**，当前为正在验收的候选。本地成果已存档；桌面、main 与 Pages 尚未更新。以[本批收尾记录](acceptance/fourfile-20261101.md)逐项记录检查、剩余问题和交付，不提前宣布完成。2.8.x 仅形成[组件维护计划](maintainer/component-architecture-2.8.md)，本批不开始拆分运行代码。
+
+### 2.7.5 上批交付
+
 产品与小组件统一为 **2.7.5**，交付 **20261028.1**。[PR #71](https://github.com/ZeusCupidCloris/Income-per-sed/pull/71) 已合并为 `5821350`，修复午休返回进度与前台恢复主针收尾。精确头提交的[完整 PR 检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40610052349)实际为 Edge 350 项、WebKit 263 项通过和 4 项既定跳过，首次工作流尝试、无测试重试；首轮本地完整失败与修复过程保留，不覆盖为通过。[main 完整检查与 Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/40615154332)首次工作流尝试通过：Edge 350 项直接通过；WebKit 262 项直接通过、1 项既有高度测量用例重试通过、4 项既定跳过。最终本地专项各 51 项、8 组 96 项备份，以及仓库和实际桌面各 8 组离线文件操作通过；桌面旧四文件已先备份再替换，手册九页核对。2026-10-28 10:13（北京时间）线上首页与命名 Push 文件字节一致，390/1440 宽度独立操作及截图核对通过。见[本批验收](acceptance/fourfile-20261028.md)与[版本说明](releases/v2.7.5.md)；不创建 Release 或标签，实体手机、真实跨夜及实际读屏继续暂缓。
 
 ### 2.7.4 历史交付
