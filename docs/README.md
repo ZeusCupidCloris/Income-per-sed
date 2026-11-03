@@ -4,7 +4,7 @@
 
 ## 当前交付
 
-产品与小组件统一为 **2.7.6**，交付 **20261101.1**，当前为正在验收的候选。本地成果已存档；桌面、main 与 Pages 尚未更新。以[本批收尾记录](acceptance/fourfile-20261101.md)逐项记录检查、剩余问题和交付，不提前宣布完成。2.8.x 仅形成[组件维护计划](maintainer/component-architecture-2.8.md)，本批不开始拆分运行代码。
+产品与小组件统一为 **2.7.6**，交付 **20261101.1**。2026-11-03 已通过 [PR #75](https://github.com/ZeusCupidCloris/Income-per-sed/pull/75) 合并为 `6d235d1`，桌面旧四文件先备份再替换，精确哈希一致。[PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/41573859993)和 [main 完整检查与 Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/41588491789)各为 Edge 415 项、WebKit 328 项通过及 4 项既定跳过，均为首次工作流尝试、无测试重试。当前四文件另通过本机各 32 项长内容及缩放检查、仓库离线文件 8 组 48 项和实际桌面文件 4 组 24 项操作核对。15:08（北京时间）独立核对线上首页与命名 Push 的完整字节、390/1440px 操作及四张截图通过。手册九页和三张当前 Push 预览已核对；历次失败、采样取舍与未解决的自动化 WebKit 原生崩溃继续保留在[本批收尾记录](acceptance/fourfile-20261101.md)。真实手机、真实跨夜和实际读屏仍暂缓，不创建 Release 或标签。2.8.x 仅形成[组件维护计划](maintainer/component-architecture-2.8.md)，本批不开始拆分运行代码。
 
 ### 2.7.5 上批交付
 
