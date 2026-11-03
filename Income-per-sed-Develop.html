@@ -5378,22 +5378,22 @@ body{
 }
 
 .work-timeline .work-segment > .progress-marker{
-    visibility:hidden !important;
-    opacity:0 !important;
+    /* Legacy helpers must not retain scrollable bounds when visual writes defer. */
+    display:none;
 }
 
 .timeline-handoff-marker{
     position:absolute;
     z-index:5;
     top:50%;
-    left:0;
+    left:var(--timeline-cursor-x);
     border:1px solid color-mix(in srgb,var(--workshop-brass) 60%,#6d563d);
     opacity:1;
     pointer-events:none;
-    transform:translate3d(calc(var(--timeline-cursor-x) - 50%),-50%,0);
+    transform:translate3d(-50%,-50%,0);
     transition:
         opacity var(--motion-fast) var(--ease-settle),
-        transform var(--motion-slow) linear;
+        left var(--motion-slow) linear;
 }
 
 body[data-work-status="day-off"] .timeline-handoff-marker{
@@ -8236,10 +8236,10 @@ html:root .status-tools .view-button[aria-pressed="true"]{background:transparent
 .status-tools .view-button svg,.status-tools .theme-cycle::before{position:relative;z-index:1;}
 .status-tools .theme-cycle::before{width:16px;height:16px;}
 @media(hover:hover) and (pointer:fine){html:root .status-tools .view-button:hover{background:transparent;}.status-tools .view-button:hover::before,.status-tools .theme-cycle:hover::after{background:var(--material-selected);}}
-#funSummaryCard{text-align:center;}
-#funSummaryCard .fun-fact{justify-items:center;align-items:center;}
-#funSummaryCard .fun-item{display:inline-flex;justify-content:center;align-items:baseline;gap:5px;text-align:center;width:100%;}
-#funSummaryCard .fun-copy{flex:0 1 auto;}
+#funSummaryCard{text-align:center;content-visibility:visible;}
+#funSummaryCard .fun-fact{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;}
+#funSummaryCard .fun-item{display:inline-flex;flex:0 1 calc(50% - 7px);min-width:max-content;justify-content:center;align-items:baseline;gap:5px;text-align:center;width:auto;}
+#funSummaryCard .fun-copy{flex:0 1 auto;white-space:nowrap;overflow-wrap:normal;}
 html[data-privacy="hidden"] #funSummaryCard #funFact::after{left:50%;transform:translate(-50%,-50%);}
 #scheduleSettingsCard .progress-header-copy{gap:0;}
 #scheduleSettingsCard .progress-phase{display:none;}
@@ -8561,11 +8561,12 @@ html:root #calendarDataSection{display:flex;align-items:center;gap:10px;flex-wra
 <style id="rc37-layout-compat">
 /* Later information fields keep their layout; RC37 owns all typography. */
 .main-container :is(.info-sub,.month-detail){white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;}
-#monthSummaryCard{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:20px;align-items:center;}
-#monthSummaryCard>div{min-width:0;}
-#monthSummaryCard .month-value{white-space:normal;overflow-wrap:anywhere;}
+#monthSummaryCard{display:flex;flex-wrap:wrap;column-gap:20px;row-gap:12px;align-items:center;}
+#monthSummaryCard>div{flex:1 1 0;min-width:min-content;max-width:100%;}
+#monthSummaryCard>div:first-child{flex-grow:1.5;}
+#monthSummaryCard .month-value{white-space:nowrap;overflow-wrap:normal;}
 .month-projection{text-align:right;}
-.month-projection-value{display:block;overflow-wrap:anywhere;}
+.month-projection-value{display:block;white-space:nowrap;overflow-wrap:normal;}
 html[data-privacy="hidden"] #estMonth::after{left:auto;right:0;}
 @media(min-width:721px){
  .info-cards-row > .card{justify-content:flex-start;}
@@ -9168,10 +9169,10 @@ html:root #settingsSafetyConfirm[data-backup-diff]{position:relative;inset:auto;
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v39',
-productVersion: '2.7.5',
-sourceTag: 'v2.7.5',
-buildId: 'v39-20261028.1',
-releaseDate: '2026-10-28',
+productVersion: '2.7.6',
+sourceTag: 'v2.7.6',
+buildId: 'v39-20261101.1',
+releaseDate: '2026-11-01',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
@@ -9597,7 +9598,7 @@ sample: () => Object.freeze({ wallNowMs: Date.now(), monotonicNowMs: performance
 
 /*
  * 业务时区适配：应用中的工作日、工作时间与日历统一按北京时间解释，
- * 不随设备当前时区漂移。返回的是“业务墙上时间”Date，供既有本地 getter 使用。
+ * Date 始终保留真实时间戳；业务分量及日期构造只在此处解释，不经过设备本地时区。
  */
 const BusinessTimeZone = (() => {
 const timeZone = APP_RELEASE.businessTimeZone;
@@ -9609,7 +9610,8 @@ hourCycle: 'h23'
 });
 function partsAt(instantMs = AppClock.wallNow()) {
 const parts = Object.create(null);
-for (const part of formatter.formatToParts(new Date(instantMs))) {
+const instant = new Date(instantMs);
+for (const part of formatter.formatToParts(instant)) {
 if (part.type !== 'literal') parts[part.type] = Number(part.value);
 }
 return Object.freeze({
@@ -9619,17 +9621,38 @@ day: parts.day,
 hour: parts.hour,
 minute: parts.minute,
 second: parts.second,
-millisecond: Math.max(0, Math.floor(instantMs % 1000))
+millisecond: instant.getUTCMilliseconds()
 });
 }
 function toBusinessDate(instantMs = AppClock.wallNow()) {
-const part = partsAt(instantMs);
-return new Date(part.year, part.month - 1, part.day, part.hour, part.minute, part.second, part.millisecond);
+return new Date(instantMs);
+}
+function createDate(year, month, day = 1, hour = 0, minute = 0, second = 0, millisecond = 0) {
+const wallMs = Date.UTC(year, month, day, hour, minute, second, millisecond);
+if (!Number.isFinite(wallMs)) throw new RangeError('日期或时间无效。');
+let instantMs = wallMs;
+// Resolve civil components in the business zone, including its historical offset changes.
+for (let attempt = 0; attempt < 4; attempt++) {
+const parts = partsAt(instantMs);
+const represented = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second, parts.millisecond);
+const correction = wallMs - represented;
+if (!correction) return new Date(instantMs);
+instantMs += correction;
+}
+throw new RangeError('日期或时间无效。');
+}
+function dateAtKey(key, second = 0, millisecond = 0) {
+const [year, month, day] = key.split('-').map(Number);
+return createDate(year, month - 1, day, 0, 0, second, millisecond);
+}
+function clockText(date, includeSeconds = true, parts = partsAt(date.getTime())) {
+const values = includeSeconds ? [parts.hour, parts.minute, parts.second] : [parts.hour, parts.minute];
+return values.map(value => String(value).padStart(2, '0')).join(':');
 }
 function describe() {
 return Object.freeze({ id: timeZone, label: '北京时间', calendarVersion: APP_RELEASE.calendarVersion });
 }
-return Object.freeze({ id: timeZone, partsAt, toBusinessDate, describe });
+return Object.freeze({ id: timeZone, partsAt, toBusinessDate, createDate, dateAtKey, clockText, describe });
 })();
 
 (() => {
@@ -9786,7 +9809,7 @@ const PREVIEW = Object.freeze({
 enabled: Boolean(previewScenario),
 mode: previewMode || '',
 label: previewScenario?.label || '',
-baseDate: previewScenario ? new Date(...previewScenario.parts) : null,
+baseDate: previewScenario ? BusinessTimeZone.createDate(...previewScenario.parts) : null,
 speed: previewSpeed
 });
 const businessClock = (() => {
@@ -10487,10 +10510,16 @@ function createFrameSnapshot(
 monotonicNow = performance.now(),
 realNowMs = AppClock.wallNow()
 ) {
+const liveDate = getLiveNow(realNowMs);
+// This result belongs to one snapshot and is never reused by the next frame.
+let liveParts = null;
 return Object.freeze({
 monotonicNow,
 realNowMs,
-liveDate: getLiveNow(realNowMs)
+liveDate,
+get liveParts() {
+return liveParts || (liveParts = BusinessTimeZone.partsAt(liveDate.getTime()));
+}
 });
 }
 function getNow(
@@ -11917,10 +11946,12 @@ const persistence = persist(reason);
 if (options.requirePersistence && !persistence.persisted) state = previous;
 return Object.freeze({ settings: state, persisted: persistence.persisted, persistence, storageStatus: getStorageStatus() });
 }
-function reset(reason = 'settings-reset') {
+function reset(reason = 'settings-reset', options = {}) {
+const previous = state;
 state = normalize(DEFAULT_CONFIG);
 revision += 1;
 const persistence = persist(reason);
+if (options.requirePersistence && !persistence.persisted) state = previous;
 return Object.freeze({ settings: state, persisted: persistence.persisted, persistence, storageStatus: getStorageStatus() });
 }
 function applyExternal(settings, reason = 'coordinator-sync', externalRevision = 0) {
@@ -13353,8 +13384,8 @@ fillNode.style.getPropertyValue(
 }
 const specialWorkdays = new Set(ACTIVE_CALENDAR.specialWorkdays);
 const holidays = new Set(ACTIVE_CALENDAR.holidays);
-let calendarCoverageStartMs = new Date(`${ACTIVE_CALENDAR.coverage.start}T00:00:00`).getTime();
-let calendarCoverageEndMs = new Date(`${ACTIVE_CALENDAR.coverage.end}T23:59:59.999`).getTime();
+let calendarCoverageStartMs = BusinessTimeZone.dateAtKey(ACTIVE_CALENDAR.coverage.start).getTime();
+let calendarCoverageEndMs = BusinessTimeZone.dateAtKey(ACTIVE_CALENDAR.coverage.end, 86399, 999).getTime();
 const calendarCoverageDiagnostics = {
 fallbackActive: false,
 lastFallbackYear: 0,
@@ -13365,7 +13396,7 @@ const timestamp = date.getTime();
 return timestamp >= calendarCoverageStartMs && timestamp <= calendarCoverageEndMs;
 }
 function noteCalendarFallback(date) {
-const year = date.getFullYear();
+const year = BusinessTimeZone.partsAt(date.getTime()).year;
 calendarCoverageDiagnostics.fallbackActive = true;
 calendarCoverageDiagnostics.lastFallbackYear = year;
 if (!calendarCoverageDiagnostics.warnedYears.has(year)) {
@@ -13380,14 +13411,15 @@ if (!covered) noteCalendarFallback(date);
 body.classList.toggle('calendar-fallback-active', !covered);
 dom.calendarWarning.hidden = covered;
 if (!covered) {
-setTextIfChanged(dom.calendarWarningText, `${date.getFullYear()} 年节假日数据尚未更新，暂按周一至周五估算。`);
+setTextIfChanged(dom.calendarWarningText, `${BusinessTimeZone.partsAt(date.getTime()).year} 年节假日数据尚未更新，暂按周一至周五估算。`);
 }
 }
 const timeFormatter = new Intl.DateTimeFormat('zh-CN', {
+timeZone: BusinessTimeZone.id,
 hour: '2-digit',
 minute: '2-digit',
 second: '2-digit',
-hour12: false
+hourCycle: 'h23'
 });
 const currencyFormatter = new Intl.NumberFormat('zh-CN', {
 style: 'currency',
@@ -13510,8 +13542,8 @@ specialWorkdays.clear();
 holidays.clear();
 for (const date of next.specialWorkdays) specialWorkdays.add(date);
 for (const date of next.holidays) holidays.add(date);
-calendarCoverageStartMs = new Date(`${next.coverage.start}T00:00:00`).getTime();
-calendarCoverageEndMs = new Date(`${next.coverage.end}T23:59:59.999`).getTime();
+calendarCoverageStartMs = BusinessTimeZone.dateAtKey(next.coverage.start).getTime();
+calendarCoverageEndMs = BusinessTimeZone.dateAtKey(next.coverage.end, 86399, 999).getTime();
 calendarCache.clear();
 ratesCache.clear();
 cachedWorkdayYear = Number.NaN;
@@ -13929,28 +13961,27 @@ return currencyFormatter.format(Number.isFinite(value) ? value : 0);
 function formatClockLabel(value) {
 return value.replace(/^0/, '');
 }
-function localDateKey(date) {
-const y = date.getFullYear();
-const m = String(date.getMonth() + 1).padStart(2, '0');
-const d = String(date.getDate()).padStart(2, '0');
+function localDateKey(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+const y = parts.year;
+const m = String(parts.month).padStart(2, '0');
+const d = String(parts.day).padStart(2, '0');
 return `${y}-${m}-${d}`;
 }
-function startOfDay(date) {
-return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+function startOfDay(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+return BusinessTimeZone.createDate(parts.year, parts.month - 1, parts.day);
 }
 function addDays(date, amount) {
-const next = new Date(date);
-next.setDate(next.getDate() + amount);
-return next;
+const parts = BusinessTimeZone.partsAt(date.getTime());
+return BusinessTimeZone.createDate(parts.year, parts.month - 1, parts.day + amount, parts.hour, parts.minute, parts.second, parts.millisecond);
 }
 let cachedWorkdayYear = Number.NaN;
 let cachedWorkdayMonth = Number.NaN;
 let cachedWorkdayDate = Number.NaN;
 let cachedWorkdayResult = false;
-function isWorkday(date) {
-const year = date.getFullYear();
-const month = date.getMonth();
-const dayOfMonth = date.getDate();
+function isWorkday(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+const year = parts.year;
+const month = parts.month - 1;
+const dayOfMonth = parts.day;
 if (
 year === cachedWorkdayYear &&
 month === cachedWorkdayMonth &&
@@ -13958,8 +13989,8 @@ dayOfMonth === cachedWorkdayDate
 ) {
 return cachedWorkdayResult;
 }
-const key = localDateKey(date);
-const dayOfWeek = date.getDay();
+const key = localDateKey(date, parts);
+const dayOfWeek = new Date(Date.UTC(year, month, dayOfMonth)).getUTCDay();
 const covered = isCalendarDateCovered(date);
 if (!covered) noteCalendarFallback(date);
 cachedWorkdayResult = covered && specialWorkdays.has(key)
@@ -13972,32 +14003,32 @@ cachedWorkdayMonth = month;
 cachedWorkdayDate = dayOfMonth;
 return cachedWorkdayResult;
 }
-function secondsSinceMidnight(date) {
-return date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds() + date.getMilliseconds() / 1000;
+function secondsSinceMidnight(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+return parts.hour * 3600 + parts.minute * 60 + parts.second + parts.millisecond / 1000;
 }
-function getStatus(date) {
-if (!isWorkday(date)) return 'day-off';
-const current = secondsSinceMidnight(date);
+function getStatus(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+if (!isWorkday(date, parts)) return 'day-off';
+const current = secondsSinceMidnight(date, parts);
 if (current < schedule.morningStart) return 'not-started';
 if (current < schedule.morningEnd) return 'working';
 if (current < schedule.afternoonStart) return 'break';
 if (current < schedule.afternoonEnd) return 'working';
 return 'ended';
 }
-function getWorkSeconds(date) {
-if (!isWorkday(date)) return 0;
-const current = secondsSinceMidnight(date);
+function getWorkSeconds(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+if (!isWorkday(date, parts)) return 0;
+const current = secondsSinceMidnight(date, parts);
 if (current <= schedule.morningStart) return 0;
 if (current < schedule.morningEnd) return current - schedule.morningStart;
 if (current < schedule.afternoonStart) return morningSeconds;
 if (current < schedule.afternoonEnd) return morningSeconds + current - schedule.afternoonStart;
 return totalWorkSeconds;
 }
-function getMonthCalendar(date) {
-const key = `${date.getFullYear()}-${date.getMonth()}`;
+function getMonthCalendar(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+const key = `${parts.year}-${parts.month - 1}`;
 if (calendarCache.has(key)) return calendarCache.get(key);
-const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+const firstDay = BusinessTimeZone.createDate(parts.year, parts.month - 1, 1);
+const lastDay = BusinessTimeZone.createDate(parts.year, parts.month, 0);
 const workdays = [];
 for (let cursor = new Date(firstDay); cursor <= lastDay; cursor = addDays(cursor, 1)) {
 if (isWorkday(cursor)) workdays.push(localDateKey(cursor));
@@ -14011,10 +14042,10 @@ totalWorkdays: workdays.length
 calendarCache.set(key, calendar);
 return calendar;
 }
-function getRates(date) {
-const cacheKey = `${date.getFullYear()}-${date.getMonth()}-${SettingsStore.getRevision()}-${CONFIG.incomeMode}`;
+function getRates(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+const cacheKey = `${parts.year}-${parts.month - 1}-${SettingsStore.getRevision()}-${CONFIG.incomeMode}`;
 if (ratesCache.has(cacheKey)) return ratesCache.get(cacheKey);
-const monthCalendar = getMonthCalendar(date);
+const monthCalendar = getMonthCalendar(date, parts);
 const rates = IncomeEngine.calculate(CONFIG, schedule, monthCalendar);
 ratesCache.set(cacheKey, rates);
 return rates;
@@ -14022,8 +14053,8 @@ return rates;
 let monthDayPositionKey = '';
 let monthDayPositionCalendar = null;
 let monthDayPosition = null;
-function getMonthProgress(date, currentIncome, rates) {
-const todayKey = localDateKey(date);
+function getMonthProgress(date, currentIncome, rates, parts = BusinessTimeZone.partsAt(date.getTime())) {
+const todayKey = localDateKey(date, parts);
 if (
 todayKey !== monthDayPositionKey ||
 rates.monthCalendar !== monthDayPositionCalendar
@@ -14032,7 +14063,7 @@ let completedBeforeToday = 0;
 for (const key of rates.monthCalendar.workdays) {
 if (key < todayKey) completedBeforeToday += 1;
 }
-const todayIsWorkday = isWorkday(date);
+const todayIsWorkday = isWorkday(date, parts);
 monthDayPositionKey = todayKey;
 monthDayPositionCalendar = rates.monthCalendar;
 monthDayPosition = Object.freeze({
@@ -17050,14 +17081,15 @@ storageStatus: SettingsStore.getStorageStatus()
 showSettingsSaveResult('默认设置', result);
 return result;
 }
-const result = SettingsStore.reset('settings-reset');
+const result = SettingsStore.reset('settings-reset', options);
 CONFIG = result.settings;
-refreshRuntimeSettings(result.persisted ? '设置已恢复默认并保存' : '设置已恢复默认，仅当前页面生效');
-if (!options.suppressBroadcast && InstanceCoordinator.isWriter()) {
+refreshRuntimeSettings(result.persisted ? '设置已恢复默认并保存' : options.requirePersistence ? '恢复默认未能保存，原设置已保留' : '设置已恢复默认，仅当前页面生效');
+if (!options.suppressBroadcast && (!options.requirePersistence || result.persisted) && InstanceCoordinator.isWriter()) {
 InstanceCoordinator.publishState('settings', Object.freeze({ settings: CONFIG, revision: SettingsStore.getRevision(), reason: 'settings-reset' }));
 }
-showSettingsSaveResult('默认设置', result);
-return Object.freeze({ ...result, config: CONFIG });
+if (options.requirePersistence && !result.persisted) showStorageNotice('默认设置未能保存，当前设置未改变。', 'warning', 5200);
+else showSettingsSaveResult('默认设置', result);
+return Object.freeze({ ...result, config: CONFIG, applied: !options.requirePersistence || result.persisted });
 }
 
 let multiWindowBindingsInitialized = false;
@@ -17088,16 +17120,25 @@ InstanceCoordinator.requestSync();
 }
 });
 InstanceCoordinator.subscribe('command:settings-update', ({ patch, reason }) => {
-applyRuntimeSettings(patch || {}, reason || 'remote-settings-update', { fromCoordinator: true });
+const result = applyRuntimeSettings(patch || {}, reason || 'remote-settings-update', { fromCoordinator: true, requirePersistence: true });
+if (!result.persisted) throw new Error('主窗口未能保存设置。');
 });
-InstanceCoordinator.subscribe('command:settings-reset', () => resetRuntimeSettings({ fromCoordinator: true }));
+InstanceCoordinator.subscribe('command:settings-reset', () => {
+const result = resetRuntimeSettings({ fromCoordinator: true, requirePersistence: true });
+if (!result.persisted) throw new Error('主窗口未能保存默认设置。');
+});
 InstanceCoordinator.subscribe('command:stopwatch-toggle', () => TaskStopwatch.toggle({ fromCoordinator: true }));
 InstanceCoordinator.subscribe('command:stopwatch-reset', () => TaskStopwatch.reset({ fromCoordinator: true }));
 InstanceCoordinator.subscribe('command:stopwatch-undo', payload => { if (typeof payload?.token === 'string') TaskStopwatch.undoReset({ token: payload.token }); });
 InstanceCoordinator.subscribe('state:settings', applyCoordinatedRuntimeSettings);
 InstanceCoordinator.subscribe('state:stopwatch', TaskStopwatch.applyCoordinatedState);
 InstanceCoordinator.subscribe('command-ack', ({ type }) => showStorageNotice(`主窗口已确认${type.startsWith('settings') ? '设置' : '怀表'}操作。`, 'success', 1600));
-InstanceCoordinator.subscribe('command-rejected', ({ reason }) => showStorageNotice(`主窗口未接受操作（${reason || '状态已变化'}），已尝试重新同步。`, 'warning', 4200));
+InstanceCoordinator.subscribe('command-rejected', ({ type, reason }) => {
+InstanceCoordinator.requestSync();
+showStorageNotice(type.startsWith('settings') && reason === 'listener-error'
+? '主窗口未能保存设置，本次修改尚未生效；请重新打开设置重试。'
+: `主窗口未接受操作（${reason || '状态已变化'}），已尝试重新同步。`, 'warning', 5200);
+});
 InstanceCoordinator.subscribe('command-timeout', () => showStorageNotice('未收到主窗口确认，请确认另一窗口仍然打开后重试。', 'warning', 5200));
 InstanceCoordinator.subscribe('sync-request', () => publishCoordinatedState('sync-request'));
 if (InstanceCoordinator.isWriter()) publishCoordinatedState('startup');
@@ -17576,7 +17617,7 @@ parent.append(wheel.element);
 return wheel;
 }
 function rebuildDay() {
-const maximum = new Date(selected.year, selected.month, 0).getDate();
+const maximum = new Date(Date.UTC(selected.year, selected.month, 0)).getUTCDate();
 selected.day = Math.min(selected.day, maximum);
 if (dayCount !== maximum) {
 wheels.get('day')?.destroy();
@@ -17599,8 +17640,9 @@ function refresh() {
 const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateInput.value);
 const time = /^(\d{2}):(\d{2})(?::\d{2})?$/.exec(timeInput.value);
 const now = timelineDisplayClockDate();
+const parts = BusinessTimeZone.partsAt(now.getTime());
 selected = day && time ? { year: Number(day[1]), month: Number(day[2]), day: Number(day[3]), hour: Number(time[1]), minute: Number(time[2]) }
-: { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate(), hour: now.getHours(), minute: now.getMinutes() };
+: { year: parts.year, month: parts.month, day: parts.day, hour: parts.hour, minute: parts.minute };
 selected.year = Math.max(startYear, Math.min(endYear, selected.year));
 wheels.get('year').setValue(selected.year - startYear, { emit: false });
 wheels.get('month').setValue(selected.month - 1, { emit: false });
@@ -17624,7 +17666,7 @@ let pointer = null;
 let trackBounds = null;
 let faceKey = '';
 let editing = false;
-const clockText = date => [date.getHours(), date.getMinutes(), date.getSeconds()].map(value => String(value).padStart(2, '0')).join(':');
+const clockText = (date, parts) => BusinessTimeZone.clockText(date, true, parts);
 function point(seconds, radius = 112) {
 const angle = seconds / 86400 * Math.PI * 2 - Math.PI / 2;
 return [140 + Math.cos(angle) * radius, 140 + Math.sin(angle) * radius];
@@ -17634,8 +17676,8 @@ if (end <= start) return '';
 const a = point(start), b = point(Math.min(end, start + 86399.99));
 return `M${a[0]} ${a[1]}A112 112 0 ${end - start > 43200 ? 1 : 0} 1 ${b[0]} ${b[1]}`;
 }
-function limits(date, live = getLiveNow()) {
-const dayStart = startOfDay(date).getTime();
+function limits(date, live = getLiveNow(), parts = BusinessTimeZone.partsAt(date.getTime())) {
+const dayStart = startOfDay(date, parts).getTime();
 const bounds = historyDateBounds(live);
 return { min: Math.max(0, Math.ceil((bounds.lowerBound - dayStart) / 1000)), max: Math.min(86399, Math.floor((bounds.upperBound - dayStart) / 1000)) };
 }
@@ -17643,12 +17685,12 @@ function clearError() {
 error.hidden = true;
 input.removeAttribute('aria-invalid');
 }
-function sync(date, live = getLiveNow()) {
+function sync(date, live = getLiveNow(), parts = BusinessTimeZone.partsAt(date.getTime()), liveParts = live.getTime() === date.getTime() ? parts : BusinessTimeZone.partsAt(live.getTime())) {
 selection = new Date(date);
-const seconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
-const bounds = limits(date, live);
-const day = localDateKey(date);
-const working = isWorkday(date);
+const seconds = Math.floor(secondsSinceMidnight(date, parts));
+const bounds = limits(date, live, parts);
+const day = localDateKey(date, parts);
+const working = isWorkday(date, parts);
 const key = `${day}|${working}|${Object.values(CONFIG.schedule).join('|')}`;
 if (key !== faceKey) {
 faceKey = key;
@@ -17662,28 +17704,27 @@ if (needle.style.transform !== rotation) needle.style.transform = rotation;
 setAttributeIfChanged(track, 'aria-valuemin', String(bounds.min));
 setAttributeIfChanged(track, 'aria-valuemax', String(bounds.max));
 setAttributeIfChanged(track, 'aria-valuenow', String(seconds));
-setAttributeIfChanged(track, 'aria-valuetext', `${day} ${clockText(date)}`);
-const text = clockText(date);
+const text = clockText(date, parts);
+setAttributeIfChanged(track, 'aria-valuetext', `${day} ${text}`);
 if (!editing && input.value !== text) input.value = text;
-const today = day === localDateKey(live);
+const today = day === localDateKey(live, liveParts);
 nowMarker.hidden = !today;
 nowMarker.style.display = today ? '' : 'none';
 document.querySelector('.history-dial-legend .now').hidden = !today;
 if (today) {
-const nowSeconds = live.getHours() * 3600 + live.getMinutes() * 60 + live.getSeconds();
+const nowSeconds = Math.floor(secondsSinceMidnight(live, liveParts));
 const p = point(nowSeconds, 124);
 setAttributeIfChanged(nowMarker, 'cx', String(p[0]));
 setAttributeIfChanged(nowMarker, 'cy', String(p[1]));
 }
 setAttributeIfChanged(unavailable, 'd', today ? arc(bounds.max, 86400) : '');
-HistoryDateReview.syncSeekClock(date);
+HistoryDateReview.syncSeekClock(date, parts);
 }
 function applySeconds(seconds, direct = false) {
 if (!selection) return false;
 const bounds = limits(selection);
 const bounded = Math.max(bounds.min, Math.min(bounds.max, Math.round(seconds)));
-const target = new Date(selection);
-target.setHours(0, 0, bounded, 0);
+const target = BusinessTimeZone.dateAtKey(localDateKey(selection), bounded);
 editing = false;
 clearError();
 if (!direct) return seekHistoryDate(target, 'time-dial');
@@ -17786,7 +17827,7 @@ if (type === 'pointerup') move(event);
 finish();
 });
 ComponentScopes.timeline.listen(track, 'keydown', event => {
-const seconds = selection ? selection.getHours() * 3600 + selection.getMinutes() * 60 + selection.getSeconds() : 0;
+const seconds = selection ? Math.floor(secondsSinceMidnight(selection)) : 0;
 const step = event.shiftKey ? 900 : 60;
 const targets = { ArrowRight: seconds + step, ArrowUp: seconds + step, ArrowLeft: seconds - step, ArrowDown: seconds - step, PageUp: seconds + 3600, PageDown: seconds - 3600, Home: 0, End: 86399 };
 if (!(event.key in targets)) return;
@@ -19861,12 +19902,13 @@ focusInside: dom.settingsDialog.hidden || dom.settingsDialog.contains(document.a
 })();
 function updateIncomeCalculation(draft = CONFIG) {
 const now = getNow();
+const parts = BusinessTimeZone.partsAt(now.getTime());
 const calendar = getMonthCalendar(now);
 const rates = draft ? IncomeEngine.calculate(draft, schedule, calendar) : null;
 const hours = Number(workHoursPerDay.toFixed(4)).toLocaleString('zh-CN', { maximumFractionDigits: 4 });
 const values = {
 monthlyWorkDaysValue: String(calendar.totalWorkdays),
-incomeCalculationDate: `${now.getFullYear()} 年 ${now.getMonth() + 1} 月 · 每天 ${hours} 小时`,
+incomeCalculationDate: `${parts.year} 年 ${parts.month} 月 · 每天 ${hours} 小时`,
 incomeCalculationDaily: rates ? formatCurrency(rates.daily) : '—',
 incomeCalculationHourly: rates ? formatCurrency(rates.hourly) : '—'
 };
@@ -19895,7 +19937,7 @@ document.getElementById('incomeEstimateWheels').removeAttribute('aria-invalid');
 function initialValues(day, time) {
 const initial = timelineDisplayClockDate();
 day.value = localDateKey(initial);
-time.value = `${String(initial.getHours()).padStart(2, '0')}:${String(initial.getMinutes()).padStart(2, '0')}`;
+time.value = BusinessTimeZone.clockText(initial, false);
 }
 function prepare() {
 seekDateDirty = false;
@@ -19912,11 +19954,11 @@ document.getElementById('historySeekWheels').removeAttribute('aria-invalid');
 seekPicker.refresh();
 syncingSeek = false;
 }
-function syncSeekClock(date) {
-const text = [date.getHours(), date.getMinutes(), date.getSeconds()].map(value => String(value).padStart(2, '0')).join(':');
+function syncSeekClock(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+const text = BusinessTimeZone.clockText(date, true, parts);
 if (seekTime.value !== text) seekTime.value = text;
-if (!seekDateDirty && seekDate.value !== localDateKey(date)) {
-seekDate.value = localDateKey(date);
+if (!seekDateDirty && seekDate.value !== localDateKey(date, parts)) {
+seekDate.value = localDateKey(date, parts);
 syncingSeek = true;
 seekPicker?.refresh();
 syncingSeek = false;
@@ -19933,8 +19975,9 @@ function selected(dayInput, clockInput) {
 const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dayInput.value);
 const time = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(clockInput.value);
 if (!day || !time) throw new Error('请选择完整的日期和时间。');
-const date = new Date(Number(day[1]), Number(day[2]) - 1, Number(day[3]), Number(time[1]), Number(time[2]), Number(time[3] || 0));
-if (localDateKey(date) !== dayInput.value || date.getHours() !== Number(time[1]) || date.getMinutes() !== Number(time[2]) || date.getSeconds() !== Number(time[3] || 0)) throw new Error('日期或时间无效。');
+const date = BusinessTimeZone.createDate(Number(day[1]), Number(day[2]) - 1, Number(day[3]), Number(time[1]), Number(time[2]), Number(time[3] || 0));
+const parts = BusinessTimeZone.partsAt(date.getTime());
+if (localDateKey(date, parts) !== dayInput.value || parts.hour !== Number(time[1]) || parts.minute !== Number(time[2]) || parts.second !== Number(time[3] || 0)) throw new Error('日期或时间无效。');
 if (!isCalendarDateCovered(date)) throw new Error(`可选日期为 ${ACTIVE_CALENDAR.coverage.start} 至 ${ACTIVE_CALENDAR.coverage.end}。`);
 if (date.getTime() > getLiveNow().getTime()) throw new Error('不能选择尚未发生的时间。');
 return date;
@@ -19953,7 +19996,7 @@ const month = getMonthProgress(date, amount, rates);
 const labels = { working: '工作时段', break: '午休', ended: '工作结束', 'not-started': '尚未上班', 'day-off': '休息日' };
 const values = {
 historyDateHeading: localDateKey(date),
-historyDateState: `截至 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')} · ${labels[getStatus(date)]}`,
+historyDateState: `截至 ${BusinessTimeZone.clockText(date, false)} · ${labels[getStatus(date)]}`,
 historyDateIncome: formatCurrency(amount),
 historyDateWork: formatDuration(work),
 historyDateDaily: formatCurrency(workingDay ? rates.daily : 0),
@@ -20416,10 +20459,10 @@ function secondHandLockOffset(progress) {
 void progress;
 return 0;
 }
-function clockAnglesForDate(date) {
-const seconds = date.getSeconds() + date.getMilliseconds() / 1000;
-const minutes = date.getMinutes() + seconds / 60;
-const hours = (date.getHours() % 12) + minutes / 60;
+function clockAnglesForDate(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+const seconds = parts.second + parts.millisecond / 1000;
+const minutes = parts.minute + seconds / 60;
+const hours = (parts.hour % 12) + minutes / 60;
 return {
 minute: minutes * 6,
 hour: hours * 30
@@ -20461,8 +20504,8 @@ dom.dialMonthHand,
 `rotate(${hourAngle.toFixed(3)}deg)`
 );
 }
-function updateClockHands(date) {
-const angles = clockAnglesForDate(date);
+function updateClockHands(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
+const angles = clockAnglesForDate(date, parts);
 setClockHandAngles(angles.minute, angles.hour);
 }
 function progressVisualForWorkSeconds(workSeconds, date = null) {
@@ -21186,8 +21229,8 @@ return repaired;
 /* DEVELOP REGRESSION EXPORT START */
 function runBoundaryRegressionChecks() {
 const failures = [];
-const base = new Date(2026, 6, 22, 0, 0, 0, 0);
-function at(seconds) { const date = new Date(base); date.setSeconds(seconds); return date; }
+const base = BusinessTimeZone.createDate(2026, 6, 22, 0, 0, 0, 0);
+function at(seconds) { return new Date(base.getTime() + seconds * 1000); }
 const cases = [
 [at(Math.max(0, schedule.morningStart - 1)), 'not-started', '上午开始前一秒'],
 [at(schedule.morningStart), 'working', '上午开始'],
@@ -21195,11 +21238,11 @@ const cases = [
 [at(schedule.morningEnd), 'break', '午休开始'],
 [at(schedule.afternoonStart), 'working', '下午开始'],
 [at(schedule.afternoonEnd), 'ended', '下午结束'],
-[new Date(2026, 9, 1, 10, 0, 0), 'day-off', '国庆节假日'],
-[new Date(2026, 9, 10, 10, 0, 0), 'working', '调休工作日'],
-[new Date(2026, 6, 22, 23, 59, 59, 999), 'ended', '午夜前一毫秒'],
-[new Date(2026, 6, 23, 0, 0, 0, 0), 'not-started', '跨越午夜后的工作日'],
-[new Date(2026, 11, 31, 23, 59, 59, 999), 'ended', '年末最后一毫秒']
+[BusinessTimeZone.createDate(2026, 9, 1, 10, 0, 0), 'day-off', '国庆节假日'],
+[BusinessTimeZone.createDate(2026, 9, 10, 10, 0, 0), 'working', '调休工作日'],
+[BusinessTimeZone.createDate(2026, 6, 22, 23, 59, 59, 999), 'ended', '午夜前一毫秒'],
+[BusinessTimeZone.createDate(2026, 6, 23, 0, 0, 0, 0), 'not-started', '跨越午夜后的工作日'],
+[BusinessTimeZone.createDate(2026, 11, 31, 23, 59, 59, 999), 'ended', '年末最后一毫秒']
 ];
 for (const [date, expected, label] of cases) {
 const actual = getStatus(date);
@@ -21208,27 +21251,31 @@ if (actual !== expected) failures.push(`${label}：预期 ${expected}，实际 $
 if (getWorkSeconds(at(schedule.morningStart)) !== 0) failures.push('上午开始瞬间累计工时应为 0');
 if (Math.abs(getWorkSeconds(at(schedule.morningEnd)) - morningSeconds) > 1e-6) failures.push('午休开始瞬间应锁定上午工时');
 if (Math.abs(getWorkSeconds(at(schedule.afternoonEnd)) - totalWorkSeconds) > 1e-6) failures.push('下午结束瞬间应达到全天工时');
-const midnightBefore = new Date(2026, 6, 22, 23, 59, 59, 999);
+const midnightBefore = BusinessTimeZone.createDate(2026, 6, 22, 23, 59, 59, 999);
 const midnightAfter = new Date(midnightBefore.getTime() + 1);
 if (localDateKey(midnightBefore) === localDateKey(midnightAfter)) failures.push('午夜边界未切换本地日期');
-const monthEnd = new Date(2026, 6, 31, 23, 59, 59, 999);
+const monthEnd = BusinessTimeZone.createDate(2026, 6, 31, 23, 59, 59, 999);
 const nextMonth = new Date(monthEnd.getTime() + 1);
-if (nextMonth.getMonth() !== 7 || nextMonth.getDate() !== 1) failures.push('月末边界计算错误');
-const yearEnd = new Date(2026, 11, 31, 23, 59, 59, 999);
+const nextMonthParts = BusinessTimeZone.partsAt(nextMonth.getTime());
+if (nextMonthParts.month !== 8 || nextMonthParts.day !== 1) failures.push('月末边界计算错误');
+const yearEnd = BusinessTimeZone.createDate(2026, 11, 31, 23, 59, 59, 999);
 const nextYear = new Date(yearEnd.getTime() + 1);
-if (nextYear.getFullYear() !== 2027 || nextYear.getMonth() !== 0 || nextYear.getDate() !== 1) failures.push('年末边界计算错误');
-const leapDay = new Date(2028, 1, 29, 12, 0, 0);
-if (leapDay.getMonth() !== 1 || leapDay.getDate() !== 29) failures.push('闰年 2 月 29 日构造失败');
+const nextYearParts = BusinessTimeZone.partsAt(nextYear.getTime());
+if (nextYearParts.year !== 2027 || nextYearParts.month !== 1 || nextYearParts.day !== 1) failures.push('年末边界计算错误');
+const leapDay = BusinessTimeZone.createDate(2028, 1, 29, 12, 0, 0);
+const leapDayParts = BusinessTimeZone.partsAt(leapDay.getTime());
+if (leapDayParts.month !== 2 || leapDayParts.day !== 29) failures.push('闰年 2 月 29 日构造失败');
 const afterLeapDay = addDays(leapDay, 1);
-if (afterLeapDay.getMonth() !== 2 || afterLeapDay.getDate() !== 1) failures.push('闰日后的日期推进错误');
+const afterLeapDayParts = BusinessTimeZone.partsAt(afterLeapDay.getTime());
+if (afterLeapDayParts.month !== 3 || afterLeapDayParts.day !== 1) failures.push('闰日后的日期推进错误');
 const stableShift = classifySystemClockShift(100000, 101000, 5000, 6000);
 const forwardShift = classifySystemClockShift(100000, 161000, 5000, 6000);
 const backwardShift = classifySystemClockShift(100000, 41000, 5000, 6000);
 if (stableShift.type !== 'stable') failures.push('正常时钟推进不应被识别为系统时间跳变');
 if (forwardShift.type !== 'forward') failures.push('系统时间向前调整未被识别');
 if (backwardShift.type !== 'backward') failures.push('系统时间向后调整未被识别');
-if (!isCalendarDateCovered(new Date(2026, 0, 1))) failures.push('2026-01-01 应在日历覆盖范围内');
-if (isCalendarDateCovered(new Date(2027, 0, 1))) failures.push('2027-01-01 不应被标记为已覆盖');
+if (!isCalendarDateCovered(BusinessTimeZone.createDate(2026, 0, 1))) failures.push('2026-01-01 应在日历覆盖范围内');
+if (isCalendarDateCovered(BusinessTimeZone.createDate(2027, 0, 1))) failures.push('2027-01-01 不应被标记为已覆盖');
 return Object.freeze({
 passed: failures.length === 0,
 failures: Object.freeze(failures),
@@ -21604,8 +21651,8 @@ const shortSeekDuration = historyRapidSeekDuration(HISTORY_RAPID_SEEK_THRESHOLD_
 const longSeekDuration = historyRapidSeekDuration(HISTORY_RAPID_SEEK_REFERENCE_MS * 4);
 if (shortSeekDuration < HISTORY_RAPID_SEEK_MIN_DURATION_MS || longSeekDuration > HISTORY_RAPID_SEEK_MAX_DURATION_MS) failures.push('长跨度回溯持续时间未保持有界');
 if (longSeekDuration < shortSeekDuration) failures.push('长跨度回溯时长曲线不应倒退');
-const sixHourStart = new Date(2026, 6, 27, 15, 0, 0);
-const sixHourTarget = new Date(2026, 6, 27, 9, 0, 0);
+const sixHourStart = BusinessTimeZone.createDate(2026, 6, 27, 15, 0, 0);
+const sixHourTarget = BusinessTimeZone.createDate(2026, 6, 27, 9, 0, 0);
 const sixHourClock = clockAnglesForDate(sixHourStart);
 const sixHourSubhands = historyActualSubhandTargets(
 sixHourStart.getTime(),
@@ -21625,7 +21672,7 @@ Math.abs(sixHourSubhands.hourAngle - (sixHourClock.hour - 180)) > 1e-9 ||
 sixHourSubhands.hourExtraTurns !== 0
 ) failures.push('时针大跨度回溯未采用直接定向落位');
 const nearestRetarget = historyNearestSubhandTargets(
-new Date(2026, 6, 27, 16, 0, 0).getTime(),
+BusinessTimeZone.createDate(2026, 6, 27, 16, 0, 0).getTime(),
 216,
 284
 );
@@ -21635,7 +21682,7 @@ Math.abs(nearestRetarget.minuteAngle - 216) > 180 ||
 Math.abs(nearestRetarget.hourAngle - 284) > 180
 ) failures.push('分针与时针反向改向仍可能重新绕整圈');
 for (const seconds of [-66600, -14400, -3600, -900, 0, 900, 3600]) {
-const from = new Date(2026, 6, 27, 18, 30, 0);
+const from = BusinessTimeZone.createDate(2026, 6, 27, 18, 30, 0);
 const to = new Date(from.getTime() + seconds * 1000);
 const clock = clockAnglesForDate(from);
 const expected = clockAnglesForDate(to);
@@ -21829,7 +21876,8 @@ cadence: Object.freeze({ hz60: cadence60, hz120: cadence120 })
 function runBusinessTimeZoneRegressionChecks() {
 const failures = [];
 const sample = BusinessTimeZone.toBusinessDate(Date.UTC(2026, 0, 1, 0, 0, 0));
-if (sample.getFullYear() !== 2026 || sample.getMonth() !== 0 || sample.getDate() !== 1 || sample.getHours() !== 8) failures.push('Asia/Shanghai 业务时区换算异常');
+const sampleParts = BusinessTimeZone.partsAt(sample.getTime());
+if (sampleParts.year !== 2026 || sampleParts.month !== 1 || sampleParts.day !== 1 || sampleParts.hour !== 8) failures.push('Asia/Shanghai 业务时区换算异常');
 if (CONFIG.businessTimeZone !== APP_RELEASE.businessTimeZone) failures.push('运行配置与内部业务时区不一致');
 if (ACTIVE_CALENDAR.coverage.timeZone !== APP_RELEASE.businessTimeZone) failures.push('日历数据未绑定业务时区');
 if (!CalendarManifest.valid) failures.push(`日历数据指纹不一致：${CalendarManifest.checksum}`);
@@ -22698,9 +22746,7 @@ render(frame.monotonicNow);
 }
 
 function historyDateBounds(liveNow = getLiveNow()) {
-const lowerBound = new Date(`${ACTIVE_CALENDAR.coverage.start}T00:00:00`).getTime();
-const coverageEnd = new Date(`${ACTIVE_CALENDAR.coverage.end}T23:59:59.999`).getTime();
-return Object.freeze({ lowerBound, upperBound: Math.min(liveNow.getTime(), coverageEnd) });
+return Object.freeze({ lowerBound: calendarCoverageStartMs, upperBound: Math.min(liveNow.getTime(), calendarCoverageEndMs) });
 }
 function clampHistoryDate(candidate) {
 const { lowerBound, upperBound } = historyDateBounds();
@@ -22775,27 +22821,29 @@ const node = document.getElementById(id);
 node.setAttribute('data-date-context', '');
 return Object.freeze({ node, live, history });
 }));
-function syncBusinessDateLabels(date, atLive) {
+function syncBusinessDateLabels(date, atLive, parts = BusinessTimeZone.partsAt(date.getTime())) {
 for (const label of businessDateLabels) setTextIfChanged(label.node, atLive ? label.live : label.history);
-const day = atLive ? '今日' : `${localDateKey(date)} 当日`;
+const day = atLive ? '今日' : `${localDateKey(date, parts)} 当日`;
 setAttributeIfChanged(dom.progressTrack, 'aria-label', `${day}工作进度`);
 setAttributeIfChanged(document.getElementById('progressReadout'), 'aria-label', `${day}工作进度读数`);
-setAttributeIfChanged(document.getElementById('monthSummaryCard'), 'aria-label', atLive ? '本月累计收入' : `${date.getFullYear()} 年 ${date.getMonth() + 1} 月累计收入`);
+setAttributeIfChanged(document.getElementById('monthSummaryCard'), 'aria-label', atLive ? '本月累计收入' : `${parts.year} 年 ${parts.month} 月累计收入`);
 }
 function updateTimelineChrome(
 displayedDate = timelineDisplayClockDate(),
-liveNow = getLiveNow()
+liveNow = getLiveNow(),
+displayedParts = BusinessTimeZone.partsAt(displayedDate.getTime()),
+liveParts = liveNow.getTime() === displayedDate.getTime() ? displayedParts : BusinessTimeZone.partsAt(liveNow.getTime())
 ) {
 const atLive = timeTravel.state === TIMELINE_STATE.LIVE;
-syncBusinessDateLabels(displayedDate, atLive);
+syncBusinessDateLabels(displayedDate, atLive, displayedParts);
 setTextIfChanged(dom.incomeContextTitle, atLive ? '今日实时收入' : '所选时刻收入');
 dom.incomeContextDate.hidden = atLive;
 if (!atLive) {
 const mode = timeTravel.state === TIMELINE_STATE.HISTORY_PLAY ? '播放中' : timeTravel.state === TIMELINE_STATE.RETURNING_LIVE ? '返回实时' : timeTravel.state === TIMELINE_STATE.SCRUBBING ? '定位中' : '已暂停';
-setTextIfChanged(dom.incomeContextDate, `${localDateKey(displayedDate)} · ${mode}`);
+setTextIfChanged(dom.incomeContextDate, `${localDateKey(displayedDate, displayedParts)} · ${mode}`);
 setAttributeIfChanged(dom.incomeContextDate, 'datetime', displayedDate.toISOString());
 }
-setAttributeIfChanged(document.getElementById('incomeMainCard'), 'aria-label', atLive ? '今日实时收入' : `所选时刻收入，${localDateKey(displayedDate)}`);
+setAttributeIfChanged(document.getElementById('incomeMainCard'), 'aria-label', atLive ? '今日实时收入' : `所选时刻收入，${localDateKey(displayedDate, displayedParts)}`);
 const displayText = timeFormatter.format(displayedDate);
 setTextIfChanged(
 dom.currentTime,
@@ -22808,7 +22856,7 @@ displayedDate.toISOString()
 );
 const liveWorkSecond = Math.max(
 0,
-Math.floor(getWorkSeconds(liveNow))
+Math.floor(getWorkSeconds(liveNow, liveParts))
 );
 const liveMarkerAngle =
 (liveWorkSecond * 6) % 360;
@@ -22881,7 +22929,7 @@ dom.liveAnchor,
 `回到现在 ${liveText}`
 );
 KineticTooltip.setLabel(dom.liveAnchor, `回到现在 · ${liveText}`);
-syncHistoryQuickPanel(displayedDate, liveNow);
+syncHistoryQuickPanel(displayedDate, liveNow, displayedParts, liveParts);
 }
 function resetHistoricalVisualState(
 date = getNow(),
@@ -26188,22 +26236,24 @@ Math.floor(
 
 function syncHistoryQuickPanel(
 displayedDate = timelineDisplayClockDate(),
-liveNow = getLiveNow()
+liveNow = getLiveNow(),
+displayedParts = BusinessTimeZone.partsAt(displayedDate.getTime()),
+liveParts = liveNow.getTime() === displayedDate.getTime() ? displayedParts : BusinessTimeZone.partsAt(liveNow.getTime())
 ) {
 if (!dom.historyQuickPanel || !dom.historyQuickOffset) return;
 const atLive = timeTravel.state === TIMELINE_STATE.LIVE;
 const panelVisible = historyQuickPanelState.open || !dom.historyQuickPanel.hidden;
 const clockText = panelVisible || !atLive
-? [displayedDate.getHours(), displayedDate.getMinutes(), displayedDate.getSeconds()].map(value => String(value).padStart(2, '0')).join(':')
+? BusinessTimeZone.clockText(displayedDate, true, displayedParts)
 : '';
 if (dom.historyQuickOpen) setAttributeIfChanged(
 dom.historyQuickOpen,
 'aria-label',
-atLive ? '打开快速回溯' : `打开快速回溯，当前 ${localDateKey(displayedDate)} ${clockText}`
+atLive ? '打开快速回溯' : `打开快速回溯，当前 ${localDateKey(displayedDate, displayedParts)} ${clockText}`
 );
 // Opening sets open before synchronizing, so the first animation frame is fresh.
 if (!panelVisible) return;
-const lowerBound = startOfDay(liveNow).getTime();
+const lowerBound = startOfDay(liveNow, liveParts).getTime();
 const returning = timeTravel.state === TIMELINE_STATE.RETURNING_LIVE;
 const playing = timeTravel.state === TIMELINE_STATE.HISTORY_PLAY || timeTravel.historyPlayHandoff.active;
 const playButton = document.getElementById('historyQuickPlay');
@@ -26221,9 +26271,10 @@ if (liveLabel) setTextIfChanged(liveLabel, '回到实时');
 const requestedDate = timeTravel.state === TIMELINE_STATE.LIVE || timeTravel.state === TIMELINE_STATE.RETURNING_LIVE
 ? liveNow
 : timeTravel.state === TIMELINE_STATE.HISTORY_PLAY ? displayedDate : (timeTravel.historyTime || displayedDate);
-const status = { working: '工作中', break: '午休', ended: '工作结束', 'not-started': '未上班', 'day-off': '休息日' }[getStatus(requestedDate)];
+const requestedParts = requestedDate.getTime() === displayedDate.getTime() ? displayedParts : requestedDate.getTime() === liveNow.getTime() ? liveParts : BusinessTimeZone.partsAt(requestedDate.getTime());
+const status = { working: '工作中', break: '午休', ended: '工作结束', 'not-started': '未上班', 'day-off': '休息日' }[getStatus(requestedDate, requestedParts)];
 setTextIfChanged(dom.historyQuickOffset, `${status} · ${atLive ? '实时' : playing ? '播放中' : returning ? '返回中' : timeTravel.state === TIMELINE_STATE.SCRUBBING ? '定位中' : '已暂停'}`);
-HistoryTimeDial.sync(requestedDate, liveNow);
+HistoryTimeDial.sync(requestedDate, liveNow, requestedParts, liveParts);
 const requestedMs = requestedDate.getTime();
 const bounds = historyDateBounds(liveNow);
 const epsilon = HISTORY_TIME_SETTLE_DISTANCE;
@@ -26333,8 +26384,9 @@ if (event.key === 'Tab' && (dom.historyQuickPanel.inert || dom.historyQuickPanel
 if (event.key === 'Tab' && !historyQuickPanelState.desktop) {
 const controls = [...dom.historyQuickPanel.querySelectorAll('button:not(:disabled):not([tabindex="-1"]),input:not([type="hidden"]),summary,[role="spinbutton"],[role="slider"]')].filter(node => !node.hidden && node.getClientRects().length && !node.closest('[inert]'));
 const first = controls[0], last = controls.at(-1);
-if (event.shiftKey && target === first) { event.preventDefault(); last?.focus(); }
-else if (!event.shiftKey && target === last) { event.preventDefault(); first?.focus(); }
+if (!first) { event.preventDefault(); return; }
+if (event.shiftKey && (target === first || target === dom.historyQuickPanel)) { event.preventDefault(); last?.focus(); }
+else if (!event.shiftKey && (target === last || target === dom.historyQuickPanel)) { event.preventDefault(); first.focus(); }
 }
 // Native editing stays inside the menu; page shortcuts remain outside it.
 return;
@@ -26530,6 +26582,11 @@ beginReturnToLive();
 }
 );
 ComponentScopes.timeline.listen(document, 'keydown', handleGlobalTimelineKeyboard);
+ComponentScopes.timeline.listen(document, 'focusin', event => {
+if (historyQuickPanelState.open && !historyQuickPanelState.desktop && !dom.historyQuickPanel.inert && !dom.historyQuickPanel.hasAttribute('data-entry-animating') && !dom.historyQuickPanel.contains(event.target)) {
+dom.historyQuickPanel.focus({ preventScroll: true });
+}
+});
 dispatchTimelineEvent(
 TIMELINE_EVENT.INITIALIZE,
 { reason: 'initial-bind', timestamp: performance.now() }
@@ -27820,7 +27877,7 @@ totalWorkSeconds;
 }
 return true;
 }
-function updateSynchronizedReadouts(now, status, workSeconds, rates) {
+function updateSynchronizedReadouts(now, status, workSeconds, rates, parts = BusinessTimeZone.partsAt(now.getTime())) {
 const dayLabel = timeTravel.state === TIMELINE_STATE.LIVE ? '今日' : '当日';
 const animated = Boolean(startupSync || foregroundCatchup || midnightReset || dayEndMotion || isHistoricalTimelineState());
 const income = animated ? rollerMotion.displayValue : Math.floor(workSeconds) * rates.secondly;
@@ -27842,16 +27899,16 @@ else if (status === 'not-started' && wholeWork === 0) text = `全天待完成 ${
 setTextIfChanged(dom.workedSub, text);
 }
 // Monthly and worked-time readouts share the same whole-second sample.
-const monthSampleKey = `${localDateKey(now)}|${rates.daily}|${rates.secondly}|${wholeWork}|${Boolean(foregroundCatchup?.resume)}`;
+const monthSampleKey = `${localDateKey(now, parts)}|${rates.daily}|${rates.secondly}|${wholeWork}|${Boolean(foregroundCatchup?.resume)}`;
 if (monthSampleKey === monthReadoutSampleKey) return;
 monthReadoutSampleKey = monthSampleKey;
-let monthIncome = getMonthProgress(now, wholeWork * rates.secondly, rates).accumulated;
+let monthIncome = getMonthProgress(now, wholeWork * rates.secondly, rates, parts).accumulated;
 if (foregroundCatchup?.resume) {
 const snapshot = foregroundCatchup.snapshot;
-const sameMonth = snapshot.dateKey.slice(0, 7) === localDateKey(now).slice(0, 7);
+const sameMonth = snapshot.dateKey.slice(0, 7) === localDateKey(now, parts).slice(0, 7);
 // Every resume keeps the visible month snapshot, including interrupted cross-date recovery.
 const from = sameMonth && Number.isFinite(snapshot.monthIncome) ? snapshot.monthIncome : 0;
-const target = getMonthProgress(now, workSeconds * rates.secondly, rates).accumulated;
+const target = getMonthProgress(now, workSeconds * rates.secondly, rates, parts).accumulated;
 monthIncome = lerp(from, target, foregroundCatchup.readoutProgress || 0);
 }
 displayedMonthIncome = monthIncome;
@@ -27866,19 +27923,21 @@ frame,
 'stats'
 );
 const now = getNow(frame);
+const parts = now.getTime() === frame.liveDate.getTime() ? frame.liveParts : BusinessTimeZone.partsAt(now.getTime());
 ensureDateTransition(
 now,
 frame.monotonicNow
 );
-const rates = getRates(now);
+const rates = getRates(now, parts);
 updateCalendarCoverageNotice(now);
-const status = getStatus(now);
-const workSeconds = getWorkSeconds(now);
+const status = getStatus(now, parts);
+const workSeconds = getWorkSeconds(now, parts);
 const income = workSeconds * rates.secondly;
 const remain = Math.max(0, totalWorkSeconds - workSeconds);
-const monthProgress = getMonthProgress(now, income, rates);
+const monthProgress = getMonthProgress(now, income, rates, parts);
 const displayedClockDate =
 timelineDisplayClockDate(now);
+const displayedParts = displayedClockDate.getTime() === now.getTime() ? parts : displayedClockDate.getTime() === frame.liveDate.getTime() ? frame.liveParts : BusinessTimeZone.partsAt(displayedClockDate.getTime());
 setTextIfChanged(
 dom.currentTime,
 timeFormatter.format(displayedClockDate)
@@ -27890,10 +27949,12 @@ displayedClockDate.toISOString()
 );
 updateTimelineChrome(
 displayedClockDate,
-frame.liveDate
+frame.liveDate,
+displayedParts,
+frame.liveParts
 );
 applyStatus(status, now);
-updateSynchronizedReadouts(now, status, workSeconds, rates);
+updateSynchronizedReadouts(now, status, workSeconds, rates, parts);
 let progressPhaseText = '等待开始';
 const dayLabel = timeTravel.state === TIMELINE_STATE.LIVE ? '今日' : '当日';
 let progressRemainingText = `全天 ${formatCompactDuration(remain)}`;
@@ -27907,7 +27968,7 @@ progressRemainingText = '工时已落袋';
 progressPhaseText = '午间停表';
 progressRemainingText = `剩余 ${formatCompactDuration(remain)}`;
 } else if (status === 'working') {
-progressPhaseText = secondsSinceMidnight(now) < schedule.morningEnd ? '上午班次' : '下午班次';
+progressPhaseText = secondsSinceMidnight(now, parts) < schedule.morningEnd ? '上午班次' : '下午班次';
 progressRemainingText = `剩余 ${formatCompactDuration(remain)}`;
 }
 setTextIfChanged(dom.progressPhase, progressPhaseText);
@@ -27927,7 +27988,7 @@ if (
 !pendingDayEnd
 ) {
 updateProgress(status, workSeconds);
-updateClockHands(now);
+updateClockHands(now, parts);
 updateIncomeDial(
 status,
 workSeconds,
@@ -27949,7 +28010,7 @@ updateFunItems(income);
 ContentPressureController.request();
 setTextIfChanged(
 dom.incomeAccessible,
-`${timeTravel.state === TIMELINE_STATE.LIVE ? '今日实时收入' : `所选时刻收入，${localDateKey(displayedClockDate)}`} ${formatCurrency(income)}`
+`${timeTravel.state === TIMELINE_STATE.LIVE ? '今日实时收入' : `所选时刻收入，${localDateKey(displayedClockDate, displayedParts)}`} ${formatCurrency(income)}`
 );
 }
 function getLiveIncome(now) {
@@ -28475,17 +28536,19 @@ frame
 );
 return;
 }
+const parts = now.getTime() === frame.liveDate.getTime() ? frame.liveParts : BusinessTimeZone.partsAt(now.getTime());
+const displayedDate = timelineDisplayClockDate(now, frame);
+const displayedParts = displayedDate.getTime() === now.getTime() ? parts : BusinessTimeZone.partsAt(displayedDate.getTime());
 updateTimelineChrome(
-timelineDisplayClockDate(
-now,
-frame
-),
-frame.liveDate
+displayedDate,
+frame.liveDate,
+displayedParts,
+frame.liveParts
 );
 ensureDateTransition(now, timestamp);
-const status = getStatus(now);
-const workSeconds = getWorkSeconds(now);
-const rates = getRates(now);
+const status = getStatus(now, parts);
+const workSeconds = getWorkSeconds(now, parts);
+const rates = getRates(now, parts);
 const liveIncome = workSeconds * rates.secondly;
 const isEarning = status === 'working';
 const historicalTimeline =
@@ -28533,10 +28596,10 @@ rates,
 liveIncome
 );
 } else if (dayEndMotion) {
-updateClockHands(now);
+updateClockHands(now, parts);
 updateDayEndMotion(timestamp);
 } else {
-updateClockHands(now);
+updateClockHands(now, parts);
 updateIncomeDial(
 status,
 workSeconds,
@@ -28556,7 +28619,7 @@ displayedIncome, timestamp);
 lastRenderedLiveIncome = liveIncome;
 }
 lastVisualStatus = status;
-updateSynchronizedReadouts(now, status, workSeconds, rates);
+updateSynchronizedReadouts(now, status, workSeconds, rates, parts);
 if (typeof updateMotionDebug === 'function') updateMotionDebug(timestamp, status);
 /* R30 DEVELOP MOTION QUALITY HOOK */ MotionQualityMonitor.sample(timestamp);
 }

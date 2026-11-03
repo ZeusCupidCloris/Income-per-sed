@@ -69,6 +69,43 @@ test.beforeEach(async ({ page }) => {
 test.afterEach(async ({ page }) => { expect(page.__errors).toEqual([]); });
 
 for (const version of ['Develop', 'Push']) {
+  for (const motion of ['reduce', 'no-preference']) {
+    test(`${version}: narrow history contains initial and reverse keyboard focus: ${motion}`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.emulateMedia({ reducedMotion: motion });
+      await page.clock.setFixedTime(START);
+      await page.goto(`/Income-per-sed-${version}.html`);
+      await fullDisplay(page);
+      await page.locator('#historyQuickOpen').click();
+      const panel = page.locator('#historyQuickPanel');
+      await expect(panel).not.toHaveAttribute('data-entry-animating');
+      await expect(panel).toBeFocused();
+      await expect(panel).toHaveAttribute('aria-modal', 'true');
+      const inside = () => page.evaluate(() => document.getElementById('historyQuickPanel').contains(document.activeElement));
+      await page.keyboard.press('Shift+Tab');
+      expect(await inside()).toBe(true);
+      await page.keyboard.press('Tab');
+      await expect(page.locator('#historyQuickClose')).toBeFocused();
+      await panel.focus();
+      await page.keyboard.press('Tab');
+      await expect(page.locator('#historyQuickClose')).toBeFocused();
+      await page.locator('#scheduleSettingsCard').focus();
+      expect(await inside()).toBe(true);
+      await page.locator('#historyDialTime').focus();
+      await page.keyboard.press('Tab');
+      expect(await inside()).toBe(true);
+      await page.keyboard.press('Escape');
+      await expect(panel).toBeHidden();
+      await expect(page.locator('#historyQuickOpen')).toBeFocused();
+    });
+  }
+  test(`${version}: desktop history remains nonmodal for keyboard focus`, async ({ page }) => {
+    await open(page, version);
+    await expect(page.locator('#historyQuickPanel')).toHaveAttribute('aria-modal', 'false');
+    await page.locator('#scheduleSettingsCard').focus();
+    await expect(page.locator('#scheduleSettingsCard')).toBeFocused();
+    await expect(page.locator('#historyQuickPanel')).toBeVisible();
+  });
   test.describe(version, () => {
     for (const action of ['blur', 'Enter', 'Tab', 'date-submit']) {
       test(`invalid time survives ${action} until corrected`, async ({ page }) => {

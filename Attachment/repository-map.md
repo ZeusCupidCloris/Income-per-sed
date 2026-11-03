@@ -62,6 +62,7 @@
 | [docs/maintainer/frame-time-format.md](../docs/maintainer/frame-time-format.md) | 本次顶部同步的时间格式化复用及原完整验收 | 维护 |
 | [docs/maintainer/patch-readiness.md](../docs/maintainer/patch-readiness.md) | 累计补丁清单、参考刻线观感、耗时样本及交付待办 | 维护 |
 | [docs/maintainer/2.7x-review.md](../docs/maintainer/2.7x-review.md) | 2.7.0 起已交付改动、本地精简、问题处理及当前边界 | 维护 |
+| [docs/maintainer/component-architecture-2.8.md](../docs/maintainer/component-architecture-2.8.md) | 2.8.x 分组件文件归属、共享规则、离线交付与分批重构计划 | 维护 |
 | [docs/Income-per-sed（说明文档）.docx](../docs/Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
 | [docs/README.md](../docs/README.md) | 当前交付与验收状态索引 | 维护 |
 | [docs/acceptance/maintenance-simplification-20261006.md](../docs/acceptance/maintenance-simplification-20261006.md) | 索引、测试入口与维护收敛验收记录 | 维护 |
@@ -90,6 +91,7 @@
 | [docs/acceptance/fourfile-20261026.md](../docs/acceptance/fourfile-20261026.md) | 2.7.3 累计精简四文件、桌面及仓库交付验收 | 维护与验收 |
 | [docs/acceptance/fourfile-20261027.md](../docs/acceptance/fourfile-20261027.md) | 2.7.4 定位优化、全量业务与备份恢复本地补丁验收 | 维护与验收 |
 | [docs/acceptance/fourfile-20261028.md](../docs/acceptance/fourfile-20261028.md) | 2.7.5 午休进度衔接与四文件补丁验收 | 维护与验收 |
+| [docs/acceptance/fourfile-20261101.md](../docs/acceptance/fourfile-20261101.md) | 2.7.6 本地留档、稳定性收尾与四文件交付状态 | 维护与验收 |
 | [docs/acceptance/grid-idle-20260930.md](../docs/acceptance/grid-idle-20260930.md) | 09-30 背景空闲重绘修复证据 | 维护与历史 |
 | [docs/acceptance/grid-recovery-20260930.md](../docs/acceptance/grid-recovery-20260930.md) | 09-30 模拟后台绘制循环检查证据 | 维护与历史 |
 | [docs/acceptance/maintenance-20260915.md](../docs/acceptance/maintenance-20260915.md) | 09-15 仓库维护验收证据 | 维护与历史 |
@@ -116,6 +118,7 @@
 | [docs/releases/v2.7.3.md](../docs/releases/v2.7.3.md) | 2.7.3 累计轻量化补丁交付说明与风险边界 | 用户与维护 |
 | [docs/releases/v2.7.4.md](../docs/releases/v2.7.4.md) | 2.7.4 回溯定位优化本地补丁说明与交付边界 | 用户与维护 |
 | [docs/releases/v2.7.5.md](../docs/releases/v2.7.5.md) | 2.7.5 午休进度衔接补丁说明 | 用户与维护 |
+| [docs/releases/v2.7.6.md](../docs/releases/v2.7.6.md) | 2.7.6 保存、北京时间、焦点与长数字排版收尾说明 | 用户与维护 |
 | [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本
@@ -172,16 +175,16 @@
 | [tests/settings-frame-budget.spec.js](../tests/settings-frame-budget.spec.js) | 设置卡片实际帧间隔与样式计算开销观察 | 维护 |
 | [tests/release-naming.test.mjs](../tests/release-naming.test.mjs) | 对外名称与版本对应测试 | 维护 |
 | [tests/readme-preview-validation.test.mjs](../tests/readme-preview-validation.test.mjs) | 首页图片检查器测试 | 维护 |
-| [tests/readout-sync.spec.js](../tests/readout-sync.spec.js) | 表盘与金额工时读数同步测试 | 维护 |
+| [tests/readout-sync.spec.js](../tests/readout-sync.spec.js) | 表盘与金额工时读数、同帧北京时间复用及历史日期隔离测试 | 维护 |
 | [tests/recovery-combinations.spec.js](../tests/recovery-combinations.spec.js) | 多状态后台恢复组合测试 | 维护 |
-| [tests/release-behavior.spec.js](../tests/release-behavior.spec.js) | 开发版与发布版业务一致性测试 | 维护 |
+| [tests/release-behavior.spec.js](../tests/release-behavior.spec.js) | 双版本业务一致性、设备时区与夏令时边界 | 维护 |
 | [tests/release-channel.test.mjs](../tests/release-channel.test.mjs) | 发布标签识别测试 | 维护 |
-| [tests/storage-resilience.spec.js](../tests/storage-resilience.spec.js) | 异常存储与页面恢复测试 | 维护 |
+| [tests/storage-resilience.spec.js](../tests/storage-resilience.spec.js) | 异常存储、多窗口失败回滚与草稿恢复 | 维护 |
 | [docs/acceptance/storage-runtime-20261003.md](../docs/acceptance/storage-runtime-20261003.md) | 保存可靠性与长时资源验收记录 | 维护 |
 | [docs/acceptance/settings-delivery-20261005.md](../docs/acceptance/settings-delivery-20261005.md) | 设置局部反馈、输入安全与四文件交付验收 | 维护 |
 | [docs/acceptance/runtime-observation-20261003.json](../docs/acceptance/runtime-observation-20261003.json) | 30 分钟资源观察原始采样证据 | 维护 |
 | [tests/startup-history-playback.spec.js](../tests/startup-history-playback.spec.js) | 启动与历史播放运动测试 | 维护 |
-| [tests/history-dial-refinement.spec.js](../tests/history-dial-refinement.spec.js) | 拨盘时间输入、统一入口、坐标缓存与模拟恢复 | 维护 |
+| [tests/history-dial-refinement.spec.js](../tests/history-dial-refinement.spec.js) | 拨盘输入、模态焦点、坐标缓存与模拟恢复 | 维护 |
 | [tests/live-reference-marker.spec.js](../tests/live-reference-marker.spec.js) | 回溯实时参考线的主题颜色、跟随实时和返回隐藏 | 维护 |
 | [tests/history-dial-touch.spec.js](../tests/history-dial-touch.spec.js) | 拨盘原生触摸坐标映射与拖动模拟 | 维护 |
 | [tests/test_prepare_delivery.py](../tests/test_prepare_delivery.py) | 交付生成与手册书签测试 | 维护 |

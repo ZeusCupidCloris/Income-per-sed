@@ -349,4 +349,74 @@ for (const artifact of ['Develop', 'Push']) {
     expect(settings.monthlyIncome).toBe(24680);
     expect(settings.schedule.morningStart).toBe('09:01');
   });
+
+  for (const failureKey of [TEMP_KEY, SETTINGS_KEY]) {
+    test(`${artifact}: forwarded save failure preserves settings and draft until a confirmed retry: ${failureKey}`, async ({ page, context }) => {
+      await page.goto(`/Income-per-sed-${artifact}.html`);
+      await fullDisplay(page);
+      await openIncome(page, 12345.67);
+      await page.locator('#settingsSaveButton').click();
+      await expect(page.locator('#settingsDialog')).toBeHidden();
+      const before = await stored(page);
+      const other = await context.newPage();
+      await other.goto(`/Income-per-sed-${artifact}.html`);
+      await fullDisplay(other);
+      await expect.poll(async () => (await Promise.all([page, other].map(p => p.locator('body').getAttribute('data-window-role')))).sort()).toEqual(['follower', 'writer']);
+      const writer = await page.locator('body').getAttribute('data-window-role') === 'writer' ? page : other;
+      const follower = writer === page ? other : page;
+      await writer.evaluate(failureKey => {
+        const original = Storage.prototype.setItem;
+        window.restoreForwardedWrite = () => { Storage.prototype.setItem = original; };
+        window.forwardedWriteFailures = 0;
+        Storage.prototype.setItem = function (key, value) {
+          if (key === failureKey) {
+            window.forwardedWriteFailures++;
+            throw new DOMException('Synthetic forwarded write failure', 'QuotaExceededError');
+          }
+          return original.call(this, key, value);
+        };
+      }, failureKey);
+      try {
+        await openIncome(follower, 45678.90);
+        await follower.locator('#settingsSaveButton').click();
+        await expect(follower.locator('#settingsDialog')).toBeHidden();
+        await expect(follower.locator('#storageWarning')).toContainText('未能保存');
+        await expect(follower.locator('#storageWarning')).toHaveAttribute('data-kind', 'warning');
+        expect(await writer.evaluate(() => window.forwardedWriteFailures)).toBe(1);
+        expect(await stored(writer)).toEqual(before);
+        expect(await writer.evaluate(key => localStorage.getItem(key), TEMP_KEY)).toBeNull();
+        if (artifact === 'Develop') {
+          const rejected = await follower.evaluate(() => window.__incomeClockDiagnostics.getMultiWindowState().rejectedCommandCount);
+          const reset = await follower.evaluate(() => window.__incomeClockDiagnostics.resetSettings());
+          expect(reset.pendingRemote).toBe(true);
+          await expect.poll(() => follower.evaluate(() => window.__incomeClockDiagnostics.getMultiWindowState().rejectedCommandCount)).toBe(rejected + 1);
+          expect(await writer.evaluate(() => window.forwardedWriteFailures)).toBe(2);
+          expect(await stored(writer)).toEqual(before);
+          await expect(follower.locator('#storageWarning')).toContainText('未能保存');
+        }
+        await openIncome(writer);
+        await expect(writer.locator('#incomeAmountInput')).toHaveValue('12345.67');
+        await writer.keyboard.press('Escape');
+        await expect(writer.locator('#settingsDialog')).toBeHidden();
+        await follower.reload();
+        await fullDisplay(follower);
+        await openIncome(follower);
+        await expect(follower.locator('#settingsSafetyTitle')).toHaveText('恢复未保存的草稿？');
+        await expect(follower.locator('#settingsSafetyConfirm')).toBeVisible();
+        await follower.locator('#settingsSafetyAccept').click();
+        await expect(follower.locator('#settingsSafetyConfirm')).toBeHidden();
+        await expect(follower.locator('#incomeAmountInput')).toHaveValue('45678.9');
+        expect(await stored(follower)).toEqual(before);
+      } finally {
+        await writer.evaluate(() => window.restoreForwardedWrite());
+      }
+      await follower.locator('#settingsSaveButton').click();
+      await expect(follower.locator('#settingsDialog')).toBeHidden();
+      await expect(follower.locator('#storageWarning')).toHaveText('主窗口已确认设置操作。');
+      await expect.poll(async () => (await stored(writer)).payload.settings.monthlyIncome).toBe(45678.9);
+      await follower.reload();
+      expect((await stored(follower)).payload.settings.monthlyIncome).toBe(45678.9);
+      await other.close();
+    });
+  }
 }
