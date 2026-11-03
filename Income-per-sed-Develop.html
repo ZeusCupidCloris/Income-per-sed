@@ -5386,14 +5386,14 @@ body{
     position:absolute;
     z-index:5;
     top:50%;
-    left:0;
+    left:var(--timeline-cursor-x);
     border:1px solid color-mix(in srgb,var(--workshop-brass) 60%,#6d563d);
     opacity:1;
     pointer-events:none;
-    transform:translate3d(calc(var(--timeline-cursor-x) - 50%),-50%,0);
+    transform:translate3d(-50%,-50%,0);
     transition:
         opacity var(--motion-fast) var(--ease-settle),
-        transform var(--motion-slow) linear;
+        left var(--motion-slow) linear;
 }
 
 body[data-work-status="day-off"] .timeline-handoff-marker{

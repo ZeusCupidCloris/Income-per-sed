@@ -1,6 +1,18 @@
 const { fullDisplay, selectTheme } = require('./helpers/display-state');
 const { test, expect } = require('@playwright/test');
 
+async function progressOverflowLayout(page) {
+  return page.locator('#scheduleSettingsCard').evaluate(card => ({
+    overflow: document.documentElement.scrollWidth - innerWidth,
+    nodes: [card, ...card.querySelectorAll('*')].map(node => {
+      const box = node.getBoundingClientRect(), style = getComputedStyle(node);
+      return { id: node.id, classes: node.className, left: box.left, right: box.right,
+        width: box.width, clientWidth: node.clientWidth, scrollWidth: node.scrollWidth,
+        display: style.display, transform: style.transform, inset: style.left, inlineStyle: node.getAttribute('style') };
+    }),
+  }));
+}
+
 async function monthSummaryLayout(page) {
   return page.locator('#monthSummaryCard').evaluate(card => {
     const box = node => {
@@ -99,6 +111,7 @@ for (const channel of ['Develop', 'Push']) {
             }).toBe(true);
           } catch (error) {
             console.log('month-resize-layout', JSON.stringify({ width: nextWidth, layout }));
+            console.log('month-progress-overflow', JSON.stringify(await progressOverflowLayout(page)));
             throw error;
           }
         }
@@ -165,7 +178,12 @@ for (const width of [320, 390]) {
       await fullDisplay(page);
       await expect.poll(() => page.evaluate(() => window.__incomeClockDiagnostics.getVisualComponentState().states.timeline)).toBe('hidden');
       await page.setViewportSize({ width, height: 1000 });
-      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+      try {
+        await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+      } catch (error) {
+        console.log('progress-resize-layout', JSON.stringify(await progressOverflowLayout(page)));
+        throw error;
+      }
       const hiddenGeometry = await page.locator('#progressTrack').evaluate(track => {
         return {
           helpers: [...track.querySelectorAll('.progress-marker')].map(marker => {

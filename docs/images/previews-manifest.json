@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "source": "Income-per-sed-Push.html",
-  "sourceSha256": "ef2fef6021a3b31f36deb4ecedebccb06b19d85dace7648863b806566b86f5d2",
+  "sourceSha256": "393dc82363326fd66cf50c7f92a62a96fe3f533ac732c655ea3de91c327e9fb4",
   "fixedTime": "2026-09-04T02:30:00.000Z",
   "previews": [
     {
@@ -10,7 +10,7 @@
       "width": 1440,
       "height": 1000,
       "colorScheme": "light",
-      "sha256": "21382e815f14e7570426c5e9944c43f21939df64f28722d49908f9d580513317"
+      "sha256": "471bbc743a54e96d54cf982f5d757574fcc5eb0d118418cfec3714bcd6720fa5"
     },
     {
       "file": "preview-mobile.png",
@@ -18,7 +18,7 @@
       "width": 390,
       "height": 844,
       "colorScheme": "light",
-      "sha256": "952a2eda2c51f7ea17cfcbeb43e5a98fb48fb2e07ad6347e437e7a779e42f4ed"
+      "sha256": "d527e75abd60bbe3198cfb39691414e58e1b734796e311aa454cd59c37c6afa4"
     },
     {
       "file": "preview-dark.png",
@@ -26,7 +26,7 @@
       "width": 1440,
       "height": 1000,
       "colorScheme": "dark",
-      "sha256": "74ea9aa5a9816f3e9925734b942e65464b78dd0a68f3cffb810ae05638fc8ec2"
+      "sha256": "4e55e27c639ebf930aadb6899250b1bd728b724673f8c310dd02f35c0522df14"
     }
   ]
 }
