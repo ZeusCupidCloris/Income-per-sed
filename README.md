@@ -54,12 +54,12 @@
 
 | 项目 | 标识 |
 | --- | --- |
-| 产品与四文件版本 | `2.7.6`（交付候选） |
+| 产品与四文件版本 | `2.7.6` |
 | 交付编号 | `20261101.1` |
 
 2.7.6 收尾保存反馈、北京时间、窄屏键盘焦点与长数字排版：保存失败不会再被其他窗口误认成成功；设备时区与夏令时不改变北京时间口径；月收入和趣味数量完整显示。保留 RC37 字体、计薪公式与机械动效，不新增跨帧缓存或产品依赖。
 
-当前为交付候选，尚不代表桌面、main 或 Pages 已更新。检查、备份与最终交付分别记录在[本批验收](docs/acceptance/fourfile-20261101.md)。此前自动化 WebKit 原生崩溃仍列为未解决风险，不用专项通过替代完整检查；不创建 Release 或标签。上批交付证据保留在[2.7.5 验收记录](docs/acceptance/fourfile-20261028.md)。
+2026-11-03 已完成四文件同步、桌面备份替换，经 [PR #75](https://github.com/ZeusCupidCloris/Income-per-sed/pull/75) 合并 main 并更新 Pages。PR 与 main 的完整检查各为 Edge 415 项、WebKit 328 项通过及 4 项既定跳过，均无测试重试；线上两入口的文件字节与操作另行核对通过。详细范围与历次失败保留在[本批验收](docs/acceptance/fourfile-20261101.md)。此前自动化 WebKit 原生崩溃仍未归因，真实手机、跨夜及实际读屏验收继续暂缓；不创建 Release 或标签。2.8.x 仅记录[组件维护计划](docs/maintainer/component-architecture-2.8.md)，尚未拆代码。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 
