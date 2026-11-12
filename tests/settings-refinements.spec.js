@@ -156,42 +156,73 @@ for (const [variant, width, height] of [['Develop', 1200, 900], ['Push', 390, 67
   });
 }
 
-test('Push: schedule wheel lifecycle rebuilds a restored draft with its pending editor', async ({ page }) => {
-  const errors = [];
-  page.on('pageerror', error => errors.push(error.message));
-  await page.setViewportSize({ width: 390, height: 676 });
-  await page.goto('/Income-per-sed-Push.html');
-  await fullDisplay(page);
-  const dialog = page.locator('#settingsDialog');
-  const grid = dialog.locator('#scheduleWheelGrid');
-  const minute = key => grid.locator(`[data-time-key="${key}"] [data-unit="minute"]`);
-  const editor = grid.locator('.time-wheel-direct input');
-  await openCalendarSettings(page);
-  await minute('morningEnd').press('ArrowDown');
-  await expect(minute('morningEnd')).toHaveAttribute('aria-valuenow', '31');
-  await minute('afternoonEnd').press('Enter');
-  await editor.fill('42');
-  await expect.poll(() => page.evaluate(() => JSON.parse(sessionStorage.getItem('income-per-sed-settings-draft-v1'))?.panels?.schedule))
-    .toMatchObject({ schedule: { morningEnd: '11:31' }, editor: { key: 'afternoonEnd', unit: 'minute', text: '42' } });
+for (const deferFirstFocus of [false, true]) {
+  const suffix = deferFirstFocus ? ' when initial focus is refused' : '';
+  test(`Push: schedule wheel lifecycle rebuilds a restored draft with its pending editor${suffix}`, async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.setViewportSize({ width: 390, height: 676 });
+    if (deferFirstFocus) await page.addInitScript(() => {
+      let defer = false;
+      document.addEventListener('click', event => {
+        if (event.target.id !== 'settingsSafetyAccept') return;
+        defer = true;
+        requestAnimationFrame(() => { defer = false; });
+      }, { capture: true });
+      const focus = HTMLElement.prototype.focus;
+      HTMLElement.prototype.focus = function (...args) {
+        if (defer && this.matches('#scheduleWheelGrid .time-wheel-direct input')) {
+          this.dataset.initialFocusRefused = 'true';
+          return;
+        }
+        return focus.apply(this, args);
+      };
+    });
+    await page.goto('/Income-per-sed-Push.html');
+    await fullDisplay(page);
+    const dialog = page.locator('#settingsDialog');
+    const grid = dialog.locator('#scheduleWheelGrid');
+    const minute = key => grid.locator(`[data-time-key="${key}"] [data-unit="minute"]`);
+    const editor = grid.locator('.time-wheel-direct input');
+    await openCalendarSettings(page);
+    await minute('morningEnd').press('ArrowDown');
+    await expect(minute('morningEnd')).toHaveAttribute('aria-valuenow', '31');
+    await minute('afternoonEnd').press('Enter');
+    await editor.fill('42');
+    await expect.poll(() => page.evaluate(() => JSON.parse(sessionStorage.getItem('income-per-sed-settings-draft-v1'))?.panels?.schedule))
+      .toMatchObject({ schedule: { morningEnd: '11:31' }, editor: { key: 'afternoonEnd', unit: 'minute', text: '42' } });
 
-  await page.reload();
-  await fullDisplay(page);
-  await page.locator('#draftReview').click();
-  await expect(dialog.locator('#settingsSafetyTitle')).toHaveText('恢复未保存的草稿？');
-  const initialWheel = await minute('afternoonEnd').elementHandle();
-  await dialog.locator('#settingsSafetyAccept').click();
-  await expectScheduleWheels(grid, { ...defaultScheduleTimes, morningEnd: '11:31' });
-  await expect(editor).toHaveValue('42');
-  await expect(editor).toBeFocused();
-  expect(await initialWheel.evaluate(node => node.isConnected)).toBe(false);
-  await initialWheel.dispose();
-  await editor.press('Enter');
-  await expectScheduleWheels(grid, { ...defaultScheduleTimes, morningEnd: '11:31', afternoonEnd: '17:42' });
-  await dialog.locator('[data-settings-close-kind="cancel"]').click();
-  await expect(dialog).toBeHidden();
-  await expect(grid.locator('.time-wheel-card, .time-wheel-column, .time-wheel-direct')).toHaveCount(0);
-  expect(errors).toEqual([]);
-});
+    await page.reload();
+    await fullDisplay(page);
+    await page.locator('#draftReview').click();
+    await expect(dialog.locator('#settingsSafetyTitle')).toHaveText('恢复未保存的草稿？');
+    const initialWheel = await minute('afternoonEnd').elementHandle();
+    await dialog.locator('#settingsSafetyAccept').click();
+    await expectScheduleWheels(grid, { ...defaultScheduleTimes, morningEnd: '11:31' });
+    await expect(editor).toHaveValue('42');
+    if (deferFirstFocus) await expect(editor).toHaveAttribute('data-initial-focus-refused', 'true');
+    try {
+      await expect(editor).toBeFocused();
+    } catch (error) {
+      const focus = await page.evaluate(() => {
+        const editor = document.querySelector('#scheduleWheelGrid .time-wheel-direct input');
+        const active = document.activeElement;
+        return { editorActive: editor === active, documentFocused: document.hasFocus(),
+          activeTag: active?.tagName, activeId: active?.id, editorInert: Boolean(editor?.closest('[inert]')) };
+      });
+      error.message += `\nRestored editor focus state: ${JSON.stringify(focus)}`;
+      throw error;
+    }
+    expect(await initialWheel.evaluate(node => node.isConnected)).toBe(false);
+    await initialWheel.dispose();
+    await page.keyboard.press('Enter');
+    await expectScheduleWheels(grid, { ...defaultScheduleTimes, morningEnd: '11:31', afternoonEnd: '17:42' });
+    await dialog.locator('[data-settings-close-kind="cancel"]').click();
+    await expect(dialog).toBeHidden();
+    await expect(grid.locator('.time-wheel-card, .time-wheel-column, .time-wheel-direct')).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+}
 
 for (const [variant, width, height] of [['Develop', 1200, 900], ['Push', 390, 676]]) {
   test(`${variant}: schedule settings entry cancels or saves hours and calendar together`, async ({ page }) => {

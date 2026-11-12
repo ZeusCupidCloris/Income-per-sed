@@ -52,7 +52,7 @@ function createScheduleWheels({ grid, fields, createWheel, splitTime, onChange }
     mount,
     destroy,
     focusFirst: () => wheels[0]?.focus(),
-    restoreEditor: ({ key, unit, text }) => wheels.find(wheel => wheel.key === key && wheel.unit === unit)?.openEditor(text),
+    restoreEditor: ({ key, unit, text }) => wheels.find(wheel => wheel.key === key && wheel.unit === unit)?.openEditor(text, { retryFocus: true }),
     isMoving: () => wheels.some(wheel => wheel.animationFrame || wheel.dragState),
     getCount: () => wheels.length
   });

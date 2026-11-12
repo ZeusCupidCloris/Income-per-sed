@@ -17029,7 +17029,7 @@ const target = this.normalize(this.value + direction * steps);
 this.updateSelection(target, true);
 this.animateTo(target, Math.min(285, 115 + steps * 19), steps > 1 ? 'out-quart' : 'out-cubic');
 }
-openEditor(seed = null) {
+openEditor(seed = null, { retryFocus = false } = {}) {
 if (this.editor || !TimeWheel.commitActiveEditor()) return;
 this.cancelAnimation();
 this.setValue(this.value, { emit: false });
@@ -17075,6 +17075,15 @@ editorScope.listen(input, 'blur', () => this.commitEditor(false));
 input.focus({ preventScroll: true });
 if (seed === null) input.select();
 else input.setSelectionRange(input.value.length, input.value.length);
+if (retryFocus && document.activeElement !== input) {
+const focusAtRestore = document.activeElement;
+// The confirmation sheet has just released its inert children.
+editorScope.requestFrame(() => {
+if (document.activeElement !== focusAtRestore || !input.isConnected || input.closest('[inert], [hidden]')) return;
+input.focus();
+if (document.activeElement === input) input.setSelectionRange(input.value.length, input.value.length);
+});
+}
 }
 commitEditor(focusInvalid = true) {
 if (!this.editor) return true;
