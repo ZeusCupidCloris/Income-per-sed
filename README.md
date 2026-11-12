@@ -33,7 +33,7 @@
 | **[Push · 发布网页](Income-per-sed-Push.html)** | 查看当前网页文件；获准取得的 HTML 可离线打开 |
 | [Widget · 手机和平板小组件](IncomeWidget.js) | 在 Scriptable 中运行，配置方式见手册 |
 | [使用手册 · Word](docs/Income-per-sed（说明文档）.docx) | 快速上手、实际操作、设计细节与常见问题 |
-| [Develop · 开发源文件](Income-per-sed-Develop.html) | 开发与诊断，网页唯一修改源 |
+| [Develop · 诊断网页](Income-per-sed-Develop.html) | 可读诊断产物，同样可独立打开；修改入口见下方维护说明 |
 
 请使用同一交付批次，不与历史 Release 混用；需要核对文件完整性时，查看 [SHA-256 校验清单](SHA256SUMS.txt)。原文件名与下载路径保持不变。
 
@@ -54,12 +54,13 @@
 
 | 项目 | 标识 |
 | --- | --- |
-| 产品与四文件版本 | `2.7.6` |
-| 交付编号 | `20261101.1` |
+| 四文件候选版本 | `2.8.0` |
+| 交付编号 | `20261112.1` |
+| 已上线版本 | `2.7.6` |
 
-2.7.6 收尾保存反馈、北京时间、窄屏键盘焦点与长数字排版：保存失败不会再被其他窗口误认成成功；设备时区与夏令时不改变北京时间口径；月收入和趣味数量完整显示。保留 RC37 字体、计薪公式与机械动效，不新增跨帧缓存或产品依赖。
+2.8.0 按卡片和操作区拆分维护源码，Develop 与 Push 仍各是一份可独立打开的 HTML。使用入口、计薪公式、字体和机械动效保持不变，无需为网页安装依赖。修复估算页签隐藏后日期被滚轮改写、回溯工时少一秒和趣味换算卡的宽度误判。
 
-2026-11-03 已完成四文件同步、桌面备份替换，经 [PR #75](https://github.com/ZeusCupidCloris/Income-per-sed/pull/75) 合并 main 并更新 Pages。PR 与 main 的完整检查各为 Edge 415 项、WebKit 328 项通过及 4 项既定跳过，均无测试重试；线上两入口的文件字节与操作另行核对通过。详细范围与历次失败保留在[本批验收](docs/acceptance/fourfile-20261101.md)。此前自动化 WebKit 原生崩溃仍未归因，真实手机、跨夜及实际读屏验收继续暂缓；不创建 Release 或标签。2.8.x 仅记录[组件维护计划](docs/maintainer/component-architecture-2.8.md)，尚未拆代码。
+本分支的四文件仅提交审核，不等于已上线。见 [2.8.0 版本说明](docs/releases/v2.8.0.md)与[候选验收](docs/acceptance/fourfile-20261112.md)。线上与桌面仍以 [2.7.6 交付记录](docs/acceptance/fourfile-20261101.md)为准。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 
@@ -77,9 +78,18 @@
 | CI 的作用与重复检查评估 | [工作流评估](docs/maintainer/workflow-review.md) |
 | 已完成卡片整理与分批记录 | [分批整理方案](docs/maintainer/card-css-plan.md) |
 | 2.8.x 分组件重构目标与边界 | [组件维护计划](docs/maintainer/component-architecture-2.8.md) |
+| 首批组件源码与单 HTML 生成 | [本地迁移说明](docs/maintainer/component-source-first-batch.md) |
+| 已工作与月收入两张卡的修改入口 | [第二批本地迁移](docs/maintainer/readout-components-second-batch.md) |
+| 每小时收入卡与编辑入口 | [第三批本地迁移](docs/maintainer/hourly-summary-third-batch.md) |
+| 工作进度读数与编辑入口 | [第四批本地迁移](docs/maintainer/progress-readout-fourth-batch.md) |
+| 组件联测与顶部状态读数 | [第五批本地迁移](docs/maintainer/status-readout-fifth-batch.md) |
+| 工资日常流程与日期定位 | [第六批本地迁移](docs/maintainer/history-date-seek-sixth-batch.md) |
+| 回溯精确时间输入 | [第七批本地迁移](docs/maintainer/history-time-input-seventh-batch.md) |
+| 快速回溯按钮接线 | [第八批本地迁移](docs/maintainer/history-quick-buttons-eighth-batch.md) |
+| 表盘几何与回溯联测 | [第九批本地迁移](docs/maintainer/history-dial-geometry-ninth-batch.md) |
 
 `scripts/`、`tests/`、`config/` 和 `.github/` 服务于构建与自动检查，日常使用无需安装这些工具。历史资料保留原地址。
 
 [自动检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions) · [更新记录](CHANGELOG.md) · [安全报告](.github/SECURITY.md)
 
-维护时只编辑 Develop，再生成 Push；四文件的日常下载路径不变。
+维护时编辑 [src/page.html](src/page.html) 及对应组件文件，再生成 Develop / Push，不手改生成文件；四文件的日常下载路径不变。先从[趣味换算卡入口](src/components/fun-conversions/README.md)了解首批边界。

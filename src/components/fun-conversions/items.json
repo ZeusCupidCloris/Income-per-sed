@@ -1,0 +1,6 @@
+[
+  { "emoji": "🥤", "name": "杯拿铁", "price": 9.9 },
+  { "emoji": "🍋", "name": "杯柠檬水", "price": 4 },
+  { "emoji": "🧀", "name": "盒芝士", "price": 39 },
+  { "emoji": "🎁", "name": "个盲盒", "price": 69 }
+]

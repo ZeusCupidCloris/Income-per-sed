@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare all release artifacts from the canonical Develop source."""
+"""Prepare standalone HTML artifacts from the canonical component source."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from validate_delivery import CHECKSUM_FILE, MANIFEST_FILE, RELEASE_FILES, ROOT,
 from manual_checksum_bookmarks import replace_manual_hashes
 
 
-TEXT_ARTIFACTS = (RELEASE_FILES[1], RELEASE_FILES[2], MANIFEST_FILE.relative_to(ROOT))
+TEXT_ARTIFACTS = (RELEASE_FILES[2], MANIFEST_FILE.relative_to(ROOT))
 DOCUMENT_XML = "word/document.xml"
 
 

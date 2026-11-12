@@ -1,0 +1,32 @@
+/* @fragment base */
+.income-mode-segments{
+display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;
+padding:5px;border:1px solid var(--border-light);
+}
+.income-mode-button{
+min-height:40px;padding:7px 8px;border:0;background:transparent;color:var(--text-secondary);font:inherit;font-size:0.76rem;cursor:pointer;
+}
+.income-mode-button.active{
+color:var(--text-primary);
+}
+/* @endfragment */
+
+/* @fragment compact-button */
+.income-mode-button{font-size:.7rem;padding-inline:4px;}
+/* @endfragment */
+
+/* @fragment selected-surface */
+.income-mode-button.active{
+    border:1px solid color-mix(in srgb,var(--border-light) 64%,transparent);
+    background:color-mix(in srgb,var(--card-hover) 92%,transparent);
+    box-shadow:inset 0 1px 0 color-mix(in srgb,var(--glass-edge-light) 34%,transparent),0 1px 3px rgba(74,63,56,.035);
+}
+/* @endfragment */
+
+/* @fragment indicator-button */
+.income-mode-segments.has-moving-indicator .income-mode-button{position:relative;z-index:1;border:1px solid transparent;background:transparent;box-shadow:none;}
+/* @endfragment */
+
+/* @fragment panel-radius */
+#settingsDialog .income-mode-segments{border-radius:calc(var(--panel-control-radius) + 5px);}
+/* @endfragment */

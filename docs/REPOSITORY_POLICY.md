@@ -8,9 +8,11 @@
 - Pull Request 必须通过 `Release validation`、`Windows Edge visual regression`、`WebKit smoke` 及 `Quality Gate`。原三个结果保留，实际浏览器范围由经过验证的改动分流选择；不需要运行套件时明确记录，不冒称浏览器通过。
 - 合并后的临时分支可按仓库设置清理；长期分支 `BlBl` 保留，不纳入临时分支清理。
 
-## 单一源文件
+## 单一源码入口
 
-`Income-per-sed-Develop.html` 是页面唯一维护源。`Income-per-sed-Push.html` 是发布产物，不直接编辑。
+页面从 `src/page.html` 组装，已迁移组件在 `src/components/` 按卡片维护；尚未迁移的实现保留在模板中。`Income-per-sed-Develop.html` 是可读诊断产物，`Income-per-sed-Push.html` 是压缩发布产物，两者都不直接编辑。此规则从[2.8.x 首批本地迁移](maintainer/component-source-first-batch.md)开始；历史 2.7.x 的 Develop 单源记录保留，不反向改写。
+
+每批必须继续交付可独立打开的单 HTML：结构、样式、脚本和配置在生成时内联，不在运行时读取 `src`，不要求用户安装构建工具。`npm run build:develop` 生成 Develop，`npm run build:push` 同时生成两份 HTML；`npm run build:check` 只读验证源码与两份产物一致。生成行号可用 `npm run source:locate -- <行号>` 回查实际源码。
 
 ```powershell
 npm ci
@@ -19,7 +21,7 @@ npm run quality:local
 
 日常维护只需[三个主要检查入口](../Attachment/scripts-index.md#三个主要入口)：快速检查、功能专项、完整验收。完整验收为只读检查，不生成交付。上方 `quality:local` 是保留的内部交付生成流程，会写入文件，不能拿它当日常检查。任一阶段失败即停止；具体参数只由脚本索引维护。
 
-交付生成负责从 Develop 构建 Push、统一发布文本换行、按文件名书签同步手册校验值、重建校验清单并核验一致性；已同步时不继续改写手册。手册定位规则只在 [说明书维护](manual-maintenance.md) 中定义。
+交付生成负责从组件源码组装 Develop 并构建 Push、统一发布文本换行、按文件名书签同步手册校验值、重建校验清单并核验一致性；已同步时不继续改写手册。手册定位规则只在 [说明书维护](manual-maintenance.md) 中定义。
 
 首页图片使用实际浏览器截图及来源清单，检查包含完整性、尺寸与源文件哈希，不做跨浏览器版本的像素等值判断。视觉测试截图另有用途，不能与首页图片合并。更新流程见下方“文件、截图和说明书同步”。
 
@@ -38,7 +40,7 @@ npm run quality:local
 
 1. `release-manifest.json` 中的产品版本、标签和发布日期。
 2. `package.json` 与 `package-lock.json` 的版本。
-3. Develop 内 `APP_RELEASE` 的 `productVersion`、`sourceTag` 和 `releaseDate`。
+3. `src/page.html` 内 `APP_RELEASE` 的 `productVersion`、`sourceTag` 和 `releaseDate`，再生成两份 HTML。
 4. `CHANGELOG.md` 与 `docs/releases/<tag>.md`。
 5. 自动生成的 Push 和 `SHA256SUMS.txt`。
 
@@ -56,7 +58,8 @@ npm run quality:local
 - 对外产品名称、版本和交付编号只由上方“对外名称与交付编号”定义；索引和其他维护文档引用规则，不自行派生另一套名称。
 - 新文件同时补全全文件索引；脚本、测试还需补对应目录用途索引。文档内链接只指向真实文件、目录或有效章节；无引用不能直接认定为可删除。
 
-- 根目录：Develop、生成的 Push、Widget、版本清单与校验值，保留现有下载路径。
+- 根目录：生成的 Develop 与 Push、Widget、版本清单与校验值，保留现有下载路径。
+- `src/`：页面源码入口与逐批迁移的组件；每个组件说明自身入口、共享依赖和测试，禁止跨组件覆盖。
 - `config/`：浏览器测试配置与 README 截图配置。
 - `scripts/`：构建、发布校验、截图采集和在线文件核验。
 - `tests/`：业务、输入、动效、视觉及发布测试；本轮不移动测试或截图基线。
@@ -98,15 +101,24 @@ npm run quality:local
 
 ## 文件、截图和说明书同步
 
-每次同步四文件都必须核对相关内容，而不只是替换版本号：Develop 承载网页功能与说明，Push 由它生成，Widget 核对受影响的共享计算、数据和显示，Word 同步操作说明、示例及受影响截图。未涉及功能的文件保留原行为，仍统一交付版本，并在本次记录中注明已核对、无需功能变更。
+每次同步四文件都必须核对相关内容，而不只是替换版本号：网页源码先生成 Develop 与 Push，Widget 核对受影响的共享计算、数据和显示，Word 同步操作说明、示例及受影响截图。未涉及功能的文件保留原行为，仍统一交付版本，并在本次记录中注明已核对、无需功能变更。未交付的本地迁移候选可沿用基线版本，但必须明确标注候选状态，不能将旧版本的通过记录冒充本批验收。
 
 更新时先列明“本次变化、四文件各自需要同步的内容、哪些内容核对后保持不变”。手册内容核对规则见[说明书维护](manual-maintenance.md#内容同步)，年度数据替换见[日历维护](calendar-maintenance.md)。仅修改仓库维护清单或验收记录，不改四份交付文件时，沿用原产品版本并使用维护提交；不虚构一次新的产品交付。
 
-1. 仅修改 Develop 源文件或 Widget，使用 `npm run release:prepare` 生成 Push 并同步手册校验值。
+1. 仅修改 `src` 源文件或 Widget，使用 `npm run release:prepare` 生成两份单 HTML 并同步手册校验值。
 2. 若 Push 改变，执行 `npm run preview:capture`，检查三张截图后再执行 `npm run test:readme`；截图清单必须对应当前 Push。
 3. 手册内容或校验页有变化时，检查 Word 渲染结果。三个源文件各使用唯一的命名书签定位校验值；缺失、重复或无效标记必须先修复，不能退回按段落顺序猜测。规则见 [说明书校验维护](manual-maintenance.md)。
 4. 根据[改动分流规则](maintainer/workflow-review.md#2026-年-10-月-8-日改动分流)执行快速检查、对应专项或完整验收。`quality:local` 保留为可主动选择的完整交付流程，不要求小组件改动重复全套 HTML 浏览器测试。无法确定范围时使用完整验收。视觉基线只在设计确实改变且人工确认后更新，不通过覆盖截图来掩盖回归。
 5. 将源码、生成产物、手册、校验清单和必要截图一起提交；在验收记录中分别写明已验证和未验证的部分。
+
+### 单 HTML 离线交付验收
+
+交付网页前，使用待交付的 Push 单 HTML 和独立测试档案核对以下两项。记录文件校验值、浏览器和实际结果，使用测试工资与日历。
+
+- [ ] 离线迁移：目标浏览器不带旧设置、缓存或草稿，离线打开单 HTML，导入另一浏览器实际导出的备份。确认后刷新，核对工时、工资、日历和首页读数。
+- [ ] 退出重开：确认导入已保存后完全退出测试浏览器，在同一档案中离线重开同一路径的 HTML。不重新导入，核对工时、工资、日历和首页读数仍一致。
+
+仅通过刷新不能代替退出重开；这两项不代替现有完整检查或目标设备验收。
 
 文档入口见 [文档索引](README.md)。本轮只维护仓库与诊断，不改变页面样式、动画或内置日历维护方式。
 

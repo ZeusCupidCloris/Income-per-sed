@@ -1,0 +1,16 @@
+/* @fragment caption */
+                                    <span class="history-dial-date" id="historyDialDate"></span>
+/* @endfragment */
+
+/* @fragment form */
+                        <section class="history-date-section" aria-labelledby="historyDateTitle">
+                            <h3 id="historyDateTitle" class="sr-only">回溯日期</h3>
+                                <form id="historySeekForm" class="date-wheel-form" novalidate>
+                                    <input id="historySeekDateInput" type="hidden">
+                                    <input id="historySeekTimeInput" type="hidden">
+                                    <div class="date-time-wheels" id="historySeekWheels" role="group" aria-label="回溯日期" aria-describedby="historySeekError"></div>
+                                    <button class="settings-action" id="historySeekSubmit" type="submit">定位日期</button>
+                                </form>
+                                <p class="context-error" id="historySeekError" role="alert" hidden></p>
+                        </section>
+/* @endfragment */

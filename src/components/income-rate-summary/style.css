@@ -1,0 +1,6 @@
+.income-rate-summary{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:8px;border-top:1px solid var(--material-edge);margin-top:8px;padding-top:12px;}
+.income-rate-summary .rate-label{display:block;font-size:11px;color:var(--text-secondary);margin-bottom:5px;}
+.income-rate-summary strong{display:inline-block;font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.35;overflow-wrap:anywhere;}
+.income-rate-summary .income-rate-secondary strong{font-size:18px;}
+.income-rate-summary small{font-size:11px;color:var(--text-secondary);margin-left:5px;}
+.income-rate-summary .context-meta{grid-column:1/-1;margin:0;font-size:11px;}

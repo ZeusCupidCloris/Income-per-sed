@@ -2,7 +2,7 @@
 <!-- build: pocket-watch-v35-r44-calibrated-rail-breathing-cards-preview-2026-09-06 -->
 <!--
   Income-per-sed · Develop · Pocket Watch v35 · R44 Calibrated Rail & Breathing Cards Preview
-  开发源码版：保留结构化注释、诊断接口和可维护代码。
+  开发诊断版由 src/page.html 与组件源码自动组装；请勿手改生成的 HTML。
   日常运行及分发请使用 Income-per-sed-Push.html。
 -->
 <html lang="zh-CN">
@@ -2000,7 +2000,7 @@ color:#edf6ef;
 .motion-debug-action[data-debug-action="quality"]{margin-left:auto;}
 /* R30 DEVELOP MOTION QUALITY CSS END */
 
-    
+
 
         /*
          * 动态合成层：
@@ -3205,7 +3205,7 @@ body::after{display:none;}
 
 
 
-/* ========================================================================== 
+/* ==========================================================================
    Warm Mechanical Workshop R8 · restrained instrument refinement
    仅精修卡片内部层级与仪表材质；卡片壳体、圆角、背景、阴影和间距保持 R7。
    ========================================================================== */
@@ -3461,7 +3461,7 @@ body::after{display:none;}
 }
 
 
-/* ========================================================================== 
+/* ==========================================================================
    Warm Mechanical Workshop R9 · release polish
    统一数字排版、信息层级与间距，并对主表盘执行减法精修。
    不覆盖通用 `.card` 壳体的背景、圆角、边框、模糊、阴影或内边距。
@@ -8959,7 +8959,7 @@ html:root #settingsSafetyConfirm[data-backup-diff]{position:relative;inset:auto;
         </section>
 
         <div class="info-cards-row full-width" id="summaryCardsRegion" data-visual-component="summaryCards" data-visual-priority="secondary">
-            <section class="card">
+            <section class="card" id="workSummaryCard">
                 <div class="info-label" id="workedTimeLabel">今日已工作</div>
                 <div class="info-value" id="workedTime" data-readout-units="duration"><span class="readout-number">0</span><span class="readout-unit">时</span><span class="readout-number">0</span><span class="readout-unit">分</span><span class="readout-number">0</span><span class="readout-unit">秒</span></div>
                 <div class="info-sub" id="workedSub" data-date-context>正在计算…</div>
@@ -9169,10 +9169,10 @@ html:root #settingsSafetyConfirm[data-backup-diff]{position:relative;inset:auto;
     <script>
 const APP_RELEASE = Object.freeze({
 version: 'v39',
-productVersion: '2.7.6',
-sourceTag: 'v2.7.6',
-buildId: 'v39-20261101.1',
-releaseDate: '2026-11-01',
+productVersion: '2.8.0',
+sourceTag: 'v2.8.0',
+buildId: 'v39-20261112.1',
+releaseDate: '2026-11-12',
 settingsSchema: 3,
 taskStopwatchSchema: 3,
 transactionSchema: 2,
@@ -10639,10 +10639,10 @@ holidays: Object.freeze([
 '2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07'
 ]),
 funItems: Object.freeze([
-{ emoji: '🥤', name: '杯拿铁', price: 9.9 },
-{ emoji: '🍋', name: '杯柠檬水', price: 4 },
-{ emoji: '🧀', name: '盒芝士', price: 39 },
-{ emoji: '🎁', name: '个盲盒', price: 69 }
+  { "emoji": "🥤", "name": "杯拿铁", "price": 9.9 },
+  { "emoji": "🍋", "name": "杯柠檬水", "price": 4 },
+  { "emoji": "🧀", "name": "盒芝士", "price": 39 },
+  { "emoji": "🎁", "name": "个盲盒", "price": 69 }
 ])
 });
 
@@ -12025,16 +12025,11 @@ morningMarker: document.getElementById('morningMarker'),
 afternoonMarker: document.getElementById('afternoonMarker'),
 monthIncome: document.getElementById('monthIncome'),
 monthDetail: document.getElementById('monthDetail'),
-calendarWarning: document.getElementById('calendarWarning'),
-calendarWarningText: document.getElementById('calendarWarningText'),
 hourlyRateDisplay: document.getElementById('hourlyRateDisplay'),
 dailyRateDisplay: document.getElementById('dailyRateDisplay'),
-estMonth: document.getElementById('estMonth'),
 funFact: document.getElementById('funFact'),
 statusDot: document.getElementById('statusDot'),
 statusLabel: document.getElementById('statusLabel'),
-statusLabelMain: document.getElementById('statusLabelMain'),
-statusLabelDetail: document.getElementById('statusLabelDetail'),
 mainCard: document.querySelector('.income-main-card'),
 currentTime: document.getElementById('currentTime'),
 themeControl: document.getElementById('themeControl'),
@@ -12064,10 +12059,7 @@ settingsDialogSubtitle: document.getElementById('settingsDialogSubtitle'),
 incomeSettingsPanel: document.getElementById('incomeSettingsPanel'),
 scheduleSettingsPanel: document.getElementById('scheduleSettingsPanel'),
 incomeAmountInput: document.getElementById('incomeAmountInput'),
-incomeAmountLabel: document.getElementById('incomeAmountLabel'),
 annualWorkDaysInput: document.getElementById('annualWorkDaysInput'),
-annualWorkDaysField: document.getElementById('annualWorkDaysField'),
-incomeModeHelp: document.getElementById('incomeModeHelp'),
 incomeSettingsError: document.getElementById('incomeSettingsError'),
 incomeAmountError: document.getElementById('incomeAmountError'),
 annualWorkDaysError: document.getElementById('annualWorkDaysError'),
@@ -12078,13 +12070,6 @@ scheduleAfternoonDuration: document.getElementById('scheduleAfternoonDuration'),
 scheduleWheelGrid: document.getElementById('scheduleWheelGrid'),
 scheduleSettingsError: document.getElementById('scheduleSettingsError'),
 calendarDataSection: document.getElementById('calendarDataSection'),
-calendarDataMeta: document.getElementById('calendarDataMeta'),
-calendarDataBadge: document.getElementById('calendarDataBadge'),
-calendarDataStatus: document.getElementById('calendarDataStatus'),
-calendarExportButton: document.getElementById('calendarExportButton'),
-calendarImportButton: document.getElementById('calendarImportButton'),
-calendarResetButton: document.getElementById('calendarResetButton'),
-calendarImportInput: document.getElementById('calendarImportInput'),
 settingsSaveButton: document.getElementById('settingsSaveButton'),
 kineticTooltip: document.getElementById('kineticTooltip')
 };
@@ -13386,6 +13371,282 @@ const specialWorkdays = new Set(ACTIVE_CALENDAR.specialWorkdays);
 const holidays = new Set(ACTIVE_CALENDAR.holidays);
 let calendarCoverageStartMs = BusinessTimeZone.dateAtKey(ACTIVE_CALENDAR.coverage.start).getTime();
 let calendarCoverageEndMs = BusinessTimeZone.dateAtKey(ACTIVE_CALENDAR.coverage.end, 86399, 999).getTime();
+function createWorkSummary({ root, writeText, formatDuration }) {
+  let nodes = null;
+
+  function mount() {
+    if (nodes) return;
+    nodes = {
+      title: root.querySelector('#workedTimeLabel'),
+      worked: root.querySelector('#workedTime'),
+      remaining: root.querySelector('#workedSub'),
+    };
+    nodes.title.setAttribute('data-date-context', '');
+  }
+
+  function update({ wholeWork, remain, totalWork, morningWork, status, dayLabel }) {
+    if (!nodes) return;
+    writeText(nodes.worked, formatDuration(wholeWork));
+    let text = `剩余 ${formatDuration(remain)}`;
+    if (status === 'day-off') text = `${dayLabel}不计工作收入`;
+    else if (wholeWork >= totalWork) text = '已完成全天工作';
+    else if (status === 'break' && wholeWork === morningWork) text = `午休后剩余 ${formatDuration(remain)}`;
+    else if (status === 'not-started' && wholeWork === 0) text = `全天待完成 ${formatDuration(remain)}`;
+    writeText(nodes.remaining, text);
+  }
+
+  function setContext(atLive) {
+    if (nodes) writeText(nodes.title, atLive ? '今日已工作' : '所选日期已工作');
+  }
+
+  function destroy() { nodes = null; }
+
+  return Object.freeze({ mount, update, setContext, destroy });
+}
+function createMonthSummary({ root, writeText, writeAttribute, formatCurrency }) {
+  let nodes = null;
+  let calendarDispose = null;
+
+  function mount() {
+    if (nodes) return;
+    nodes = {
+      title: root.querySelector('#monthIncomeLabel'),
+      income: root.querySelector('#monthIncome'),
+      detail: root.querySelector('#monthDetail'),
+      projectionTitle: root.querySelector('#estMonthLabel'),
+      projection: root.querySelector('#estMonth'),
+      warning: root.querySelector('#calendarWarning'),
+      warningText: root.querySelector('#calendarWarningText'),
+      calendarAction: root.querySelector('#calendarWarningSettings'),
+    };
+    nodes.title.setAttribute('data-date-context', '');
+    nodes.projectionTitle.setAttribute('data-date-context', '');
+  }
+
+  function updateIncome(income) {
+    if (nodes) writeText(nodes.income, formatCurrency(income));
+  }
+
+  function updateSummary({ projection, progress, totalWorkdays }) {
+    if (!nodes) return;
+    writeText(nodes.projection, formatCurrency(projection));
+    writeText(nodes.detail, progress.todayIsWorkday
+      ? `第 ${progress.currentWorkdayIndex} / ${totalWorkdays} 个工作日`
+      : `已完成 ${progress.completedBeforeToday} / ${totalWorkdays} 个工作日`);
+  }
+
+  function updateCoverage(covered, year) {
+    if (!nodes) return;
+    nodes.warning.hidden = covered;
+    if (!covered) writeText(nodes.warningText, `${year} 年节假日数据尚未更新，暂按周一至周五估算。`);
+  }
+
+  function setContext(atLive, { year, month }) {
+    if (!nodes) return;
+    writeText(nodes.title, atLive ? '本月累计收入' : '所在月份累计收入');
+    writeText(nodes.projectionTitle, atLive ? '本月预计' : '该月预计');
+    writeAttribute(root, 'aria-label', atLive ? '本月累计收入' : `${year} 年 ${month} 月累计收入`);
+  }
+
+  function bindCalendarAction(listen, openCalendar) {
+    if (!nodes) return;
+    calendarDispose?.();
+    calendarDispose = listen(nodes.calendarAction, 'click', event => openCalendar(event.currentTarget));
+  }
+
+  function destroy() {
+    calendarDispose?.();
+    calendarDispose = null;
+    nodes = null;
+  }
+
+  return Object.freeze({ mount, updateIncome, updateSummary, updateCoverage, setContext, bindCalendarAction, destroy });
+}
+function createHourlySummary({ root, writeText, formatCurrency }) {
+  let nodes = null;
+  let editDispose = null;
+
+  function mount() {
+    if (nodes) return;
+    nodes = {
+      hourly: root.querySelector('#hourlyRateDisplay'),
+      daily: root.querySelector('#dailyRateDisplay'),
+    };
+  }
+
+  function update({ hourly, daily, modeLabel }) {
+    if (!nodes) return;
+    writeText(nodes.hourly, formatCurrency(hourly));
+    writeText(nodes.daily, `日均 ${formatCurrency(daily)} · ${modeLabel}`);
+  }
+
+  function bindEdit(bindActivation, openIncome) {
+    if (!nodes) return;
+    editDispose?.();
+    editDispose = bindActivation(root, openIncome);
+  }
+
+  function destroy() {
+    editDispose?.();
+    editDispose = null;
+    nodes = null;
+  }
+
+  return Object.freeze({ mount, update, bindEdit, destroy });
+}
+function createProgressReadout({ root, track, writeText, writeAttribute, formatDuration }) {
+  let nodes = null;
+  let editDispose = null;
+
+  function mount() {
+    if (nodes) return;
+    nodes = {
+      title: root.querySelector('#progressContextLabel'),
+      readout: root.querySelector('#progressReadout'),
+      percent: root.querySelector('#progressPercent'),
+      phase: root.querySelector('#progressPhase'),
+      remaining: root.querySelector('#progressRemaining'),
+    };
+    nodes.title.setAttribute('data-date-context', '');
+  }
+
+  function setContext(atLive, dateKey) {
+    if (!nodes) return;
+    const day = atLive ? '今日' : `${dateKey} 当日`;
+    writeText(nodes.title, atLive ? '今日工作进度' : '当日工作进度');
+    writeAttribute(track, 'aria-label', `${day}工作进度`);
+    writeAttribute(nodes.readout, 'aria-label', `${day}工作进度读数`);
+  }
+
+  function setPercent(value) {
+    if (!nodes) return;
+    writeText(nodes.percent, `${value}%`);
+    writeAttribute(track, 'aria-valuenow', value);
+  }
+
+  // The midnight handoff needs an immediate final write, not the batched writer.
+  function resetPercent() {
+    if (!nodes) return;
+    nodes.percent.textContent = '0.0%';
+    track.setAttribute('aria-valuenow', '0.0');
+  }
+
+  function updateStatus(status, remain, dayLabel, isMorning) {
+    if (!nodes) return;
+    let phase = '等待开始';
+    let remaining = `全天 ${formatDuration(remain)}`;
+    if (status === 'day-off') {
+      phase = `${dayLabel}休息`;
+      remaining = '不计工作进度';
+    } else if (status === 'ended') {
+      phase = `${dayLabel}完成`;
+      remaining = '工时已落袋';
+    } else if (status === 'break') {
+      phase = '午间停表';
+      remaining = `剩余 ${formatDuration(remain)}`;
+    } else if (status === 'working') {
+      phase = isMorning ? '上午班次' : '下午班次';
+      remaining = `剩余 ${formatDuration(remain)}`;
+    }
+    writeText(nodes.phase, phase);
+    writeText(nodes.remaining, remaining);
+    writeAttribute(root, 'data-work-status', status);
+    if (status === 'day-off') writeText(nodes.remaining, `${dayLabel}休息`);
+    writeAttribute(track, 'aria-valuetext', status === 'day-off'
+      ? `${dayLabel}休息，显示已设置的工作时段，不计工作进度`
+      : `${phase}，${remaining}`);
+  }
+
+  function bindEdit(bindActivation, openSchedule) {
+    if (!nodes) return;
+    editDispose?.();
+    editDispose = bindActivation(root, openSchedule);
+  }
+
+  function destroy() {
+    editDispose?.();
+    editDispose = null;
+    nodes = null;
+  }
+
+  return Object.freeze({ mount, setContext, setPercent, resetPercent, updateStatus, bindEdit, destroy });
+}
+function createStatusReadout({ root, clock, writeText, writeAttribute }) {
+  let nodes = null;
+
+  function mount() {
+    if (nodes) return;
+    nodes = {
+      main: root.querySelector('#statusLabelMain'),
+      detail: root.querySelector('#statusLabelDetail'),
+    };
+  }
+
+  function updateStatus(status, atLive) {
+    if (!nodes) return;
+    const day = atLive ? '今日' : '当日';
+    const text = ({
+      working: '工作中 · 时间正在积累价值',
+      break: '午休中 · 收入暂时停表',
+      ended: `${day}工作结束`,
+      'not-started': `等待${day}工作开始`,
+      'day-off': '休息日 · 好好生活',
+    })[status] || '状态未知';
+    const separator = text.indexOf(' · ');
+    writeText(nodes.main, separator < 0 ? text : text.slice(0, separator));
+    writeText(nodes.detail, separator < 0 ? '' : text.slice(separator));
+    writeAttribute(root, 'aria-label', text);
+  }
+
+  function updateTime(text, datetime) {
+    if (!nodes) return;
+    writeText(clock, text);
+    writeAttribute(clock, 'datetime', datetime);
+  }
+
+  function destroy() { nodes = null; }
+
+  return Object.freeze({ mount, updateStatus, updateTime, destroy });
+}
+const workSummary = createWorkSummary({
+root: document.getElementById('workSummaryCard'),
+writeText: setTextIfChanged,
+formatDuration
+});
+const monthSummary = createMonthSummary({
+root: document.getElementById('monthSummaryCard'),
+writeText: setTextIfChanged,
+writeAttribute: setAttributeIfChanged,
+formatCurrency
+});
+workSummary.mount();
+monthSummary.mount();
+const hourlySummary = createHourlySummary({
+root: dom.incomeSettingsCard,
+writeText: setTextIfChanged,
+formatCurrency
+});
+hourlySummary.mount();
+const progressReadout = createProgressReadout({
+root: dom.scheduleSettingsCard,
+track: dom.progressTrack,
+writeText: setTextIfChanged,
+writeAttribute: setAttributeIfChanged,
+formatDuration: formatCompactDuration
+});
+progressReadout.mount();
+const statusReadout = createStatusReadout({
+root: dom.statusLabel,
+clock: dom.currentTime,
+writeText: setTextIfChanged,
+writeAttribute: setAttributeIfChanged
+});
+statusReadout.mount();
+ComponentScopes.app.on('destroy', workSummary.destroy);
+ComponentScopes.app.on('destroy', monthSummary.destroy);
+ComponentScopes.app.on('destroy', hourlySummary.destroy);
+ComponentScopes.app.on('destroy', progressReadout.destroy);
+ComponentScopes.app.on('destroy', statusReadout.destroy);
 const calendarCoverageDiagnostics = {
 fallbackActive: false,
 lastFallbackYear: 0,
@@ -13409,10 +13670,7 @@ const covered = isCalendarDateCovered(date);
 calendarCoverageDiagnostics.fallbackActive = !covered;
 if (!covered) noteCalendarFallback(date);
 body.classList.toggle('calendar-fallback-active', !covered);
-dom.calendarWarning.hidden = covered;
-if (!covered) {
-setTextIfChanged(dom.calendarWarningText, `${BusinessTimeZone.partsAt(date.getTime()).year} 年节假日数据尚未更新，暂按周一至周五估算。`);
-}
+monthSummary.updateCoverage(covered, covered ? undefined : BusinessTimeZone.partsAt(date.getTime()).year);
 }
 const timeFormatter = new Intl.DateTimeFormat('zh-CN', {
 timeZone: BusinessTimeZone.id,
@@ -13514,16 +13772,86 @@ annualIncome = CONFIG.incomeMode === 'fixed-daily' ? CONFIG.dailyIncome * CONFIG
 rebuildDerivedSettings();
 const calendarCache = new Map();
 const ratesCache = new Map();
-function updateCalendarDataPresentation(message = '', calendar = ACTIVE_CALENDAR) {
-if (!dom.calendarDataMeta) return;
-const coverage = calendar.coverage;
-setTextIfChanged(
-dom.calendarDataMeta,
-coverage.start.slice(0, 4) === coverage.end.slice(0, 4) ? `${coverage.start.slice(0, 4)} 年` : `${coverage.start.slice(0, 4)}—${coverage.end.slice(0, 4)} 年`
-);
-dom.calendarDataMeta.setAttribute('aria-label', `${coverage.label}，${coverage.start} 至 ${coverage.end}，${calendar.holidays.length} 个休息日，${calendar.specialWorkdays.length} 个调休工作日`);
-setTextIfChanged(dom.calendarDataBadge, calendar.origin === 'builtin' ? '内置' : '已导入');
-setTextIfChanged(dom.calendarDataStatus, message);
+function createScheduleSettings({ calibration, calendarRoot, writeText }) {
+function createScheduleCalibrationSummary({ morning, afternoon, total, writeText }) {
+  function formatDuration(seconds) {
+    const safeSeconds = Math.max(0, Math.floor(seconds));
+    const hours = Math.floor(safeSeconds / 3600);
+    const minutes = Math.floor((safeSeconds % 3600) / 60);
+    if (hours > 0 && minutes > 0) return `${hours}小时${minutes}分`;
+    if (hours > 0) return `${hours}小时`;
+    return `${minutes}分钟`;
+  }
+
+  function update(morningSeconds, afternoonSeconds, valid) {
+    writeText(morning, morningSeconds > 0 ? formatDuration(morningSeconds) : '—');
+    writeText(afternoon, afternoonSeconds > 0 ? formatDuration(afternoonSeconds) : '—');
+    writeText(total, valid ? formatDuration(morningSeconds + afternoonSeconds) : '等待校准');
+  }
+
+  return Object.freeze({ update });
+}
+function createCalendarStatus({ root, writeText }) {
+  const meta = root?.querySelector('#calendarDataMeta');
+  const badge = root?.querySelector('#calendarDataBadge');
+  const status = root?.querySelector('#calendarDataStatus');
+  const messages = {
+    'validated-and-saved': version => `日历 ${version} 已校验并保存。`,
+    'applied-for-page': version => `日历 ${version} 已在当前页面生效。`,
+    'reset-builtin': '已恢复内置日历清单。',
+    'reset-for-page': '已在当前页面恢复内置日历，但未能清除浏览器中的旧数据。',
+    'draft-restored': '草稿已恢复，保存后生效。',
+    'exported-draft': '已导出当前面板的日历。',
+    'loaded-draft': '已载入日历，保存后生效。',
+    'schedule-and-calendar-saved': '工作时间和日历已保存。',
+    'selected-builtin': '已选择内置日历，保存后生效。',
+    'already-builtin': '当前已是内置日历。',
+    'export-failed': detail => `导出失败：${detail}`,
+    'import-failed': detail => `导入失败：${detail}`,
+  };
+
+  function setStatus(result, detail) {
+    const message = messages[result];
+    writeText(status, typeof message === 'function' ? message(detail) : (message ?? ''));
+  }
+
+  function update(calendar, result) {
+    if (!meta) return;
+    const coverage = calendar.coverage;
+    const startYear = coverage.start.slice(0, 4);
+    const endYear = coverage.end.slice(0, 4);
+    writeText(meta, startYear === endYear ? `${startYear} 年` : `${startYear}—${endYear} 年`);
+    meta.setAttribute('aria-label', `${coverage.label}，${coverage.start} 至 ${coverage.end}，${calendar.holidays.length} 个休息日，${calendar.specialWorkdays.length} 个调休工作日`);
+    writeText(badge, calendar.origin === 'builtin' ? '内置' : '已导入');
+    setStatus(result, coverage.version);
+  }
+
+  return Object.freeze({ update, setStatus });
+}
+
+  const summary = createScheduleCalibrationSummary({ ...calibration, writeText });
+  const calendar = createCalendarStatus({ root: calendarRoot, writeText });
+  const importButton = calendarRoot.querySelector('#calendarImportButton');
+  const importInput = calendarRoot.querySelector('#calendarImportInput');
+
+  function bindCalendarActions(listen, { onExport, onImport, onReset }) {
+    listen(calendarRoot.querySelector('#calendarExportButton'), 'click', onExport);
+    listen(importButton, 'click', () => importInput.click());
+    listen(importInput, 'change', () => onImport(importInput.files?.[0]));
+    listen(calendarRoot.querySelector('#calendarResetButton'), 'click', onReset);
+  }
+
+  return Object.freeze({ summary, calendar, importButton, importInput, bindCalendarActions });
+}
+const scheduleSettings = createScheduleSettings({
+calibration: { morning: dom.scheduleMorningDuration, afternoon: dom.scheduleAfternoonDuration, total: dom.scheduleCalibrationTotal },
+calendarRoot: dom.calendarDataSection,
+writeText: setTextIfChanged
+});
+const { summary: scheduleCalibrationSummary, calendar: calendarStatus,
+importButton: calendarImportButton, importInput: calendarImportInput } = scheduleSettings;
+function updateCalendarDataPresentation(result, calendar = ACTIVE_CALENDAR) {
+calendarStatus.update(calendar, result);
 }
 function applyCalendarData(input, options = {}) {
 const normalized = CalendarDataStore.normalize(input, options.origin || 'imported');
@@ -13553,9 +13881,7 @@ calendarCoverageDiagnostics.fallbackActive = false;
 calendarCoverageDiagnostics.lastFallbackYear = 0;
 calendarCoverageDiagnostics.warnedYears.clear();
 updateCalendarCoverageNotice(getNow());
-updateCalendarDataPresentation(
-persisted ? `日历 ${next.coverage.version} 已校验并保存。` : `日历 ${next.coverage.version} 已在当前页面生效。`
-);
+updateCalendarDataPresentation(persisted ? 'validated-and-saved' : 'applied-for-page');
 updateStats();
 recordDiagnosticEvent('calendar', `启用日历 ${next.coverage.version}`, {
 coverage: next.coverage,
@@ -13578,12 +13904,9 @@ holidays: DEFAULT_CONFIG.holidays
 persisted = false;
 }
 const result = applyCalendarData(next, { persist: false, origin: 'builtin' });
-updateCalendarDataPresentation(
-persisted ? '已恢复内置日历清单。' : '已在当前页面恢复内置日历，但未能清除浏览器中的旧数据。'
-);
+updateCalendarDataPresentation(persisted ? 'reset-builtin' : 'reset-for-page');
 return Object.freeze({ ...result, persisted });
 }
-const funNodes = [];
 let statsTimer = 0;
 let animationFrame = 0;
 let idleRenderTimer = 0;
@@ -14224,11 +14547,15 @@ return required / available;
 }
 
 function funPressureRatio() {
-if (!dom.funFact) return 0;
+if (!dom.funFact) return null;
 const items = [...dom.funFact.children];
-if (!items.length) return 0;
-const available = Math.max(1, availableInlineSize(dom.funFact, dom.funFact));
-const longest = Math.max(...items.map((item) => measuredTextWidth(item)));
+const available = availableInlineSize(dom.funFact, dom.funFact);
+if (!items.length || available <= 1) return null;
+// Flex cells include unused column space; only their non-shrinking children measure the content.
+const itemGap = Number.parseFloat(getComputedStyle(items[0]).columnGap) || 0;
+const longest = Math.max(...items.map(item =>
+item.firstElementChild.getBoundingClientRect().width + itemGap + item.lastElementChild.getBoundingClientRect().width
+));
 const columnGap = Number.parseFloat(getComputedStyle(dom.funFact).columnGap) || 0;
 return longest / Math.max(1, (available - columnGap) / 2);
 }
@@ -14303,7 +14630,9 @@ pressureRatio(dom.monthIncome, dom.monthIncome?.parentElement, 6),
 pressureRatio(dom.monthDetail, dom.monthDetail?.parentElement, 6)
 )
 );
-commitLevel('fun', dom.funSummaryCard, funPressureRatio());
+const funRatio = funPressureRatio();
+if (funRatio === null) pendingLevels.delete('fun');
+else commitLevel('fun', dom.funSummaryCard, funRatio);
 }
 
 function request() {
@@ -16911,13 +17240,7 @@ markerPhase === 2
 : 'progress-marker'
 );
 }
-const overallText = `${overall.toFixed(1)}%`;
-setTextIfChanged(dom.progressPercent, overallText);
-setAttributeIfChanged(
-dom.progressTrack,
-'aria-valuenow',
-overall.toFixed(1)
-);
+progressReadout.setPercent(overall.toFixed(1));
 if (resetProgress >= 1) {
 commitRollerValue(
 getRollerKey(ROLLER_OWNER.MIDNIGHT_RESET),
@@ -16943,8 +17266,7 @@ progressGeometry.afternoonWidth
 );
 dom.morningMarker.className = 'progress-marker';
 dom.afternoonMarker.className = 'progress-marker';
-dom.progressPercent.textContent = '0.0%';
-dom.progressTrack.setAttribute('aria-valuenow', '0.0');
+progressReadout.resetPercent();
 midnightReset = null;
 const settledNow = getNow();
 updateClockHands(settledNow);
@@ -16974,34 +17296,64 @@ dom.incomeDial,
 `实时收入多功能机械表盘，岩浆色主针显示收入运行，亮银针为分针，枪灰针为时针；当前累计 ${formatCurrency(currentIncome)}，每圈收入 ${formatCurrency(minuteIncome)}，状态 ${status}`
 );
 }
-function createFunItems() {
-const fragment = document.createDocumentFragment();
-CONFIG.funItems.forEach((item) => {
-const node = document.createElement('span');
-node.className = 'fun-item';
-const icon = document.createElement('span');
-icon.className = 'fun-icon';
-icon.textContent = item.emoji;
-const copy = document.createElement('span');
-copy.className = 'fun-copy';
-const countNode = document.createElement('span');
-countNode.className = 'fun-count';
-countNode.textContent = '0';
-copy.append(countNode, document.createTextNode(` ${item.name}`));
-node.append(icon, document.createTextNode(' '), copy);
-funNodes.push({ node, countNode, item, count: 0 });
-fragment.appendChild(node);
+function createFunConversions({ root, items, writeText }) {
+  const list = root.querySelector('.fun-fact');
+  const title = root.querySelector('.fun-title');
+  const owner = root.ownerDocument;
+  const entries = [];
+  let mounted = false;
+  title.setAttribute('data-date-context', '');
+
+  function mount() {
+    if (mounted) return;
+    const fragment = owner.createDocumentFragment();
+    for (const item of items) {
+      const node = owner.createElement('span');
+      node.className = 'fun-item';
+      const icon = owner.createElement('span');
+      icon.className = 'fun-icon';
+      icon.textContent = item.emoji;
+      const copy = owner.createElement('span');
+      copy.className = 'fun-copy';
+      const countNode = owner.createElement('span');
+      countNode.className = 'fun-count';
+      countNode.textContent = '0';
+      copy.append(countNode, owner.createTextNode(` ${item.name}`));
+      node.append(icon, owner.createTextNode(' '), copy);
+      entries.push({ countNode, item, count: 0 });
+      fragment.appendChild(node);
+    }
+    list.replaceChildren(fragment);
+    mounted = true;
+  }
+
+  function update({ income }) {
+    for (const entry of entries) {
+      const nextCount = Math.floor(income / entry.item.price);
+      if (nextCount === entry.count) continue;
+      entry.count = nextCount;
+      entry.countNode.textContent = String(nextCount);
+    }
+  }
+
+  function setContext(atLive) {
+    writeText(title, atLive ? '今日已赚可买…' : '当日已赚可买…');
+  }
+
+  function destroy() {
+    entries.length = 0;
+    list.replaceChildren();
+    mounted = false;
+  }
+
+  return Object.freeze({ mount, update, setContext, destroy });
+}
+const funConversions = createFunConversions({
+root: document.getElementById('funSummaryCard'),
+items: CONFIG.funItems,
+writeText: setTextIfChanged
 });
-dom.funFact.replaceChildren(fragment);
-}
-function updateFunItems(income) {
-for (const entry of funNodes) {
-const nextCount = Math.floor(income / entry.item.price);
-if (nextCount === entry.count) continue;
-entry.count = nextCount;
-entry.countNode.textContent = String(nextCount);
-}
-}
+ComponentScopes.app.on('destroy', funConversions.destroy);
 function updateStaticScheduleLabels() {
 dom.scheduleStart.textContent = formatClockLabel(CONFIG.schedule.morningStart);
 dom.scheduleLunchStart.textContent = formatClockLabel(CONFIG.schedule.morningEnd);
@@ -17233,6 +17585,8 @@ if (this.programmatic || this.dragState?.intent === 'wheel') return;
 this.scope.clearTimeout(this.scrollTimer);
 this.scrollTimer = this.scope.setTimeout(() => {
 this.scrollTimer = 0;
+// A hidden wheel reports scrollTop zero, not its selected index.
+if (this.element.clientHeight === 0) return;
 this.setValue(this.element.scrollTop / TIME_WHEEL_ITEM_HEIGHT, { animate: true });
 }, 82);
 }, { passive: true });
@@ -17654,19 +18008,98 @@ sync();
 return Object.freeze({ refresh, destroy: () => { for (const wheel of wheels.values()) wheel.destroy(); host.replaceChildren(); } });
 }
 
+function createHistoryTimeInput({
+  input, error, submitButton, writeText, readDate, readBounds,
+  readSelectionText, commitTarget, focusDial,
+}) {
+  let editing = false;
+
+  function reset() {
+    editing = false;
+    error.hidden = true;
+    input.removeAttribute('aria-invalid');
+  }
+
+  function sync(text) {
+    if (!editing && input.value !== text) input.value = text;
+  }
+
+  function restore() {
+    reset();
+    const text = readSelectionText();
+    if (text !== undefined) input.value = text;
+  }
+
+  function commit({ apply = true } = {}) {
+    if (!editing) return true;
+    const text = input.value.trim();
+    let target;
+    try {
+      if (!/^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/.test(text)) {
+        throw new Error('请输入有效时间，例如 09:30 或 09:30:15。');
+      }
+      target = readDate(text);
+      const bounds = readBounds();
+      const timestamp = target.getTime();
+      if (timestamp < bounds.lowerBound || timestamp > bounds.upperBound) {
+        throw new Error('不能选择尚未发生或超出范围的时间。');
+      }
+    } catch (failure) {
+      writeText(error, failure.message);
+      error.hidden = false;
+      input.setAttribute('aria-invalid', 'true');
+      return false;
+    }
+    reset();
+    commitTarget(target, apply);
+    return true;
+  }
+
+  function bind(listen) {
+    listen(input, 'focus', () => { editing = true; input.select(); });
+    listen(input, 'blur', event => {
+      // Keep the draft until the date form consumes it, including intervening renders.
+      if (event.relatedTarget !== submitButton) commit();
+    });
+    listen(input, 'keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        event.stopPropagation();
+        if (commit()) input.blur();
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        event.stopPropagation();
+        restore();
+        input.blur();
+        focusDial();
+      }
+    });
+  }
+
+  return Object.freeze({ reset, sync, restore, commit, bind });
+}
 const HistoryTimeDial = (() => {
 const track = document.getElementById('historyDialTrack');
-const input = document.getElementById('historyDialTime');
 const needle = document.getElementById('historyDialNeedle');
 const nowMarker = document.getElementById('historyDialNow');
 const unavailable = document.getElementById('historyDialUnavailable');
-const error = document.getElementById('historySeekError');
 let selection = null;
 let pointer = null;
 let trackBounds = null;
 let faceKey = '';
-let editing = false;
 const clockText = (date, parts) => BusinessTimeZone.clockText(date, true, parts);
+const timeInput = createHistoryTimeInput({
+input: document.getElementById('historyDialTime'),
+error: document.getElementById('historySeekError'),
+submitButton: document.getElementById('historySeekSubmit'),
+writeText: setTextIfChanged,
+readDate: text => HistoryDateReview.readSeekDate(text),
+readBounds: historyDateBounds,
+readSelectionText: () => selection ? clockText(selection) : undefined,
+commitTarget: applyTimeEdit,
+focusDial: () => track.focus({ preventScroll: true })
+});
 function point(seconds, radius = 112) {
 const angle = seconds / 86400 * Math.PI * 2 - Math.PI / 2;
 return [140 + Math.cos(angle) * radius, 140 + Math.sin(angle) * radius];
@@ -17681,10 +18114,6 @@ const dayStart = startOfDay(date, parts).getTime();
 const bounds = historyDateBounds(live);
 return { min: Math.max(0, Math.ceil((bounds.lowerBound - dayStart) / 1000)), max: Math.min(86399, Math.floor((bounds.upperBound - dayStart) / 1000)) };
 }
-function clearError() {
-error.hidden = true;
-input.removeAttribute('aria-invalid');
-}
 function sync(date, live = getLiveNow(), parts = BusinessTimeZone.partsAt(date.getTime()), liveParts = live.getTime() === date.getTime() ? parts : BusinessTimeZone.partsAt(live.getTime())) {
 selection = new Date(date);
 const seconds = Math.floor(secondsSinceMidnight(date, parts));
@@ -17697,7 +18126,7 @@ faceKey = key;
 setAttributeIfChanged(document.getElementById('historyDialMorning'), 'd', working ? arc(parseClock(CONFIG.schedule.morningStart), parseClock(CONFIG.schedule.morningEnd)) : '');
 setAttributeIfChanged(document.getElementById('historyDialAfternoon'), 'd', working ? arc(parseClock(CONFIG.schedule.afternoonStart), parseClock(CONFIG.schedule.afternoonEnd)) : '');
 for (const label of document.querySelectorAll('.history-dial-legend .morning,.history-dial-legend .afternoon')) label.hidden = !working;
-setTextIfChanged(document.getElementById('historyDialDate'), day);
+HistoryDateReview.setDialDate(day);
 }
 const rotation = `rotate(${seconds / 240}deg)`;
 if (needle.style.transform !== rotation) needle.style.transform = rotation;
@@ -17706,7 +18135,7 @@ setAttributeIfChanged(track, 'aria-valuemax', String(bounds.max));
 setAttributeIfChanged(track, 'aria-valuenow', String(seconds));
 const text = clockText(date, parts);
 setAttributeIfChanged(track, 'aria-valuetext', `${day} ${text}`);
-if (!editing && input.value !== text) input.value = text;
+timeInput.sync(text);
 const today = day === localDateKey(live, liveParts);
 nowMarker.hidden = !today;
 nowMarker.style.display = today ? '' : 'none';
@@ -17725,8 +18154,7 @@ if (!selection) return false;
 const bounds = limits(selection);
 const bounded = Math.max(bounds.min, Math.min(bounds.max, Math.round(seconds)));
 const target = BusinessTimeZone.dateAtKey(localDateKey(selection), bounded);
-editing = false;
-clearError();
+timeInput.reset();
 if (!direct) return seekHistoryDate(target, 'time-dial');
 const timestamp = performance.now();
 cancelTimelineScrubCoast(false);
@@ -17739,33 +18167,10 @@ updateStats();
 render(timestamp);
 return true;
 }
-function commit({ apply = true } = {}) {
-if (!editing) return true;
-const text = input.value.trim();
-const match = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/.exec(text);
-let target;
-try {
-if (!match) throw new Error('请输入有效时间，例如 09:30 或 09:30:15。');
-target = HistoryDateReview.readSeekDate(text);
-const bounds = historyDateBounds();
-if (target.getTime() < bounds.lowerBound || target.getTime() > bounds.upperBound) throw new Error('不能选择尚未发生或超出范围的时间。');
-} catch (failure) {
-setTextIfChanged(error, failure.message);
-error.hidden = false;
-input.setAttribute('aria-invalid', 'true');
-return false;
-}
-editing = false;
-clearError();
+function applyTimeEdit(target, apply) {
 HistoryDateReview.syncSeekClock(target);
 if (apply && target.getTime() !== selection?.getTime()) seekHistoryDate(target, 'time-input');
 if (apply) sync(target);
-return true;
-}
-function restoreInput() {
-editing = false;
-clearError();
-if (selection) input.value = clockText(selection);
 }
 function finish() {
 if (pointer) {
@@ -17776,7 +18181,7 @@ track.removeAttribute('data-dragging');
 if (track.hasPointerCapture?.(id)) track.releasePointerCapture(id);
 settleTimelineScrubbing();
 }
-restoreInput();
+timeInput.restore();
 }
 function pointerSeconds(event) {
 const box = trackBounds || (trackBounds = track.getBoundingClientRect());
@@ -17808,7 +18213,7 @@ ticks.append(tick);
 }
 document.getElementById('historyDialTicks').replaceChildren(ticks);
 ComponentScopes.timeline.listen(track, 'pointerdown', event => {
-if ((event.pointerType === 'mouse' && event.button !== 0) || pointer || !commit()) return;
+if ((event.pointerType === 'mouse' && event.button !== 0) || pointer || !timeInput.commit()) return;
 const box = track.getBoundingClientRect();
 if (Math.hypot(event.clientX - box.left - box.width / 2, event.clientY - box.top - box.height / 2) < box.width * .28) return;
 event.preventDefault();
@@ -17832,15 +18237,11 @@ const step = event.shiftKey ? 900 : 60;
 const targets = { ArrowRight: seconds + step, ArrowUp: seconds + step, ArrowLeft: seconds - step, ArrowDown: seconds - step, PageUp: seconds + 3600, PageDown: seconds - 3600, Home: 0, End: 86399 };
 if (!(event.key in targets)) return;
 event.preventDefault();
-if (!commit()) return;
+if (!timeInput.commit()) return;
 applySeconds(targets[event.key], true);
 settleTimelineScrubbing();
 });
-ComponentScopes.timeline.listen(input, 'focus', () => { editing = true; input.select(); });
-ComponentScopes.timeline.listen(input, 'blur', event => {
-// Preserve the draft until submit consumes it, even if a render runs before click.
-if (event.relatedTarget?.id !== 'historySeekSubmit') commit();
-});
+timeInput.bind(ComponentScopes.timeline.listen);
 const invalidateBounds = () => { trackBounds = null; };
 ComponentScopes.timeline.listen(window, 'resize', invalidateBounds, { passive: true });
 ComponentScopes.timeline.listen(window, 'scroll', invalidateBounds, { passive: true, capture: true });
@@ -17848,13 +18249,9 @@ if (window.visualViewport) {
 ComponentScopes.timeline.listen(window.visualViewport, 'resize', invalidateBounds, { passive: true });
 ComponentScopes.timeline.listen(window.visualViewport, 'scroll', invalidateBounds, { passive: true });
 }
-ComponentScopes.timeline.listen(input, 'keydown', event => {
-if (event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); if (commit()) input.blur(); }
-if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); restoreInput(); input.blur(); track.focus({ preventScroll: true }); }
-});
 ComponentScopes.app.on('destroy', finish);
 }
-return Object.freeze({ bind, sync, finish, commit });
+return Object.freeze({ bind, sync, finish, commit: timeInput.commit });
 })();
 
 const SHARED_CARD_MOTION = Object.freeze({ duration: 360, axisLead: 45, contentStart: .70, contentSpan: .30, landingDuration: 120, landingDepth: 2 });
@@ -18441,6 +18838,249 @@ panelOpened: () => { noticePresentation.hide({ immediate: true }); }, panelClose
 dismissNotice: () => noticePresentation.hide({ immediate: true }) });
 })();
 
+function createIncomeSettings({ root, resolvePanel, modes, readFields, writeText }) {
+function createIncomeFields({ root, writeText }) {
+  let nodes = null;
+  const help = {
+    'fixed-monthly': '按当月工作日折算',
+    'annual-average': '按全年工作日均摊',
+    'fixed-daily': '每个工作日固定计薪'
+  };
+
+  function mount() {
+    if (nodes) return;
+    nodes = {
+      label: root.querySelector('#incomeAmountLabel'),
+      amount: root.querySelector('#incomeAmountInput'),
+      annualInput: root.querySelector('#annualWorkDaysInput'),
+      annualField: root.querySelector('#annualWorkDaysField'),
+      monthlyField: root.querySelector('#monthlyWorkDaysField'),
+      monthlyValue: root.querySelector('#monthlyWorkDaysValue'),
+      help: root.querySelector('#incomeModeHelp'),
+    };
+  }
+
+  function update(mode, { amount, days }, limits) {
+    if (!nodes) return;
+    const monthly = mode === 'fixed-monthly';
+    writeText(nodes.label, mode === 'fixed-daily' ? '日薪到手' : '月薪到手');
+    nodes.amount.value = amount;
+    nodes.annualInput.value = days;
+    nodes.amount.min = limits.minimum.toFixed(limits.decimals);
+    nodes.amount.max = String(limits.maximum);
+    nodes.amount.step = (1 / (10 ** limits.decimals)).toFixed(limits.decimals);
+    nodes.annualField.hidden = monthly;
+    nodes.monthlyField.hidden = !monthly;
+    root.toggleAttribute('data-monthly', monthly);
+    writeText(nodes.help, help[mode]);
+  }
+
+  function updateMonthlyWorkdays(count) {
+    if (nodes) writeText(nodes.monthlyValue, String(count));
+  }
+
+  function destroy() {
+    nodes = null;
+  }
+
+  return Object.freeze({ mount, update, updateMonthlyWorkdays, destroy });
+}
+function createIncomeDrafts({ modes, readFields }) {
+  let drafts = null;
+  const copy = values => JSON.parse(JSON.stringify(values));
+  const valueKey = value => value.trim() === '' ? '' : Number.isFinite(Number(value)) ? Number(value) : value;
+
+  function reset({ monthlyIncome, dailyIncome, annualWorkDays }) {
+    drafts = Object.fromEntries(modes.map(mode => [mode, {
+      amount: (mode === 'fixed-daily' ? dailyIncome : monthlyIncome).toFixed(2),
+      days: String(annualWorkDays)
+    }]));
+  }
+
+  function capture(mode) {
+    if (!drafts) return;
+    const { amount, days } = readFields();
+    drafts[mode] = { amount, days };
+  }
+
+  function get(mode) {
+    return { ...drafts[mode] };
+  }
+
+  function key(mode) {
+    capture(mode);
+    return JSON.stringify([mode, modes.map(name => {
+      const draft = drafts?.[name];
+      return draft ? [valueKey(draft.amount), name === 'fixed-monthly' ? null : valueKey(draft.days)] : null;
+    })]);
+  }
+
+  function snapshot(mode) {
+    capture(mode);
+    return copy(drafts);
+  }
+
+  function accepts({ mode, modes: values }) {
+    return modes.includes(mode) && modes.every(name => {
+      const draft = values?.[name];
+      return typeof draft?.amount === 'string' && draft.amount.length <= 64
+        && typeof draft.days === 'string' && draft.days.length <= 16;
+    });
+  }
+
+  function restore(values) {
+    drafts = copy(values);
+  }
+
+  function clear() {
+    drafts = null;
+  }
+
+  return Object.freeze({ reset, capture, get, key, snapshot, accepts, restore, clear });
+}
+function createIncomeModeSwitch({ root }) {
+  let buttons = null;
+  let dispose = null;
+
+  function mount() {
+    if (buttons) return;
+    buttons = [...root.querySelectorAll('[data-income-mode]')];
+  }
+
+  function updateSelection(mode) {
+    if (!buttons) return;
+    for (const button of buttons) {
+      const active = button.dataset.incomeMode === mode;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    }
+  }
+
+  function bind(listen, onSelect) {
+    if (!buttons) return;
+    dispose?.();
+    const stops = buttons.map(button => listen(button, 'click', () => onSelect(button.dataset.incomeMode)));
+    dispose = () => stops.forEach(stop => stop());
+  }
+
+  function destroy() {
+    dispose?.();
+    dispose = null;
+    buttons = null;
+  }
+
+  return Object.freeze({ mount, updateSelection, bind, destroy });
+}
+function createIncomeViewTabs({ root, resolvePanel }) {
+  let tabs = null;
+  let dispose = null;
+
+  function mount() {
+    if (tabs) return;
+    tabs = [...root.querySelectorAll('[role="tab"]')];
+  }
+
+  function updateSelection(view, focus = false) {
+    if (!tabs) return;
+    for (const tab of tabs) {
+      const selected = tab.dataset.incomeView === view;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      resolvePanel(tab.getAttribute('aria-controls')).hidden = !selected;
+      if (selected && focus) tab.focus({ preventScroll: true });
+    }
+  }
+
+  function bind(listen, onSelect) {
+    if (!tabs) return;
+    dispose?.();
+    const stops = tabs.flatMap((tab, index) => [
+      listen(tab, 'click', () => onSelect(tab.dataset.incomeView)),
+      listen(tab, 'keydown', event => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const offset = event.key === 'ArrowRight' ? 1 : -1;
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1
+          : (index + offset + tabs.length) % tabs.length;
+        onSelect(tabs[next].dataset.incomeView, true);
+      })
+    ]);
+    dispose = () => stops.forEach(stop => stop());
+  }
+
+  function destroy() {
+    dispose?.();
+    dispose = null;
+    tabs = null;
+  }
+
+  return Object.freeze({ mount, updateSelection, bind, destroy });
+}
+function createIncomeRateSummary({ root, writeText }) {
+  let nodes = null;
+
+  function mount() {
+    if (nodes) return;
+    nodes = {
+      context: root.querySelector('#incomeCalculationDate'),
+      daily: root.querySelector('#incomeCalculationDaily'),
+      hourly: root.querySelector('#incomeCalculationHourly'),
+    };
+  }
+
+  function update(values) {
+    if (!nodes) return;
+    for (const [key, node] of Object.entries(nodes)) writeText(node, values[key]);
+  }
+
+  function destroy() {
+    nodes = null;
+  }
+
+  return Object.freeze({ mount, update, destroy });
+}
+
+  const modeRoot = root.querySelector('.income-mode-segments');
+  const fields = createIncomeFields({ root: root.querySelector('#incomeConfigView'), writeText });
+  const drafts = createIncomeDrafts({ modes, readFields });
+  const modeSwitch = createIncomeModeSwitch({ root: modeRoot });
+  const tabs = createIncomeViewTabs({ root: root.querySelector('.income-view-tabs'), resolvePanel });
+  const summary = createIncomeRateSummary({ root: root.querySelector('.income-rate-summary'), writeText });
+
+  function mount() {
+    fields.mount();
+    modeSwitch.mount();
+    tabs.mount();
+    summary.mount();
+  }
+
+  function bind(listen, { onSelectView, onSelectMode }) {
+    tabs.bind(listen, onSelectView);
+    modeSwitch.bind(listen, onSelectMode);
+  }
+
+  function destroy() {
+    fields.destroy();
+    modeSwitch.destroy();
+    tabs.destroy();
+    summary.destroy();
+  }
+
+  return Object.freeze({ modeRoot, fields, drafts, modeSwitch, tabs, summary, mount, bind, destroy });
+}
+const incomeSettings = createIncomeSettings({
+root: dom.incomeSettingsPanel,
+resolvePanel: id => document.getElementById(id),
+modes: IncomeEngine.modes,
+readFields: () => ({ amount: dom.incomeAmountInput.value, days: dom.annualWorkDaysInput.value }),
+writeText: setTextIfChanged
+});
+const { modeRoot: incomeModeSegments, fields: incomeFields, drafts: incomeDrafts, modeSwitch: incomeModeSwitch,
+tabs: incomeViewTabs, summary: incomeRateSummary } = incomeSettings;
+incomeSettings.mount();
+ComponentScopes.app.on('destroy', () => incomeSettings.destroy());
+
 const SettingsUI = (() => {
 const timeFields = Object.freeze([
 Object.freeze({ key: 'morningStart', title: '上午开始' }),
@@ -18462,7 +19102,6 @@ let estimatePrepared = false;
 let draftSchedule = { ...CONFIG.schedule };
 let draftCalendar = ACTIVE_CALENDAR;
 let incomeBaseline = '';
-let incomeModeDrafts = null;
 let draftBaseFingerprint = '';
 let importGeneration = 0;
 let importBusy = false;
@@ -18495,8 +19134,7 @@ const entry = data.panels?.[panel];
 if (!entry || !Number.isFinite(entry.savedAt) || Math.abs(AppClock.wallNow() - entry.savedAt) > 7 * 86400000) continue;
 if (typeof entry.baseline !== 'string') continue;
 if (panel === 'income') {
-if (!IncomeEngine.modes.includes(entry.mode)) continue;
-if (!IncomeEngine.modes.every(mode => typeof entry.modes?.[mode]?.amount === 'string' && entry.modes[mode].amount.length <= 64 && typeof entry.modes[mode].days === 'string' && entry.modes[mode].days.length <= 16)) continue;
+if (!incomeDrafts.accepts(entry)) continue;
 } else {
 if (!timeFields.every(field => typeof entry.schedule?.[field.key] === 'string' && /^\d{2}:\d{2}$/.test(entry.schedule[field.key]))) continue;
 entry.calendar = CalendarDataStore.normalize(entry.calendar, entry.calendar?.origin === 'builtin' ? 'builtin' : 'imported');
@@ -18530,9 +19168,8 @@ if (dom.settingsDialog.hidden || dom.settingsDialog.classList.contains('is-closi
 if (!hasUnsavedChanges()) { if (draftRecords[activePanel]) clearDraft(activePanel); return; }
 const entry = { savedAt: AppClock.wallNow(), baseline: draftBaseFingerprint };
 if (activePanel === 'income') {
-captureIncomeModeDraft();
 entry.mode = selectedIncomeMode;
-entry.modes = JSON.parse(JSON.stringify(incomeModeDrafts));
+entry.modes = incomeDrafts.snapshot(selectedIncomeMode);
 } else {
 entry.schedule = { ...draftSchedule };
 entry.calendar = draftCalendar;
@@ -18672,14 +19309,14 @@ if (!accepted) { clearDraft(panel); return; }
 restoringDraft = true;
 try {
 if (panel === 'income') {
-incomeModeDrafts = JSON.parse(JSON.stringify(entry.modes));
+incomeDrafts.restore(entry.modes);
 setIncomeMode(entry.mode, { initialize: true });
 DisplayPreferences.syncIncomeGate();
 } else {
 draftCalendar = CalendarDataStore.normalize(entry.calendar, entry.calendar.origin);
 buildScheduleWheels(entry.schedule);
-updateCalendarDataPresentation('草稿已恢复，保存后生效。', draftCalendar);
-if (entry.editor) wheelInstances.find(wheel => wheel.key === entry.editor.key && wheel.unit === entry.editor.unit)?.openEditor(entry.editor.text);
+updateCalendarDataPresentation('draft-restored', draftCalendar);
+if (entry.editor) scheduleWheels.restoreEditor(entry.editor);
 }
 } finally { restoringDraft = false; }
 persistDraft();
@@ -18772,24 +19409,6 @@ if (generation !== backupGeneration || dom.settingsDialog.hidden) return;
 await askSafety('未导入设置', error instanceof SyntaxError ? '文件不是有效的 JSON 备份。' : error.message, '知道了');
 } finally { document.getElementById('settingsBackupFile').value = ''; }
 }
-function incomeDraftKey() {
-captureIncomeModeDraft();
-const valueKey = value => value.trim() === '' ? '' : Number.isFinite(Number(value)) ? Number(value) : value;
-return JSON.stringify([selectedIncomeMode, IncomeEngine.modes.map(mode => {
-const draft = incomeModeDrafts?.[mode];
-return draft ? [valueKey(draft.amount), mode === 'fixed-monthly' ? null : valueKey(draft.days)] : null;
-})]);
-}
-function captureIncomeModeDraft() {
-if (!incomeModeDrafts) return;
-incomeModeDrafts[selectedIncomeMode] = { amount: dom.incomeAmountInput.value, days: dom.annualWorkDaysInput.value };
-}
-function resetIncomeModeDrafts() {
-incomeModeDrafts = Object.fromEntries(IncomeEngine.modes.map(mode => [mode, {
-amount: (mode === 'fixed-daily' ? CONFIG.dailyIncome : CONFIG.monthlyIncome).toFixed(2),
-days: String(CONFIG.annualWorkDays)
-}]));
-}
 function calendarChanged() { return draftCalendar.checksum !== ACTIVE_CALENDAR.checksum || draftCalendar.origin !== ACTIVE_CALENDAR.origin; }
 function hasUnsavedChanges() {
 const directInput = TimeWheel.activeEditor;
@@ -18797,7 +19416,7 @@ if (directInput?.editor && dom.settingsDialog.contains(directInput.editor.wrap))
 const selected = directInput.labels ? String(directInput.labels[directInput.value]) : String(directInput.value);
 if (Number(directInput.editor.input.value) !== Number(selected) || directInput.editor.input.value.trim() === '') return true;
 }
-return activePanel === 'income' ? incomeDraftKey() !== incomeBaseline
+return activePanel === 'income' ? incomeDrafts.key(selectedIncomeMode) !== incomeBaseline
 : calendarChanged() || timeFields.some(field => draftSchedule[field.key] !== CONFIG.schedule[field.key]);
 }
 function setDiscardPrompt(visible) {
@@ -18859,7 +19478,72 @@ dom.settingsSaveButton.disabled = saveBusy || !amount.valid || !validDays;
 if (amount.valid && validDays) setError(dom.incomeSettingsError);
 }
 let scheduleDirty = false;
-let wheelInstances = [];
+function createScheduleWheels({ grid, fields, createWheel, splitTime, onChange }) {
+  let wheels = [];
+
+  function destroy() {
+    for (const wheel of wheels) wheel.destroy();
+    wheels = [];
+    for (const host of grid.querySelectorAll('.schedule-period-times')) host.replaceChildren();
+  }
+
+  function mount(schedule) {
+    if (wheels.length) destroy();
+    const owner = grid.ownerDocument;
+    const fragments = { morning: owner.createDocumentFragment(), afternoon: owner.createDocumentFragment() };
+    for (const field of fields) {
+      const value = splitTime(schedule[field.key]);
+      const card = owner.createElement('section');
+      card.className = 'time-wheel-card';
+      card.dataset.timeKey = field.key;
+      const title = owner.createElement('div');
+      title.className = 'time-wheel-title';
+      title.textContent = field.key.endsWith('Start') ? '开始' : '结束';
+      const picker = owner.createElement('div');
+      picker.className = 'time-wheel-picker';
+      const separator = owner.createElement('span');
+      separator.className = 'time-wheel-separator';
+      separator.textContent = ':';
+      const hourWheel = createWheel({
+        key: field.key,
+        unit: 'hour',
+        title: field.title,
+        value: value.hour,
+        onChange: (nextValue) => onChange(field.key, 'hour', nextValue)
+      });
+      const minuteWheel = createWheel({
+        key: field.key,
+        unit: 'minute',
+        title: field.title,
+        value: value.minute,
+        onChange: (nextValue) => onChange(field.key, 'minute', nextValue)
+      });
+      wheels.push(hourWheel, minuteWheel);
+      picker.append(hourWheel.element, separator, minuteWheel.element);
+      picker.setAttribute('aria-describedby', 'scheduleSettingsError');
+      card.append(title, picker);
+      fragments[field.key.startsWith('morning') ? 'morning' : 'afternoon'].appendChild(card);
+    }
+    grid.querySelector('#scheduleMorningWheels').replaceChildren(fragments.morning);
+    grid.querySelector('#scheduleAfternoonWheels').replaceChildren(fragments.afternoon);
+  }
+
+  return Object.freeze({
+    mount,
+    destroy,
+    focusFirst: () => wheels[0]?.focus(),
+    restoreEditor: ({ key, unit, text }) => wheels.find(wheel => wheel.key === key && wheel.unit === unit)?.openEditor(text),
+    isMoving: () => wheels.some(wheel => wheel.animationFrame || wheel.dragState),
+    getCount: () => wheels.length
+  });
+}
+const scheduleWheels = createScheduleWheels({
+grid: dom.scheduleWheelGrid,
+fields: timeFields,
+createWheel: options => new TimeWheel(options),
+splitTime,
+onChange: updateDraftTime
+});
 let mainAriaHiddenBeforeOpen = null;
 function splitTime(value) {
 const [hour, minute] = value.split(':').map(Number);
@@ -18901,23 +19585,29 @@ setFieldError(dom.incomeAmountInput, dom.incomeAmountError);
 setFieldError(dom.annualWorkDaysInput, dom.annualWorkDaysError);
 setError(dom.incomeSettingsError);
 }
-function getScheduleViolation() {
-const parsed = {
-morningStart: parseClock(draftSchedule.morningStart),
-morningEnd: parseClock(draftSchedule.morningEnd),
-afternoonStart: parseClock(draftSchedule.afternoonStart),
-afternoonEnd: parseClock(draftSchedule.afternoonEnd)
-};
-if (!(parsed.morningStart < parsed.morningEnd)) {
-return Object.freeze({ key: 'morningEnd', message: '上午结束必须晚于上午开始。' });
+function evaluateScheduleDraft(schedule, parseTime) {
+  const morningStart = parseTime(schedule.morningStart);
+  const morningEnd = parseTime(schedule.morningEnd);
+  const afternoonStart = parseTime(schedule.afternoonStart);
+  const afternoonEnd = parseTime(schedule.afternoonEnd);
+
+  let violation = null;
+  if (!(morningStart < morningEnd)) {
+    violation = Object.freeze({ key: 'morningEnd', message: '上午结束必须晚于上午开始。' });
+  } else if (!(morningEnd <= afternoonStart)) {
+    violation = Object.freeze({ key: 'afternoonStart', message: '下午开始不能早于上午结束。' });
+  } else if (!(afternoonStart < afternoonEnd)) {
+    violation = Object.freeze({ key: 'afternoonEnd', message: '下午结束必须晚于下午开始。' });
+  }
+
+  return {
+    morningSeconds: Math.max(0, morningEnd - morningStart),
+    afternoonSeconds: Math.max(0, afternoonEnd - afternoonStart),
+    violation
+  };
 }
-if (!(parsed.morningEnd <= parsed.afternoonStart)) {
-return Object.freeze({ key: 'afternoonStart', message: '下午开始不能早于上午结束。' });
-}
-if (!(parsed.afternoonStart < parsed.afternoonEnd)) {
-return Object.freeze({ key: 'afternoonEnd', message: '下午结束必须晚于下午开始。' });
-}
-return null;
+function getScheduleValidation() {
+return evaluateScheduleDraft(draftSchedule, parseClock);
 }
 function clearScheduleErrors() {
 setError(dom.scheduleSettingsError);
@@ -18940,31 +19630,14 @@ card.setAttribute('aria-invalid', 'true');
 setError(card.querySelector('.time-wheel-field-error'), violation.message);
 card.querySelector('.time-wheel-column')?.focus();
 } else {
-wheelInstances[0]?.focus();
+scheduleWheels.focusFirst();
 }
 }
-function formatScheduleDuration(seconds) {
-const safeSeconds = Math.max(0, Math.floor(seconds));
-const hours = Math.floor(safeSeconds / 3600);
-const minutes = Math.floor((safeSeconds % 3600) / 60);
-if (hours > 0 && minutes > 0) return `${hours}小时${minutes}分`;
-if (hours > 0) return `${hours}小时`;
-return `${minutes}分钟`;
-}
-function updateScheduleCalibrationSummary() {
+function updateScheduleCalibrationSummary(validation) {
 if (!dom.scheduleCalibrationSummary) return;
-const parsed = {
-morningStart: parseClock(draftSchedule.morningStart),
-morningEnd: parseClock(draftSchedule.morningEnd),
-afternoonStart: parseClock(draftSchedule.afternoonStart),
-afternoonEnd: parseClock(draftSchedule.afternoonEnd)
-};
-const morning = Math.max(0, parsed.morningEnd - parsed.morningStart);
-const afternoon = Math.max(0, parsed.afternoonEnd - parsed.afternoonStart);
-const valid = parsed.morningStart < parsed.morningEnd && parsed.morningEnd <= parsed.afternoonStart && parsed.afternoonStart < parsed.afternoonEnd;
-setTextIfChanged(dom.scheduleMorningDuration, morning > 0 ? formatScheduleDuration(morning) : '—');
-setTextIfChanged(dom.scheduleAfternoonDuration, afternoon > 0 ? formatScheduleDuration(afternoon) : '—');
-setTextIfChanged(dom.scheduleCalibrationTotal, valid ? formatScheduleDuration(morning + afternoon) : '等待校准');
+const { morningSeconds, afternoonSeconds, violation } = validation ?? getScheduleValidation();
+const valid = !violation;
+scheduleCalibrationSummary.update(morningSeconds, afternoonSeconds, valid);
 dom.scheduleSettingsPanel.classList.toggle('has-error', !valid);
 dom.scheduleCalibrationSummary.setAttribute('data-valid', String(valid));
 }
@@ -18990,7 +19663,7 @@ return;
 const announce = () => {
 scheduleAnnouncementTimer = 0;
 if (dom.settingsDialog.hidden || dom.settingsDialog.classList.contains('is-closing') || document.hidden) return;
-if (wheelInstances.some(wheel => wheel.animationFrame || wheel.dragState)) {
+if (scheduleWheels.isMoving()) {
 scheduleAnnouncementTimer = ComponentScopes.settings.setTimeout(announce, 80);
 return;
 }
@@ -19310,7 +19983,6 @@ element.classList.remove('income-mode-copy');
 incomeCopyMotions.delete(element);
 }).catch(() => {});
 }
-const incomeModeSegments = dom.incomeSettingsPanel.querySelector('.income-mode-segments');
 const incomeModeIndicator = document.createElement('span');
 incomeModeIndicator.className = 'income-mode-indicator';
 incomeModeIndicator.setAttribute('aria-hidden', 'true');
@@ -19336,34 +20008,14 @@ ComponentScopes.settings.listen(window, 'resize', () => updateIncomeModeIndicato
 function setIncomeMode(mode, { initialize = false } = {}) {
 const nextMode = IncomeEngine.modes.includes(mode) ? mode : 'fixed-monthly';
 if (!initialize) {
-captureIncomeModeDraft();
+incomeDrafts.capture(selectedIncomeMode);
 if (nextMode === selectedIncomeMode) return;
 }
 const animateCopy = dom.settingsDialog.classList.contains('is-visible') && activePanel === 'income';
 selectedIncomeMode = nextMode;
-for (const button of dom.settingsDialog.querySelectorAll('[data-income-mode]')) {
-const active = button.dataset.incomeMode === selectedIncomeMode;
-button.classList.toggle('active', active);
-button.setAttribute('aria-pressed', String(active));
-}
+incomeModeSwitch.updateSelection(selectedIncomeMode);
 updateIncomeModeIndicator(animateCopy);
-const fixedDaily = selectedIncomeMode === 'fixed-daily';
-const limits = incomeAmountLimits(selectedIncomeMode);
-setTextIfChanged(dom.incomeAmountLabel, fixedDaily ? '日薪到手' : '月薪到手');
-dom.incomeAmountInput.value = incomeModeDrafts[selectedIncomeMode].amount;
-dom.annualWorkDaysInput.value = incomeModeDrafts[selectedIncomeMode].days;
-dom.incomeAmountInput.min = limits.minimum.toFixed(limits.decimals);
-dom.incomeAmountInput.max = String(limits.maximum);
-dom.incomeAmountInput.step = (1 / (10 ** limits.decimals)).toFixed(limits.decimals);
-dom.annualWorkDaysField.hidden = selectedIncomeMode === 'fixed-monthly';
-document.getElementById('monthlyWorkDaysField').hidden = selectedIncomeMode !== 'fixed-monthly';
-document.getElementById('incomeConfigView').toggleAttribute('data-monthly', selectedIncomeMode === 'fixed-monthly');
-const help = {
-'fixed-monthly': '按当月工作日折算',
-'annual-average': '按全年工作日均摊',
-'fixed-daily': '每个工作日固定计薪'
-};
-setTextIfChanged(dom.incomeModeHelp, help[selectedIncomeMode]);
+incomeFields.update(selectedIncomeMode, incomeDrafts.get(selectedIncomeMode), incomeAmountLimits(selectedIncomeMode));
 clearIncomeErrors();
 revalidateIncome();
 renderIncomePreview();
@@ -19383,13 +20035,7 @@ updateIncomeCalculation(draft);
 function setIncomeView(view, focus = false) {
 incomeView = view === 'estimate' ? 'estimate' : 'config';
 dom.settingsDialog.dataset.incomeView = incomeView;
-for (const tab of dom.incomeSettingsPanel.querySelectorAll('[role="tab"]')) {
-const selected = tab.dataset.incomeView === incomeView;
-tab.setAttribute('aria-selected', String(selected));
-tab.tabIndex = selected ? 0 : -1;
-document.getElementById(tab.getAttribute('aria-controls')).hidden = !selected;
-if (selected && focus) tab.focus({ preventScroll: true });
-}
+incomeViewTabs.updateSelection(incomeView, focus);
 if (incomeView === 'estimate') {
 if (!estimatePrepared) { HistoryDateReview.prepareEstimate(); estimatePrepared = true; }
 else HistoryDateReview.refreshEstimate();
@@ -19399,17 +20045,16 @@ requestSettingsScrollEdges();
 }
 function destroyScheduleWheels() {
 clearScheduleAnnouncement();
-for (const wheel of wheelInstances) wheel.destroy();
-wheelInstances = [];
-for (const host of dom.scheduleWheelGrid.querySelectorAll('.schedule-period-times')) host.replaceChildren();
+scheduleWheels.destroy();
 }
 function updateDraftTime(key, unit, value) {
 const current = splitTime(draftSchedule[key]);
 const next = unit === 'hour' ? { hour: value, minute: current.minute } : { hour: current.hour, minute: value };
 draftSchedule[key] = formatTime(next.hour, next.minute);
 scheduleDirty = true;
-if (scheduleValidationActive) {
-const violation = getScheduleViolation();
+const validation = scheduleValidationActive ? getScheduleValidation() : null;
+if (validation) {
+const { violation } = validation;
 for (const card of dom.scheduleWheelGrid.querySelectorAll('.time-wheel-card')) {
 const invalid = violation?.key === card.dataset.timeKey;
 if (invalid) card.setAttribute('aria-invalid', 'true');
@@ -19421,7 +20066,7 @@ else dom.scheduleWheelGrid.removeAttribute('aria-invalid');
 setError(dom.scheduleSettingsError, violation ? violation.message : '');
 dom.settingsSaveButton.disabled = saveBusy || Boolean(violation);
 } else clearScheduleErrors();
-updateScheduleCalibrationSummary();
+updateScheduleCalibrationSummary(validation);
 queueScheduleAnnouncement();
 queueDraftWrite();
 }
@@ -19429,42 +20074,7 @@ function buildScheduleWheels(restoredSchedule = null) {
 destroyScheduleWheels();
 draftSchedule = { ...(restoredSchedule || CONFIG.schedule) };
 scheduleDirty = false;
-const fragments = { morning: document.createDocumentFragment(), afternoon: document.createDocumentFragment() };
-for (const field of timeFields) {
-const value = splitTime(draftSchedule[field.key]);
-const card = document.createElement('section');
-card.className = 'time-wheel-card';
-card.dataset.timeKey = field.key;
-const title = document.createElement('div');
-title.className = 'time-wheel-title';
-title.textContent = field.key.endsWith('Start') ? '开始' : '结束';
-const picker = document.createElement('div');
-picker.className = 'time-wheel-picker';
-const separator = document.createElement('span');
-separator.className = 'time-wheel-separator';
-separator.textContent = ':';
-const hourWheel = new TimeWheel({
-key: field.key,
-unit: 'hour',
-title: field.title,
-value: value.hour,
-onChange: (nextValue) => updateDraftTime(field.key, 'hour', nextValue)
-});
-const minuteWheel = new TimeWheel({
-key: field.key,
-unit: 'minute',
-title: field.title,
-value: value.minute,
-onChange: (nextValue) => updateDraftTime(field.key, 'minute', nextValue)
-});
-wheelInstances.push(hourWheel, minuteWheel);
-picker.append(hourWheel.element, separator, minuteWheel.element);
-picker.setAttribute('aria-describedby', 'scheduleSettingsError');
-card.append(title, picker);
-fragments[field.key.startsWith('morning') ? 'morning' : 'afternoon'].appendChild(card);
-}
-document.getElementById('scheduleMorningWheels').replaceChildren(fragments.morning);
-document.getElementById('scheduleAfternoonWheels').replaceChildren(fragments.afternoon);
+scheduleWheels.mount(draftSchedule);
 clearScheduleErrors();
 updateScheduleCalibrationSummary();
 }
@@ -19481,10 +20091,10 @@ document.body.append(anchor);
 anchor.click();
 anchor.remove();
 AppLifecycle.setTimeout(() => URL.revokeObjectURL(url), 1000);
-updateCalendarDataPresentation('已导出当前面板的日历。', draftCalendar);
+updateCalendarDataPresentation('exported-draft', draftCalendar);
 recordDiagnosticEvent('calendar', '导出日历草稿', { checksum: draftCalendar.checksum });
 } catch (error) {
-setTextIfChanged(dom.calendarDataStatus, `导出失败：${error.message}`);
+calendarStatus.setStatus('export-failed', error.message);
 }
 }
 async function importCalendarFile(file) {
@@ -19498,19 +20108,26 @@ const text = await file.text();
 if (generation !== importGeneration || dom.settingsDialog.hidden || activePanel !== 'schedule') return;
 const parsed = JSON.parse(text);
 draftCalendar = CalendarDataStore.normalize(parsed, 'imported');
-updateCalendarDataPresentation('已载入日历，保存后生效。', draftCalendar);
+updateCalendarDataPresentation('loaded-draft', draftCalendar);
 queueDraftWrite();
 } catch (error) {
 if (generation !== importGeneration) return;
-setTextIfChanged(dom.calendarDataStatus, `导入失败：${error.message}`);
+calendarStatus.setStatus('import-failed', error.message);
 recordDiagnosticEvent('calendar', '导入日历清单失败', { message: error.message });
 } finally {
 if (generation === importGeneration) {
 importBusy = false;
-dom.calendarImportInput.value = '';
-dom.settingsSaveButton.disabled = saveBusy || (scheduleValidationActive && Boolean(getScheduleViolation()));
+calendarImportInput.value = '';
+dom.settingsSaveButton.disabled = saveBusy || (scheduleValidationActive && Boolean(getScheduleValidation().violation));
 }
 }
+}
+function selectBuiltinCalendarDraft() {
+importGeneration += 1;
+importBusy = false;
+draftCalendar = CalendarDataStore.normalize({ coverage: DEFAULT_CONFIG.calendarCoverage, specialWorkdays: DEFAULT_CONFIG.specialWorkdays, holidays: DEFAULT_CONFIG.holidays }, 'builtin');
+updateCalendarDataPresentation(calendarChanged() ? 'selected-builtin' : 'already-builtin', draftCalendar);
+dom.settingsSaveButton.disabled = saveBusy || (scheduleValidationActive && Boolean(getScheduleValidation().violation));
 }
 function open(panel, { focusCalendar = false, focusReturnTarget = null } = {}) {
 backupGeneration += 1;
@@ -19522,7 +20139,7 @@ TimeWheel.cancelActiveEditor();
 importGeneration += 1;
 importBusy = false;
 draftCalendar = ACTIVE_CALENDAR;
-dom.calendarImportInput.value = '';
+calendarImportInput.value = '';
 DisplayPreferences.lockIncome();
 DisplayPreferences.panelOpened();
 savedReadoutTargets = [];
@@ -19559,10 +20176,10 @@ updateCalendarDataPresentation();
 if (income) {
 destroyScheduleWheels();
 dom.annualWorkDaysInput.value = String(CONFIG.annualWorkDays);
-resetIncomeModeDrafts();
+incomeDrafts.reset(CONFIG);
 setIncomeMode(CONFIG.incomeMode, { initialize: true });
 DisplayPreferences.syncIncomeGate();
-incomeBaseline = incomeDraftKey();
+incomeBaseline = incomeDrafts.key(selectedIncomeMode);
 estimatePrepared = false;
 setIncomeView('config');
 } else {
@@ -19591,8 +20208,8 @@ if (!resetScroll || document.activeElement !== dom.settingsDialog.querySelector(
 if (!income) {
 if (focusCalendar) {
 dom.calendarDataSection.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
-dom.calendarImportButton.focus({ preventScroll: true });
-} else wheelInstances[0]?.focus();
+calendarImportButton.focus({ preventScroll: true });
+} else scheduleWheels.focusFirst();
 }
 }, reduceMotionQuery.matches ? 0 : sharedPreview ? SETTINGS_SHARED_MOTION.duration : MOTION.fast);
 });
@@ -19600,7 +20217,7 @@ recordDiagnosticEvent('settings', income ? '打开收入设置' : '打开工作�
 AppLifecycle.setTimeout(() => offerDraftRecovery(panel, generation), reduceMotionQuery.matches ? 0 : SETTINGS_SHARED_MOTION.duration + 60);
 }
 function finalizeClose() {
-incomeModeDrafts = null;
+incomeDrafts.clear();
 setDiscardPrompt(false);
 importGeneration += 1;
 importBusy = false;
@@ -19702,10 +20319,11 @@ return result;
 }
 function saveSchedule() {
 scheduleValidationActive = true;
-const violation = getScheduleViolation();
+const validation = getScheduleValidation();
+const { violation } = validation;
 if (violation) {
 showScheduleViolation(violation);
-updateScheduleCalibrationSummary();
+updateScheduleCalibrationSummary(validation);
 dom.settingsSaveButton.disabled = true;
 return false;
 }
@@ -19713,7 +20331,7 @@ try {
 ScheduleEngine.validate(draftSchedule);
 } catch (error) {
 showScheduleViolation(Object.freeze({ key: 'morningStart', message: error.message }));
-updateScheduleCalibrationSummary();
+updateScheduleCalibrationSummary(validation);
 return false;
 }
 clearScheduleErrors();
@@ -19746,7 +20364,7 @@ return false;
 }
 if (changingCalendar) {
 applyCalendarData(draftCalendar, { persist: false, origin: draftCalendar.origin });
-updateCalendarDataPresentation('工作时间和日历已保存。');
+updateCalendarDataPresentation('schedule-and-calendar-saved');
 if (InstanceCoordinator.isWriter()) publishCoordinatedState('工作时间和日历已保存');
 }
 showSettingsSaveResult('工作时间设置', result);
@@ -19794,7 +20412,7 @@ getFocusableElements()[0]?.focus();
 }
 function bindHoverFeedback(card) {
 let hoverTimer = 0;
-ComponentScopes.settings.listen(card, 'pointerenter', event => {
+const stopEnter = ComponentScopes.settings.listen(card, 'pointerenter', event => {
 if (event.pointerType !== 'mouse' || !matchMedia('(hover:hover) and (pointer:fine)').matches) return;
 hoverTimer = AppLifecycle.setTimeout(() => card.classList.add('is-hovered'), 70);
 });
@@ -19802,17 +20420,19 @@ const clearHover = () => {
 AppLifecycle.clearTimeout(hoverTimer);
 card.classList.remove('is-hovered');
 };
-ComponentScopes.settings.listen(card, 'pointerleave', clearHover);
-ComponentScopes.settings.listen(card, 'pointercancel', clearHover);
+const stopLeave = ComponentScopes.settings.listen(card, 'pointerleave', clearHover);
+const stopCancel = ComponentScopes.settings.listen(card, 'pointercancel', clearHover);
+return () => { stopEnter(); stopLeave(); stopCancel(); clearHover(); };
 }
-function bindCard(card, panel) {
-bindHoverFeedback(card);
-ComponentScopes.settings.listen(card, 'click', () => open(panel));
-ComponentScopes.settings.listen(card, 'keydown', (event) => {
+function bindCard(card, activate) {
+const stopHover = bindHoverFeedback(card);
+const stopClick = ComponentScopes.settings.listen(card, 'click', () => activate());
+const stopKey = ComponentScopes.settings.listen(card, 'keydown', (event) => {
 if (event.key !== 'Enter' && event.key !== ' ') return;
 event.preventDefault();
-open(panel);
+activate();
 });
+return () => { stopHover(); stopClick(); stopKey(); };
 }
 function bind() {
 const sheet = getDialogSheet();
@@ -19830,18 +20450,7 @@ ComponentScopes.settings.listen(document, 'visibilitychange', () => { if (docume
 ComponentScopes.settings.listen(window, 'beforeunload', () => persistDraft());
 ComponentScopes.settings.listen(document.getElementById('draftReview'), 'click', () => { const panel = recoveryPanels.values().next().value; if (panel) open(panel); });
 document.getElementById('draftNotice').hidden = !recoveryPanels.size;
-const incomeTabs = [...dom.incomeSettingsPanel.querySelectorAll('[role="tab"]')];
-for (const tab of incomeTabs) {
-ComponentScopes.settings.listen(tab, 'click', () => setIncomeView(tab.dataset.incomeView));
-ComponentScopes.settings.listen(tab, 'keydown', event => {
-if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-event.preventDefault();
-event.stopPropagation();
-const index = incomeTabs.indexOf(tab);
-const next = event.key === 'Home' ? 0 : event.key === 'End' ? incomeTabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + incomeTabs.length) % incomeTabs.length;
-setIncomeView(incomeTabs[next].dataset.incomeView, true);
-});
-}
+incomeSettings.bind(ComponentScopes.settings.listen, { onSelectView: setIncomeView, onSelectMode: setIncomeMode });
 for (const view of dom.incomeSettingsPanel.querySelectorAll('.income-view')) ComponentScopes.settings.listen(view, 'scroll', requestSettingsScrollEdges, { passive: true });
 ComponentScopes.settings.listen(sheet, 'scroll', requestSettingsScrollEdges, { passive: true });
 ComponentScopes.settings.listen(window, 'resize', requestSettingsScrollEdges, { passive: true });
@@ -19851,10 +20460,9 @@ for (const node of [sheet, dom.incomeSettingsPanel, dom.scheduleSettingsPanel, d
 ComponentScopes.settings.replaceResource('scroll-edge-observer', observer, value => value.disconnect());
 }
 ComponentScopes.settings.replaceResource('saved-readout-feedback', {}, clearReadoutFeedback);
-bindCard(dom.incomeSettingsCard, 'income');
-bindCard(dom.scheduleSettingsCard, 'schedule');
+hourlySummary.bindEdit(bindCard, () => open('income'));
+progressReadout.bindEdit(bindCard, () => open('schedule'));
 bindHoverFeedback(dom.historyQuickOpen);
-for (const button of dom.settingsDialog.querySelectorAll('[data-income-mode]')) ComponentScopes.settings.listen(button, 'click', () => setIncomeMode(button.dataset.incomeMode));
 ComponentScopes.settings.listen(dom.incomeAmountInput, 'input', () => {
 revalidateIncome();
 renderIncomePreview();
@@ -19865,16 +20473,11 @@ renderIncomePreview();
 });
 for (const button of dom.settingsDialog.querySelectorAll('[data-settings-close]')) ComponentScopes.settings.listen(button, 'click', () => close({ source: button.dataset.settingsCloseKind || 'generic', trigger: button }));
 ComponentScopes.settings.listen(dom.settingsSaveButton, 'click', save);
-ComponentScopes.settings.listen(document.getElementById('calendarWarningSettings'), 'click', event => open('schedule', { focusCalendar: true, focusReturnTarget: event.currentTarget }));
-ComponentScopes.settings.listen(dom.calendarExportButton, 'click', exportCalendarData);
-ComponentScopes.settings.listen(dom.calendarImportButton, 'click', () => dom.calendarImportInput.click());
-ComponentScopes.settings.listen(dom.calendarImportInput, 'change', () => importCalendarFile(dom.calendarImportInput.files?.[0]));
-ComponentScopes.settings.listen(dom.calendarResetButton, 'click', () => {
-importGeneration += 1;
-importBusy = false;
-draftCalendar = CalendarDataStore.normalize({ coverage: DEFAULT_CONFIG.calendarCoverage, specialWorkdays: DEFAULT_CONFIG.specialWorkdays, holidays: DEFAULT_CONFIG.holidays }, 'builtin');
-updateCalendarDataPresentation(calendarChanged() ? '已选择内置日历，保存后生效。' : '当前已是内置日历。', draftCalendar);
-dom.settingsSaveButton.disabled = saveBusy || (scheduleValidationActive && Boolean(getScheduleViolation()));
+monthSummary.bindCalendarAction(ComponentScopes.settings.listen, focusReturnTarget => open('schedule', { focusCalendar: true, focusReturnTarget }));
+scheduleSettings.bindCalendarActions(ComponentScopes.settings.listen, {
+onExport: exportCalendarData,
+onImport: importCalendarFile,
+onReset: selectBuiltinCalendarDraft
 });
 ComponentScopes.settings.listen(document.getElementById('settingsContinueEditing'), 'click', () => setDiscardPrompt(false));
 ComponentScopes.settings.listen(document.getElementById('settingsDiscardChanges'), 'click', () => close({ force: true }));
@@ -19891,7 +20494,7 @@ open,
 close,
 save,
 getActivePanel: () => activePanel,
-getWheelCount: () => wheelInstances.length,
+getWheelCount: scheduleWheels.getCount,
 getScheduleDirty: () => scheduleDirty,
 getFocusState: () => Object.freeze({
 open: !dom.settingsDialog.hidden,
@@ -19906,31 +20509,151 @@ const parts = BusinessTimeZone.partsAt(now.getTime());
 const calendar = getMonthCalendar(now);
 const rates = draft ? IncomeEngine.calculate(draft, schedule, calendar) : null;
 const hours = Number(workHoursPerDay.toFixed(4)).toLocaleString('zh-CN', { maximumFractionDigits: 4 });
-const values = {
-monthlyWorkDaysValue: String(calendar.totalWorkdays),
-incomeCalculationDate: `${parts.year} 年 ${parts.month} 月 · 每天 ${hours} 小时`,
-incomeCalculationDaily: rates ? formatCurrency(rates.daily) : '—',
-incomeCalculationHourly: rates ? formatCurrency(rates.hourly) : '—'
-};
-for (const [id, value] of Object.entries(values)) setTextIfChanged(document.getElementById(id), value);
+incomeFields.updateMonthlyWorkdays(calendar.totalWorkdays);
+incomeRateSummary.update({
+context: `${parts.year} 年 ${parts.month} 月 · 每天 ${hours} 小时`,
+daily: rates ? formatCurrency(rates.daily) : '—',
+hourly: rates ? formatCurrency(rates.hourly) : '—'
+});
 }
 
+function createHistoryDateSeek({
+  form, caption, error, clockEditor, writeText,
+  initialValues, createPicker, dateKey, clockText, parseSelection,
+  commitEditors, seekDate, syncDial,
+}) {
+  const day = form.querySelector('#historySeekDateInput');
+  const time = form.querySelector('#historySeekTimeInput');
+  const wheels = form.querySelector('#historySeekWheels');
+  let picker = null;
+  let dirty = false;
+  let syncing = false;
+  let unbind = null;
+
+  function prepare() {
+    dirty = false;
+    syncing = true;
+    initialValues(day, time);
+    error.hidden = true;
+    wheels.removeAttribute('aria-invalid');
+    picker?.destroy();
+    picker = createPicker(wheels, day, time, 'history-seek', () => {
+      if (!syncing) dirty = true;
+      if (!clockEditor.hasAttribute('aria-invalid')) error.hidden = true;
+      wheels.removeAttribute('aria-invalid');
+    });
+    picker.refresh();
+    syncing = false;
+  }
+
+  function syncClock(date, parts) {
+    const text = clockText(date, parts);
+    if (time.value !== text) time.value = text;
+    if (!dirty) {
+      const nextDay = dateKey(date, parts);
+      if (day.value !== nextDay) {
+        day.value = nextDay;
+        syncing = true;
+        picker?.refresh();
+        syncing = false;
+      }
+    }
+  }
+
+  function readDate(text) {
+    return parseSelection(day, { value: text });
+  }
+
+  function setCaption(value) {
+    writeText(caption, value);
+  }
+
+  function submit(event) {
+    event.preventDefault();
+    if (!commitEditors()) return;
+    error.hidden = true;
+    try {
+      const date = parseSelection(day, time);
+      if (!seekDate(date)) throw new Error('所选时间不在可回溯范围内。');
+      dirty = false;
+      syncClock(date);
+      syncDial(date);
+    } catch (failure) {
+      writeText(error, failure.message);
+      error.hidden = false;
+      wheels.setAttribute('aria-invalid', 'true');
+    }
+  }
+
+  function bind(listen) {
+    if (!unbind) unbind = listen(form, 'submit', submit);
+  }
+
+  function destroy() {
+    unbind?.();
+    unbind = null;
+    picker?.destroy();
+    picker = null;
+  }
+
+  return Object.freeze({ prepare, syncClock, readDate, setCaption, bind, destroy });
+}
+function createDateEstimateResult({ root, writeText }) {
+  let nodes = null;
+
+  function mount() {
+    if (nodes) return;
+    nodes = {
+      dateLabel: root.querySelector('#historyDateHeading'),
+      stateLabel: root.querySelector('#historyDateState'),
+      income: root.querySelector('#historyDateIncome'),
+      work: root.querySelector('#historyDateWork'),
+      daily: root.querySelector('#historyDateDaily'),
+      month: root.querySelector('#historyDateMonth'),
+    };
+  }
+
+  function update(values) {
+    if (!nodes) return;
+    for (const [key, node] of Object.entries(nodes)) writeText(node, values[key]);
+    root.hidden = false;
+  }
+
+  function clear() {
+    if (nodes) root.hidden = true;
+  }
+
+  function destroy() {
+    nodes = null;
+  }
+
+  return Object.freeze({ mount, update, clear, destroy });
+}
 const HistoryDateReview = (() => {
 const form = document.getElementById('historyDateForm');
 const dateInput = document.getElementById('historyDateInput');
 const timeInput = document.getElementById('historyTimeInput');
 const error = document.getElementById('historyDateError');
-const result = document.getElementById('historyDateResult');
-const seekForm = document.getElementById('historySeekForm');
-const seekDate = document.getElementById('historySeekDateInput');
-const seekTime = document.getElementById('historySeekTimeInput');
-const seekError = document.getElementById('historySeekError');
-let seekPicker = null;
+const resultDisplay = createDateEstimateResult({ root: document.getElementById('historyDateResult'), writeText: setTextIfChanged });
+resultDisplay.mount();
+const dateSeek = createHistoryDateSeek({
+form: document.getElementById('historySeekForm'),
+caption: document.getElementById('historyDialDate'),
+error: document.getElementById('historySeekError'),
+clockEditor: document.getElementById('historyDialTime'),
+writeText: setTextIfChanged,
+initialValues,
+createPicker: createDateTimeWheels,
+dateKey: localDateKey,
+clockText: (date, parts) => BusinessTimeZone.clockText(date, true, parts),
+parseSelection: selected,
+commitEditors: () => TimeWheel.commitActiveEditor() && HistoryTimeDial.commit({ apply: false }),
+seekDate: date => seekHistoryDate(date, 'date-picker'),
+syncDial: date => HistoryTimeDial.sync(date)
+});
 let estimatePicker = null;
-let seekDateDirty = false;
-let syncingSeek = false;
 function clearResult() {
-result.hidden = true;
+resultDisplay.clear();
 error.hidden = true;
 document.getElementById('incomeEstimateWheels').removeAttribute('aria-invalid');
 }
@@ -19939,30 +20662,8 @@ const initial = timelineDisplayClockDate();
 day.value = localDateKey(initial);
 time.value = BusinessTimeZone.clockText(initial, false);
 }
-function prepare() {
-seekDateDirty = false;
-syncingSeek = true;
-initialValues(seekDate, seekTime);
-seekError.hidden = true;
-document.getElementById('historySeekWheels').removeAttribute('aria-invalid');
-seekPicker?.destroy();
-seekPicker = createDateTimeWheels(document.getElementById('historySeekWheels'), seekDate, seekTime, 'history-seek', () => {
-if (!syncingSeek) seekDateDirty = true;
-if (!document.getElementById('historyDialTime').hasAttribute('aria-invalid')) seekError.hidden = true;
-document.getElementById('historySeekWheels').removeAttribute('aria-invalid');
-});
-seekPicker.refresh();
-syncingSeek = false;
-}
 function syncSeekClock(date, parts = BusinessTimeZone.partsAt(date.getTime())) {
-const text = BusinessTimeZone.clockText(date, true, parts);
-if (seekTime.value !== text) seekTime.value = text;
-if (!seekDateDirty && seekDate.value !== localDateKey(date, parts)) {
-seekDate.value = localDateKey(date, parts);
-syncingSeek = true;
-seekPicker?.refresh();
-syncingSeek = false;
-}
+dateSeek.syncClock(date, parts);
 }
 function prepareEstimate() {
 initialValues(dateInput, timeInput);
@@ -19995,15 +20696,14 @@ const amount = work * rates.secondly;
 const month = getMonthProgress(date, amount, rates);
 const labels = { working: '工作时段', break: '午休', ended: '工作结束', 'not-started': '尚未上班', 'day-off': '休息日' };
 const values = {
-historyDateHeading: localDateKey(date),
-historyDateState: `截至 ${BusinessTimeZone.clockText(date, false)} · ${labels[getStatus(date)]}`,
-historyDateIncome: formatCurrency(amount),
-historyDateWork: formatDuration(work),
-historyDateDaily: formatCurrency(workingDay ? rates.daily : 0),
-historyDateMonth: formatCurrency(month.accumulated)
+dateLabel: localDateKey(date),
+stateLabel: `截至 ${BusinessTimeZone.clockText(date, false)} · ${labels[getStatus(date)]}`,
+income: formatCurrency(amount),
+work: formatDuration(work),
+daily: formatCurrency(workingDay ? rates.daily : 0),
+month: formatCurrency(month.accumulated)
 };
-for (const [id, value] of Object.entries(values)) setTextIfChanged(document.getElementById(id), value);
-result.hidden = false;
+resultDisplay.update(values);
 } catch (failure) {
 setTextIfChanged(error, failure.message);
 error.hidden = false;
@@ -20012,43 +20712,14 @@ document.getElementById('incomeEstimateWheels').setAttribute('aria-invalid', 'tr
 }
 function bind() {
 ComponentScopes.settings.listen(form, 'submit', submit);
-ComponentScopes.timeline.listen(seekForm, 'submit', event => {
-event.preventDefault();
-if (!TimeWheel.commitActiveEditor() || !HistoryTimeDial.commit({ apply: false })) return;
-seekError.hidden = true;
-try {
-const date = selected(seekDate, seekTime);
-if (!seekHistoryDate(date, 'date-picker')) throw new Error('所选时间不在可回溯范围内。');
-seekDateDirty = false;
-syncSeekClock(date);
-HistoryTimeDial.sync(date);
-} catch (failure) {
-setTextIfChanged(seekError, failure.message);
-seekError.hidden = false;
-document.getElementById('historySeekWheels').setAttribute('aria-invalid', 'true');
+dateSeek.bind(ComponentScopes.timeline.listen);
+ComponentScopes.app.on('destroy', () => { dateSeek.destroy(); estimatePicker?.destroy(); resultDisplay.destroy(); });
 }
-});
-ComponentScopes.app.on('destroy', () => { seekPicker?.destroy(); estimatePicker?.destroy(); });
-}
-return Object.freeze({ bind, prepare, prepareEstimate, syncSeekClock, readSeekDate: time => selected(seekDate, { value: time }), refreshEstimate: () => estimatePicker?.refresh() });
+return Object.freeze({ bind, prepare: dateSeek.prepare, prepareEstimate, syncSeekClock, readSeekDate: dateSeek.readDate, setDialDate: dateSeek.setCaption, refreshEstimate: () => estimatePicker?.refresh() });
 })();
 
-function statusText(status) {
-const day = timeTravel.state === TIMELINE_STATE.LIVE ? '今日' : '当日';
-return ({
-working: '工作中 · 时间正在积累价值',
-break: '午休中 · 收入暂时停表',
-ended: `${day}工作结束`,
-'not-started': `等待${day}工作开始`,
-'day-off': '休息日 · 好好生活'
-})[status] || '状态未知';
-}
 function syncStatusCopy(status) {
-const text = statusText(status);
-const separator = text.indexOf(' · ');
-setTextIfChanged(dom.statusLabelMain, separator < 0 ? text : text.slice(0, separator));
-setTextIfChanged(dom.statusLabelDetail, separator < 0 ? '' : text.slice(separator));
-setAttributeIfChanged(dom.statusLabel, 'aria-label', text);
+statusReadout.updateStatus(status, timeTravel.state === TIMELINE_STATE.LIVE);
 }
 function safelyReadStorage(key) {
 try {
@@ -20666,8 +21337,7 @@ dom.progressTrack,
 '--timeline-cursor-x',
 `${routeX.toFixed(3)}px`
 );
-setTextIfChanged(dom.progressPercent, `${overallValue}%`);
-setAttributeIfChanged(dom.progressTrack, 'aria-valuenow', overallValue);
+progressReadout.setPercent(overallValue);
 }
 function updateProgress(status, workSeconds) {
 applyProgressVisual(
@@ -21544,7 +22214,7 @@ if (Number.parseFloat(getComputedStyle(input).fontSize) < 16) failures.push(`${i
 if (Number.parseFloat(getComputedStyle(input).minHeight) < 44) failures.push(`${input.id} 触控高度低于 44px`);
 }
 if (TIME_WHEEL_ITEM_HEIGHT < 44) failures.push('时间滚轮单项触控高度低于 44px');
-if (Number.parseFloat(getComputedStyle(dom.calendarImportButton).minHeight) < 44) failures.push('日历导入按钮触控高度低于 44px');
+if (Number.parseFloat(getComputedStyle(calendarImportButton).minHeight) < 44) failures.push('日历导入按钮触控高度低于 44px');
 return Object.freeze({
 passed: failures.length === 0,
 failures: Object.freeze(failures),
@@ -22810,11 +23480,6 @@ progress
 );
 }
 const businessDateLabels = Object.freeze([
-['workedTimeLabel', '今日已工作', '所选日期已工作'],
-['progressContextLabel', '今日工作进度', '当日工作进度'],
-['monthIncomeLabel', '本月累计收入', '所在月份累计收入'],
-['funContextLabel', '今日已赚可买…', '当日已赚可买…'],
-['estMonthLabel', '本月预计', '该月预计'],
 ['completionNote', '今日的时间，已经落袋', '当日的时间，已经落袋']
 ].map(([id, live, history]) => {
 const node = document.getElementById(id);
@@ -22823,10 +23488,10 @@ return Object.freeze({ node, live, history });
 }));
 function syncBusinessDateLabels(date, atLive, parts = BusinessTimeZone.partsAt(date.getTime())) {
 for (const label of businessDateLabels) setTextIfChanged(label.node, atLive ? label.live : label.history);
-const day = atLive ? '今日' : `${localDateKey(date, parts)} 当日`;
-setAttributeIfChanged(dom.progressTrack, 'aria-label', `${day}工作进度`);
-setAttributeIfChanged(document.getElementById('progressReadout'), 'aria-label', `${day}工作进度读数`);
-setAttributeIfChanged(document.getElementById('monthSummaryCard'), 'aria-label', atLive ? '本月累计收入' : `${parts.year} 年 ${parts.month} 月累计收入`);
+funConversions.setContext(atLive);
+workSummary.setContext(atLive);
+monthSummary.setContext(atLive, parts);
+progressReadout.setContext(atLive, atLive ? undefined : localDateKey(date, parts));
 }
 function updateTimelineChrome(
 displayedDate = timelineDisplayClockDate(),
@@ -22845,15 +23510,7 @@ setAttributeIfChanged(dom.incomeContextDate, 'datetime', displayedDate.toISOStri
 }
 setAttributeIfChanged(document.getElementById('incomeMainCard'), 'aria-label', atLive ? '今日实时收入' : `所选时刻收入，${localDateKey(displayedDate, displayedParts)}`);
 const displayText = timeFormatter.format(displayedDate);
-setTextIfChanged(
-dom.currentTime,
-displayText
-);
-setAttributeIfChanged(
-dom.currentTime,
-'datetime',
-displayedDate.toISOString()
-);
+statusReadout.updateTime(displayText, displayedDate.toISOString());
 const liveWorkSecond = Math.max(
 0,
 Math.floor(getWorkSeconds(liveNow, liveParts))
@@ -25959,8 +26616,196 @@ pressedButton: null,
 recentButton: null,
 recentTimer: 0
 };
+function createHistoryPanelFocus({ root, panel, opener, control, backdrop, state, closePanel, canReturnFocus }) {
+  function handleKeyboard(event, editing) {
+    const target = event.target;
+    const ownsKeyboard = panel.contains(target) || opener.contains(target) || (target === root.body && (panel.inert || panel.hasAttribute('data-entry-animating')));
+    if (!(state.open || state.closing) || !(event.key === 'Escape' || ownsKeyboard)) return false;
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closePanel();
+    } else if (!editing && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+      event.preventDefault();
+    }
+    if (event.key === 'Tab' && (panel.inert || panel.hasAttribute('data-entry-animating'))) { event.preventDefault(); return true; }
+    if (event.key === 'Tab' && !state.desktop) {
+      const controls = [...panel.querySelectorAll('button:not(:disabled):not([tabindex="-1"]),input:not([type="hidden"]),summary,[role="spinbutton"],[role="slider"]')].filter(node => !node.hidden && node.getClientRects().length && !node.closest('[inert]'));
+      const first = controls[0], last = controls.at(-1);
+      if (!first) { event.preventDefault(); return true; }
+      if (event.shiftKey && (target === first || target === panel)) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && (target === last || target === panel)) { event.preventDefault(); first.focus(); }
+    }
+    return true;
+  }
+
+  function focusAfterOpen(openingActive) {
+    const active = root.activeElement;
+    if (state.open && (active === opener || active === openingActive || active === root.body)) panel.focus({ preventScroll: true });
+  }
+
+  function rememberCloseFocus() {
+    state.returnFocus = panel.contains(root.activeElement) || root.activeElement === root.body;
+  }
+
+  function captureCloseFocus() {
+    const active = root.activeElement;
+    const shouldReturn = panel.contains(active) || (state.returnFocus && active === root.body);
+    state.returnFocus = false;
+    return shouldReturn;
+  }
+
+  function restoreFocus(shouldReturn) {
+    if (shouldReturn && canReturnFocus()) opener.focus({ preventScroll: true });
+  }
+
+  function cancelReturnFocus() {
+    state.returnFocus = false;
+  }
+
+  function bind(listen) {
+    listen(backdrop, 'click', () => closePanel());
+    listen(panel.querySelector('#historyQuickClose'), 'click', () => closePanel());
+    listen(root, 'pointerdown', event => {
+      if (state.open && !control.contains(event.target) && !panel.contains(event.target)) {
+        closePanel();
+        // The outside action owns focus, including unfocused Safari buttons.
+        cancelReturnFocus();
+      }
+    }, { passive: true });
+    listen(root, 'focusin', event => {
+      if (state.open && !state.desktop && !panel.inert && !panel.hasAttribute('data-entry-animating') && !panel.contains(event.target)) {
+        panel.focus({ preventScroll: true });
+      }
+    });
+  }
+
+  return Object.freeze({ bind, handleKeyboard, focusAfterOpen, rememberCloseFocus, captureCloseFocus, restoreFocus, cancelReturnFocus });
+}
+const HistoryPanelFocus = createHistoryPanelFocus({
+root: document,
+panel: dom.historyQuickPanel,
+opener: dom.historyQuickOpen,
+control: dom.timeTravelControl,
+backdrop: dom.historyQuickBackdrop,
+state: historyQuickPanelState,
+closePanel: () => setHistoryQuickPanelOpen(false),
+canReturnFocus: () => dom.settingsDialog.hidden
+});
 const historyQuickPresentation = EntryPopovers.create(dom.historyQuickPanel, dom.historyQuickOpen, {
 menuFeedback: true, cardMotion: true, centered: true
+});
+function createHistoryPanelController({
+  root, panel, opener, backdrop, state, presentation, focus, clearTimer,
+  finishEditing, prepareDate, resetDrag, dismissNotice, syncPanel, viewport,
+}) {
+  const body = root.body;
+
+  function portal() {
+    if (!panel || !body) return;
+    if (backdrop?.parentElement !== body) body.appendChild(backdrop);
+    if (panel.parentElement !== body) body.appendChild(panel);
+    body.dataset.historyQuickPortal = 'body';
+  }
+
+  function initialize() {
+    portal();
+    viewport.sync();
+  }
+
+  function finishClose() {
+    if (state.open) return;
+    const returnFocus = focus.captureCloseFocus();
+    clearTimer(state.closeTimer);
+    state.closeTimer = 0;
+    state.closing = false;
+    clearTimer(state.recentTimer);
+    state.recentButton?.classList.remove('is-recent-source');
+    state.recentButton = null;
+    panel.hidden = true;
+    presentation.release();
+    state.desktop = false;
+    panel.setAttribute('aria-modal', 'true');
+    if (backdrop) backdrop.hidden = true;
+    body.classList.remove('history-quick-panel-open', 'history-quick-panel-visible', 'history-quick-panel-closing');
+    resetDrag();
+    focus.restoreFocus(returnFocus);
+  }
+
+  function setOpen(open) {
+    const nextOpen = Boolean(open);
+    if (!nextOpen) finishEditing();
+    if (nextOpen && !state.open) prepareDate();
+    if (!panel || !opener) return;
+    if (!nextOpen && (panel.hidden || state.closing)) return;
+    clearTimer(state.closeTimer);
+    state.closeTimer = 0;
+    state.desktop = nextOpen ? viewport.desktop() : state.desktop;
+    state.open = nextOpen;
+    state.closing = !nextOpen;
+    opener.setAttribute('aria-expanded', String(nextOpen));
+    panel.setAttribute('aria-modal', String(!state.desktop));
+    if (nextOpen) {
+      portal();
+      viewport.sync();
+      resetDrag();
+      dismissNotice();
+      backdrop.hidden = state.desktop;
+      body.classList.remove('history-quick-panel-closing');
+      body.classList.add('history-quick-panel-open', 'history-quick-panel-visible');
+      syncPanel();
+      const openingActive = root.activeElement;
+      presentation.show({ onfinish: () => focus.focusAfterOpen(openingActive) });
+    } else {
+      focus.rememberCloseFocus();
+      presentation.hide({ onfinish: finishClose });
+      if (!state.closing) return;
+      body.classList.remove('history-quick-panel-visible');
+      body.classList.add('history-quick-panel-closing');
+    }
+  }
+
+  function toggle() {
+    setOpen(!state.open);
+  }
+
+  function resize() {
+    viewport.sync();
+    if (state.desktop && viewport.desktop()) presentation.schedulePosition();
+    else if (state.desktop || viewport.width() > 620) setOpen(false);
+  }
+
+  function dismiss() {
+    if (!state.open && !state.closing) return;
+    setOpen(false);
+    focus.cancelReturnFocus();
+    presentation.hide({ immediate: true, onfinish: finishClose });
+  }
+
+  return Object.freeze({ initialize, setOpen, toggle, resize, dismiss });
+}
+const HistoryPanelController = createHistoryPanelController({
+root: document,
+panel: dom.historyQuickPanel,
+opener: dom.historyQuickOpen,
+backdrop: dom.historyQuickBackdrop,
+state: historyQuickPanelState,
+presentation: historyQuickPresentation,
+focus: HistoryPanelFocus,
+clearTimer: id => AppLifecycle.clearTimeout(id),
+finishEditing: () => {
+HistoryTimeDial.finish();
+if (TimeWheel.activeEditor?.editor && dom.historyQuickPanel?.contains(TimeWheel.activeEditor.editor.wrap)) TimeWheel.cancelActiveEditor();
+},
+prepareDate: () => HistoryDateReview.prepare(),
+resetDrag: resetHistoryQuickSheetDrag,
+dismissNotice: () => DisplayPreferences.dismissNotice(),
+syncPanel: () => syncHistoryQuickPanel(),
+viewport: {
+sync: syncHistoryQuickVisualViewport,
+desktop: () => EntryPopovers.desktop(),
+width: () => window.innerWidth
+}
 });
 const historyQuickSheetDrag = {
 active: false,
@@ -26119,17 +26964,6 @@ historyQuickPanelState.pressedButton.classList.remove('is-pressed');
 historyQuickPanelState.pressedButton = null;
 }
 
-function portalHistoryQuickLayer() {
-if (!dom.historyQuickPanel || !body) return;
-if (dom.historyQuickBackdrop?.parentElement !== body) {
-body.appendChild(dom.historyQuickBackdrop);
-}
-if (dom.historyQuickPanel.parentElement !== body) {
-body.appendChild(dom.historyQuickPanel);
-}
-body.dataset.historyQuickPortal = 'body';
-}
-
 function syncHistoryQuickVisualViewport() {
 const viewport = window.visualViewport;
 const visualTop = Math.max(0, Number(viewport?.offsetTop) || 0);
@@ -26158,68 +26992,8 @@ body,
 );
 }
 
-function finalizeHistoryQuickPanelClose() {
-if (historyQuickPanelState.open) return;
-const returnFocus = dom.historyQuickPanel.contains(document.activeElement) || (historyQuickPanelState.returnFocus && document.activeElement === body);
-historyQuickPanelState.returnFocus = false;
-AppLifecycle.clearTimeout(historyQuickPanelState.closeTimer);
-historyQuickPanelState.closeTimer = 0;
-historyQuickPanelState.closing = false;
-AppLifecycle.clearTimeout(historyQuickPanelState.recentTimer);
-historyQuickPanelState.recentButton?.classList.remove('is-recent-source');
-historyQuickPanelState.recentButton = null;
-dom.historyQuickPanel.hidden = true;
-historyQuickPresentation.release();
-historyQuickPanelState.desktop = false;
-dom.historyQuickPanel.setAttribute('aria-modal', 'true');
-if (dom.historyQuickBackdrop) {
-dom.historyQuickBackdrop.hidden = true;
-}
-body.classList.remove(
-'history-quick-panel-open',
-'history-quick-panel-visible',
-'history-quick-panel-closing'
-);
-resetHistoryQuickSheetDrag();
-if (returnFocus && dom.settingsDialog.hidden) dom.historyQuickOpen.focus({ preventScroll: true });
-}
-
 function setHistoryQuickPanelOpen(open) {
-const nextOpen = Boolean(open);
-if (!nextOpen) HistoryTimeDial.finish();
-if (!nextOpen && TimeWheel.activeEditor?.editor && dom.historyQuickPanel?.contains(TimeWheel.activeEditor.editor.wrap)) TimeWheel.cancelActiveEditor();
-if (nextOpen && !historyQuickPanelState.open) HistoryDateReview.prepare();
-if (!dom.historyQuickPanel || !dom.historyQuickOpen) return;
-if (!nextOpen && (dom.historyQuickPanel.hidden || historyQuickPanelState.closing)) return;
-AppLifecycle.clearTimeout(historyQuickPanelState.closeTimer);
-historyQuickPanelState.closeTimer = 0;
-historyQuickPanelState.desktop = nextOpen ? EntryPopovers.desktop() : historyQuickPanelState.desktop;
-historyQuickPanelState.open = nextOpen;
-historyQuickPanelState.closing = !nextOpen;
-dom.historyQuickOpen.setAttribute('aria-expanded', String(nextOpen));
-dom.historyQuickPanel.setAttribute('aria-modal', String(!historyQuickPanelState.desktop));
-if (nextOpen) {
-portalHistoryQuickLayer();
-syncHistoryQuickVisualViewport();
-resetHistoryQuickSheetDrag();
-DisplayPreferences.dismissNotice();
-dom.historyQuickBackdrop.hidden = historyQuickPanelState.desktop;
-body.classList.remove('history-quick-panel-closing');
-body.classList.add('history-quick-panel-open', 'history-quick-panel-visible');
-syncHistoryQuickPanel();
-const openingActive = document.activeElement;
-historyQuickPresentation.show({ onfinish: () => {
-if (historyQuickPanelState.open && (document.activeElement === dom.historyQuickOpen || document.activeElement === openingActive || document.activeElement === body)) {
-dom.historyQuickPanel.focus({ preventScroll: true });
-}
-} });
-} else {
-historyQuickPanelState.returnFocus = dom.historyQuickPanel.contains(document.activeElement) || document.activeElement === body;
-historyQuickPresentation.hide({ onfinish: finalizeHistoryQuickPanelClose });
-if (!historyQuickPanelState.closing) return;
-body.classList.remove('history-quick-panel-visible');
-body.classList.add('history-quick-panel-closing');
-}
+HistoryPanelController.setOpen(open);
 }
 
 function historyQuickGapSeconds(
@@ -26321,19 +27095,7 @@ beginReturnToLive();
 }
 }
 
-function applyHistoryQuickAction(button) {
-if (
-!(button instanceof HTMLButtonElement) ||
-button.disabled
-) return;
-
-const seconds =
-Number(button.dataset.historySeconds);
-const action =
-button.dataset.historyAction || '';
-if (action === 'live') HistoryTimeDial.finish();
-else if (!HistoryTimeDial.commit()) return;
-
+function applyHistoryQuickAction(button, seconds, action) {
 clearHistoryQuickPressedButton();
 AppLifecycle.clearTimeout(historyQuickPanelState.recentTimer);
 if (historyQuickPanelState.recentButton !== button) historyQuickPanelState.recentButton?.classList.remove('is-recent-source');
@@ -26372,25 +27134,7 @@ return;
 }
 const target = event.target;
 const editing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable;
-const quickOwnsKeyboard = dom.historyQuickPanel.contains(target) || dom.historyQuickOpen.contains(target) || (target === body && (dom.historyQuickPanel.inert || dom.historyQuickPanel.hasAttribute('data-entry-animating')));
-if ((historyQuickPanelState.open || historyQuickPanelState.closing) && (event.key === 'Escape' || quickOwnsKeyboard)) {
-if (event.key === 'Escape') {
-event.preventDefault();
-setHistoryQuickPanelOpen(false);
-} else if (!editing && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
-event.preventDefault();
-}
-if (event.key === 'Tab' && (dom.historyQuickPanel.inert || dom.historyQuickPanel.hasAttribute('data-entry-animating'))) { event.preventDefault(); return; }
-if (event.key === 'Tab' && !historyQuickPanelState.desktop) {
-const controls = [...dom.historyQuickPanel.querySelectorAll('button:not(:disabled):not([tabindex="-1"]),input:not([type="hidden"]),summary,[role="spinbutton"],[role="slider"]')].filter(node => !node.hidden && node.getClientRects().length && !node.closest('[inert]'));
-const first = controls[0], last = controls.at(-1);
-if (!first) { event.preventDefault(); return; }
-if (event.shiftKey && (target === first || target === dom.historyQuickPanel)) { event.preventDefault(); last?.focus(); }
-else if (!event.shiftKey && (target === last || target === dom.historyQuickPanel)) { event.preventDefault(); first.focus(); }
-}
-// Native editing stays inside the menu; page shortcuts remain outside it.
-return;
-}
+if (HistoryPanelFocus.handleKeyboard(event, editing)) return;
 if (editing) return;
 if ((event.key === 'Escape' || event.key === 'Home') && timeTravel.state !== TIMELINE_STATE.LIVE) {
 event.preventDefault();
@@ -26409,50 +27153,52 @@ event.preventDefault();
 toggleHistoryPlayback();
 }
 }
+function bindHistoryQuickButtons({
+  listen, panel, playButton, commitDraft, discardDraft,
+  togglePlayback, syncPanel, applyAction,
+}) {
+  listen(playButton, 'click', () => {
+    if (!commitDraft()) return;
+    togglePlayback();
+    syncPanel();
+  });
+  listen(panel, 'click', event => {
+    const button = event.target.closest('button[data-history-seconds],button[data-history-action]');
+    if (!(button instanceof HTMLButtonElement) || !panel.contains(button) || button.disabled) return;
+
+    const seconds = Number(button.dataset.historySeconds);
+    const action = button.dataset.historyAction || '';
+    if (action === 'live') discardDraft();
+    else if (!commitDraft()) return;
+    applyAction(button, seconds, action);
+  });
+}
 function bindTimeTravelInteraction() {
-portalHistoryQuickLayer();
-syncHistoryQuickVisualViewport();
-const dismissDesktopQuick = () => {
-if (!historyQuickPanelState.open && !historyQuickPanelState.closing) return;
-setHistoryQuickPanelOpen(false);
-historyQuickPanelState.returnFocus = false;
-historyQuickPresentation.hide({ immediate: true, onfinish: finalizeHistoryQuickPanelClose });
-};
-ComponentScopes.timeline.listen(document, 'visibilitychange', () => { if (document.hidden) dismissDesktopQuick(); });
-ComponentScopes.timeline.listen(document, 'freeze', dismissDesktopQuick);
-ComponentScopes.timeline.listen(window, 'pagehide', dismissDesktopQuick);
-ComponentScopes.timeline.on('pagehide', dismissDesktopQuick, 200);
-ComponentScopes.timeline.on('suspend', dismissDesktopQuick, 200);
+HistoryPanelController.initialize();
+ComponentScopes.timeline.listen(document, 'visibilitychange', () => { if (document.hidden) HistoryPanelController.dismiss(); });
+ComponentScopes.timeline.listen(document, 'freeze', HistoryPanelController.dismiss);
+ComponentScopes.timeline.listen(window, 'pagehide', HistoryPanelController.dismiss);
+ComponentScopes.timeline.on('pagehide', HistoryPanelController.dismiss, 200);
+ComponentScopes.timeline.on('suspend', HistoryPanelController.dismiss, 200);
 ComponentScopes.timeline.listen(
 dom.historyQuickOpen,
 'click',
 (event) => {
 event.stopPropagation();
-setHistoryQuickPanelOpen(!historyQuickPanelState.open);
+HistoryPanelController.toggle();
 }
 );
-ComponentScopes.timeline.listen(
-dom.historyQuickBackdrop,
-'click',
-() => {
-setHistoryQuickPanelOpen(false);
-}
-);
-ComponentScopes.timeline.listen(document.getElementById('historyQuickClose'), 'click', () => setHistoryQuickPanelOpen(false));
-ComponentScopes.timeline.listen(document.getElementById('historyQuickPlay'), 'click', () => {
-if (!HistoryTimeDial.commit()) return;
-toggleHistoryPlayback();
-syncHistoryQuickPanel();
+HistoryPanelFocus.bind(ComponentScopes.timeline.listen);
+bindHistoryQuickButtons({
+listen: ComponentScopes.timeline.listen,
+panel: dom.historyQuickPanel,
+playButton: document.getElementById('historyQuickPlay'),
+commitDraft: HistoryTimeDial.commit,
+discardDraft: HistoryTimeDial.finish,
+togglePlayback: toggleHistoryPlayback,
+syncPanel: syncHistoryQuickPanel,
+applyAction: applyHistoryQuickAction
 });
-ComponentScopes.timeline.listen(
-dom.historyQuickPanel,
-'click',
-(event) => {
-const button = event.target.closest('button[data-history-seconds],button[data-history-action]');
-if (!button || !dom.historyQuickPanel.contains(button)) return;
-applyHistoryQuickAction(button);
-}
-);
 ComponentScopes.timeline.listen(
 dom.historyQuickGrabber,
 'pointerdown',
@@ -26478,28 +27224,10 @@ dom.historyQuickPanel,
 { passive: true }
 );
 ComponentScopes.timeline.listen(
-document,
-'pointerdown',
-(event) => {
-if (
-historyQuickPanelState.open &&
-!dom.timeTravelControl.contains(event.target) &&
-!dom.historyQuickPanel.contains(event.target)
-) {
-setHistoryQuickPanelOpen(false);
-// An outside pointer action owns focus, including Safari's unfocused buttons.
-historyQuickPanelState.returnFocus = false;
-}
-},
-{ passive: true }
-);
-ComponentScopes.timeline.listen(
 window,
 'resize',
 () => {
-syncHistoryQuickVisualViewport();
-if (historyQuickPanelState.desktop && EntryPopovers.desktop()) historyQuickPresentation.schedulePosition();
-else if (historyQuickPanelState.desktop || window.innerWidth > 620) setHistoryQuickPanelOpen(false);
+HistoryPanelController.resize();
 },
 { passive: true }
 );
@@ -26582,11 +27310,6 @@ beginReturnToLive();
 }
 );
 ComponentScopes.timeline.listen(document, 'keydown', handleGlobalTimelineKeyboard);
-ComponentScopes.timeline.listen(document, 'focusin', event => {
-if (historyQuickPanelState.open && !historyQuickPanelState.desktop && !dom.historyQuickPanel.inert && !dom.historyQuickPanel.hasAttribute('data-entry-animating') && !dom.historyQuickPanel.contains(event.target)) {
-dom.historyQuickPanel.focus({ preventScroll: true });
-}
-});
 dispatchTimelineEvent(
 TIMELINE_EVENT.INITIALIZE,
 { reason: 'initial-bind', timestamp: performance.now() }
@@ -27884,19 +28607,14 @@ const income = animated ? rollerMotion.displayValue : Math.floor(workSeconds) * 
 const displayedWork = animated && rates.secondly > 0
 ? clamp(income / rates.secondly, 0, totalWorkSeconds)
 : workSeconds;
-const wholeWork = Math.max(0, Math.floor(displayedWork));
+// Income-to-time division can land one representable step below a whole second.
+const wholeWork = Math.max(0, Math.floor(displayedWork + (animated ? displayedWork * Number.EPSILON : 0)));
 const remain = Math.max(0, totalWorkSeconds - wholeWork);
 // Ordinary text changes at whole seconds; animated timelines keep frame sampling.
 const sample = workedReadoutSample;
 if (animated || !sample || sample.wholeWork !== wholeWork || sample.total !== totalWorkSeconds || sample.morning !== morningSeconds || sample.status !== status || sample.dayLabel !== dayLabel) {
 workedReadoutSample = animated ? null : { wholeWork, total: totalWorkSeconds, morning: morningSeconds, status, dayLabel };
-setTextIfChanged(dom.workedTime, formatDuration(wholeWork));
-let text = `剩余 ${formatDuration(remain)}`;
-if (status === 'day-off') text = `${dayLabel}不计工作收入`;
-else if (wholeWork >= totalWorkSeconds) text = '已完成全天工作';
-else if (status === 'break' && wholeWork === morningSeconds) text = `午休后剩余 ${formatDuration(remain)}`;
-else if (status === 'not-started' && wholeWork === 0) text = `全天待完成 ${formatDuration(remain)}`;
-setTextIfChanged(dom.workedSub, text);
+workSummary.update({ wholeWork, remain, totalWork: totalWorkSeconds, morningWork: morningSeconds, status, dayLabel });
 }
 // Monthly and worked-time readouts share the same whole-second sample.
 const monthSampleKey = `${localDateKey(now, parts)}|${rates.daily}|${rates.secondly}|${wholeWork}|${Boolean(foregroundCatchup?.resume)}`;
@@ -27912,7 +28630,7 @@ const target = getMonthProgress(now, workSeconds * rates.secondly, rates, parts)
 monthIncome = lerp(from, target, foregroundCatchup.readoutProgress || 0);
 }
 displayedMonthIncome = monthIncome;
-setTextIfChanged(dom.monthIncome, formatCurrency(monthIncome));
+monthSummary.updateIncome(monthIncome);
 }
 function updateStats(
 frame = createFrameSnapshot()
@@ -27938,15 +28656,7 @@ const monthProgress = getMonthProgress(now, income, rates, parts);
 const displayedClockDate =
 timelineDisplayClockDate(now);
 const displayedParts = displayedClockDate.getTime() === now.getTime() ? parts : displayedClockDate.getTime() === frame.liveDate.getTime() ? frame.liveParts : BusinessTimeZone.partsAt(displayedClockDate.getTime());
-setTextIfChanged(
-dom.currentTime,
-timeFormatter.format(displayedClockDate)
-);
-setAttributeIfChanged(
-dom.currentTime,
-'datetime',
-displayedClockDate.toISOString()
-);
+statusReadout.updateTime(timeFormatter.format(displayedClockDate), displayedClockDate.toISOString());
 updateTimelineChrome(
 displayedClockDate,
 frame.liveDate,
@@ -27955,27 +28665,8 @@ frame.liveParts
 );
 applyStatus(status, now);
 updateSynchronizedReadouts(now, status, workSeconds, rates, parts);
-let progressPhaseText = '等待开始';
 const dayLabel = timeTravel.state === TIMELINE_STATE.LIVE ? '今日' : '当日';
-let progressRemainingText = `全天 ${formatCompactDuration(remain)}`;
-if (status === 'day-off') {
-progressPhaseText = `${dayLabel}休息`;
-progressRemainingText = '不计工作进度';
-} else if (status === 'ended') {
-progressPhaseText = `${dayLabel}完成`;
-progressRemainingText = '工时已落袋';
-} else if (status === 'break') {
-progressPhaseText = '午间停表';
-progressRemainingText = `剩余 ${formatCompactDuration(remain)}`;
-} else if (status === 'working') {
-progressPhaseText = secondsSinceMidnight(now, parts) < schedule.morningEnd ? '上午班次' : '下午班次';
-progressRemainingText = `剩余 ${formatCompactDuration(remain)}`;
-}
-setTextIfChanged(dom.progressPhase, progressPhaseText);
-setTextIfChanged(dom.progressRemaining, progressRemainingText);
-setAttributeIfChanged(dom.scheduleSettingsCard, 'data-work-status', status);
-if (status === 'day-off') setTextIfChanged(dom.progressRemaining, `${dayLabel}休息`);
-setAttributeIfChanged(dom.progressTrack, 'aria-valuetext', status === 'day-off' ? `${dayLabel}休息，显示已设置的工作时段，不计工作进度` : `${progressPhaseText}，${progressRemainingText}`);
+progressReadout.updateStatus(status, remain, dayLabel, status === 'working' && secondsSinceMidnight(now, parts) < schedule.morningEnd);
 const pendingDayEnd =
 status === 'ended' &&
 lastVisualStatus === 'working';
@@ -27996,17 +28687,10 @@ rates.secondly,
 income
 );
 }
-setTextIfChanged(dom.hourlyRateDisplay, formatCurrency(rates.hourly));
-setTextIfChanged(dom.dailyRateDisplay, `日均 ${formatCurrency(rates.daily)} · ${rates.modeLabel}`);
+hourlySummary.update(rates);
 setTextIfChanged(dom.rateText, `¥${rates.secondly.toFixed(4)}`);
-setTextIfChanged(dom.estMonth, formatCurrency(rates.monthProjection));
-setTextIfChanged(
-dom.monthDetail,
-monthProgress.todayIsWorkday
-? `第 ${monthProgress.currentWorkdayIndex} / ${rates.monthCalendar.totalWorkdays} 个工作日`
-: `已完成 ${monthProgress.completedBeforeToday} / ${rates.monthCalendar.totalWorkdays} 个工作日`
-);
-updateFunItems(income);
+monthSummary.updateSummary({ projection: rates.monthProjection, progress: monthProgress, totalWorkdays: rates.monthCalendar.totalWorkdays });
+funConversions.update({ income });
 ContentPressureController.request();
 setTextIfChanged(
 dom.incomeAccessible,
@@ -29091,7 +29775,7 @@ hierarchy: false
 resetRollerMotion(initialIncome, initialStatus, timestamp);
 lastRenderedLiveIncome = initialIncome;
 lastVisualStatus = initialStatus;
-createFunItems();
+funConversions.mount();
 updateStaticScheduleLabels();
 updateStats();
 beginStartupSync(initialNow, timestamp);

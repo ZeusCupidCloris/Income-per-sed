@@ -1,0 +1,7 @@
+/* @fragment unit-spacing */
+#workedTime .readout-unit{margin-inline:.03em .12em;}
+/* @endfragment */
+
+/* @fragment last-unit-spacing */
+#workedTime .readout-unit:last-child{margin-inline-end:0;}
+/* @endfragment */

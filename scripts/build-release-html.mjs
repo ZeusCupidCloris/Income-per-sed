@@ -1,7 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { minify } from 'html-minifier-terser';
+import { assertDevelopCurrent, buildDevelopHtml } from './build-develop-html.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const developPath = path.join(root, 'Income-per-sed-Develop.html');
@@ -19,9 +21,8 @@ function stripMarkedBlock(source, start, end, replacement = '') {
   return source.slice(0, startIndex) + replacement + source.slice(endIndex + end.length);
 }
 
-async function buildPush() {
-  let source = await readFile(developPath, 'utf8');
-  source = source.replace(/\r\n?/g, '\n');
+export async function buildPushFromDevelop(develop) {
+  let source = develop.replace(/\r\n?/g, '\n');
 
   for (const [start, end, replacement] of [
     ['/* R28 DEVELOP MOTION DEBUG CSS START */', '/* R28 DEVELOP MOTION DEBUG CSS END */', ''],
@@ -91,20 +92,18 @@ async function buildPush() {
   return `${output}\n`;
 }
 
-const mode = process.argv[2] || '--check';
-const generated = await buildPush();
-
-if (mode === '--write') {
-  await writeFile(pushPath, generated, 'utf8');
-  console.log(`Generated ${path.relative(root, pushPath)} from ${path.relative(root, developPath)}.`);
-} else if (mode === '--check') {
-  const current = await readFile(pushPath, 'utf8');
-  if (current !== generated) {
-    console.error('Income-per-sed-Push.html is stale. Run npm run build:push.');
-    process.exitCode = 1;
-  } else {
-    console.log('Push build is reproducible and current.');
-  }
-} else {
-  throw new Error(`Unknown mode: ${mode}`);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try {
+    const [mode = '--check', ...extra] = process.argv.slice(2);
+    if (extra.length || !['--write', '--check'].includes(mode)) throw new Error(`Unknown build mode: ${mode}`);
+    const { html } = mode === '--write' ? await buildDevelopHtml() : await assertDevelopCurrent();
+    const generated = await buildPushFromDevelop(html);
+    if (mode === '--write') {
+      await writeFile(developPath, html, 'utf8');
+      await writeFile(pushPath, generated, 'utf8');
+      console.log('Generated the standalone Develop and Push HTML files from src/page.html.');
+    } else if (await readFile(pushPath, 'utf8') !== generated) {
+      throw new Error('Push HTML is stale. Edit src and run npm run build:push.');
+    } else console.log('Develop assembly and Push build are reproducible and current.');
+  } catch (error) { console.error(error.message); process.exitCode = 1; }
 }

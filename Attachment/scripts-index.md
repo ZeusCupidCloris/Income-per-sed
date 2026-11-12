@@ -18,14 +18,15 @@ Windows PowerShell 运行带参数的功能专项时使用 `npm.cmd run check:fo
 
 ## 内部生成与专项工具
 
-- 生成交付：`npm run release:prepare`。只有明确要更新 Push、手册校验值和清单时才运行。
+- 组装诊断页：`npm run build:develop`；组装两份独立 HTML：`npm run build:push`。修改 `src`，不要手改生成页面。生成行号用 `npm run source:locate -- <行号>` 回查源码。
+- 生成交付：`npm run release:prepare`。只有明确要更新 Develop / Push、手册校验值和清单时才运行；生成本身不等于已发布。
 - 重复构建：`npm run release:repeatability`，会执行生成，串行运行。
 - 帧开销观察：`npm run test:observe`，手动 Edge 专项，不纳入默认完整回归；采样值用于同机对比，不当作跨设备评分。
 - 长时资源观察：`node scripts/observe-runtime-resources.cjs <报告路径> --minutes 30 --sample-seconds 30`。模拟后台不等于系统冻结、实机后台或真实跨夜。
-- 双版本资源比较：`node scripts/compare-runtime-resources.cjs <旧Develop> <新Develop> <报告路径>`。同机交替采样并隔离生成临时 Push；结果不视为跨设备性能承诺。
+- 双版本资源比较：`node scripts/compare-runtime-resources.cjs <旧Develop> <新Develop> <报告路径>`。同机交替采样，在内存中压缩两版 Push，不改交付文件；结果不视为跨设备性能承诺。
 - Develop 预览：维护者可设置 `DEVELOP_PREVIEW=1`；生成版设置反馈检查可设置 `SETTINGS_RELEASE_CHANNEL=push`。这些是内部选择，不增加用户设置。
 - 旧 `test:checks`、`test:recovery`、`test:layout`、`test:settings`、`npm test`、`test:webkit`保留供 CI 与既有调用使用，日常不需要记忆它们。
-- `quality:local`是保留的交付生成流程，会修改交付，不属于三个只读检查入口。
+- `quality:local`是保留的交付生成流程，先生成再检查，避免编辑源码后被旧产物阻挡；会修改交付，不属于三个只读检查入口。
 
 ## 全部脚本用途
 
@@ -34,8 +35,9 @@ Windows PowerShell 运行带参数的功能专项时使用 `npm.cmd run check:fo
 | run-quality.mjs | 三个主要检查入口、五组专项及手动观察；顺序执行并遇错停止 | 测试报告，不生成交付 |
 | quality-scope.mjs | CI 比较本次改动，选择原有专项；不能可靠识别时全测，汇总检查拒绝失败或缺失 | CI 摘要与测试报告，不改交付 |
 | install-ci-dependencies.mjs | CI 安装有限重试与超时终止 | 依赖目录 |
-| build-release-html.mjs | Develop 生成压缩 Push；--check 核对是否可复现 | --write 写 Push |
-| prepare_delivery.py | 生成 Push，同步手册书签和校验清单 | 修改交付 |
+| build-develop-html.mjs | src/page.html 组装、片段完整性与路径检查；--locate 回查生成行的源码 | --write 写 Develop；--check 只读 |
+| build-release-html.mjs | 复用源码组装及纯压缩函数生成单 HTML；--check 核对两份产物 | --write 写 Develop 和 Push |
+| prepare_delivery.py | 生成两份 HTML，同步手册书签和校验清单 | 修改交付 |
 | manual_checksum_bookmarks.py | 按文件名书签定位说明书校验值 | 由构建调用 |
 | validate_delivery.py | 版本、语法、手册及校验清单检查 | 默认只读 |
 | validate-document-index.mjs | 全文件用途、脚本测试遗漏、内部链接与章节检查 | 只读 |
@@ -48,6 +50,6 @@ Windows PowerShell 运行带参数的功能专项时使用 `npm.cmd run check:fo
 | run-python.mjs | 选择 Python 并调用维护脚本 | 由被调用脚本决定 |
 | serve-test-pages.mjs | 本地静态测试服务 | 不写入 |
 | observe-runtime-resources.cjs | 空闲、历史播放、设置开关及恢复的资源采样 | 写报告 |
-| compare-runtime-resources.cjs | 两版交替比较工作态与空闲耗时、文件大小和设置资源稳定性 | 临时隔离构建与报告，不改四文件 |
+| compare-runtime-resources.cjs | 两版交替比较工作态与空闲耗时、文件大小和设置资源稳定性 | 内存压缩与报告，不改四文件 |
 
 [维护策略](../docs/REPOSITORY_POLICY.md)定义发布规则；[测试索引](tests-index.md)定义覆盖职责；[仓库地图](repository-map.md)维护全部路径。文档检查不联网、不解析 Word 内部链接，也不把“没有引用”视为删除理由。

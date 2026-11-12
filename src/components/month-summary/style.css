@@ -1,0 +1,156 @@
+/* @fragment card-wrap */
+.month-card{
+flex-wrap: wrap;
+}
+/* @endfragment */
+
+/* @fragment warning-base */
+.calendar-warning{
+max-width: 38em;
+margin-top: 6px;
+padding: 5px 8px;
+border: 1px solid color-mix(in srgb, var(--accent-warm) 24%, var(--border-light));
+background: color-mix(in srgb, var(--accent-warm) 8%, transparent);
+color: color-mix(in srgb, var(--accent-warm) 76%, var(--text-secondary));
+font-size: 0.68rem;
+line-height: 1.45;
+}
+/* @endfragment */
+
+/* @fragment warning-hidden */
+.calendar-warning[hidden]{display:none;}
+/* @endfragment */
+
+/* @fragment workdays-alignment */
+.month-workdays{
+text-align: right;
+}
+/* @endfragment */
+
+/* @fragment value-color */
+.month-value{
+    margin-top:4px;
+    color:color-mix(in srgb,var(--text-primary) 89%,var(--workshop-ink));
+}
+/* @endfragment */
+
+/* @fragment workdays-color */
+.month-workdays{
+    color:color-mix(in srgb,var(--text-primary) 84%,var(--workshop-ink));
+    font-size:1rem;
+    font-weight:540;
+}
+/* @endfragment */
+
+/* @fragment short-landscape-value */
+    .month-value{font-size:1.25rem;}
+/* @endfragment */
+
+/* @fragment wide-area */
+    .month-card{
+        grid-area:month;
+        height:100%;
+    }
+/* @endfragment */
+
+/* @fragment tablet-area */
+    .month-card{grid-area:month;height:100%;}
+/* @endfragment */
+
+/* @fragment compact-area */
+    .main-container > .month-card{grid-area:month;}
+/* @endfragment */
+
+/* @fragment value-weight */
+.month-value{
+    font-weight:560;
+}
+/* @endfragment */
+
+/* @fragment pressure-compact */
+#monthSummaryCard[data-content-pressure="compact"] .month-value{
+    font-size:calc(var(--type-summary) * .94);
+}
+/* @endfragment */
+
+/* @fragment pressure-critical */
+#monthSummaryCard[data-content-pressure="critical"] .month-value{
+    font-size:calc(var(--type-summary) * .86);
+}
+/* @endfragment */
+
+/* @fragment pressure-detail */
+#monthSummaryCard[data-content-pressure="critical"] .month-detail{
+    font-size:.68rem;
+}
+/* @endfragment */
+
+/* @fragment value-size */
+.month-value{font-size:var(--type-summary);}
+/* @endfragment */
+
+/* @fragment card-alignment */
+.month-card{
+    align-items:center;
+}
+/* @endfragment */
+
+/* @fragment startup-delay */
+body.startup-presentation-active .month-card{animation-delay:120ms !important;}
+/* @endfragment */
+
+/* @fragment padding-desktop */
+    .month-card{padding:18px 21px;}
+/* @endfragment */
+
+/* @fragment padding-tablet */
+    .month-card{padding:16px 19px;}
+/* @endfragment */
+
+/* @fragment warning-layout */
+#calendarWarning{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;}
+/* @endfragment */
+
+/* @fragment warning-id-hidden */
+#calendarWarning[hidden]{display:none;}
+/* @endfragment */
+
+/* @fragment warning-action */
+.calendar-warning-action{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:28px;padding:0;border:0;background:transparent;color:var(--text-primary);font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+/* @endfragment */
+
+/* @fragment warning-icon */
+.calendar-warning-action svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+/* @endfragment */
+
+/* @fragment card-compat */
+#monthSummaryCard{display:flex;flex-wrap:wrap;column-gap:20px;row-gap:12px;align-items:center;}
+/* @endfragment */
+
+/* @fragment columns */
+#monthSummaryCard>div{flex:1 1 0;min-width:min-content;max-width:100%;}
+/* @endfragment */
+
+/* @fragment primary-column */
+#monthSummaryCard>div:first-child{flex-grow:1.5;}
+/* @endfragment */
+
+/* @fragment whole-amount */
+#monthSummaryCard .month-value{white-space:nowrap;overflow-wrap:normal;}
+/* @endfragment */
+
+/* @fragment projection-alignment */
+.month-projection{text-align:right;}
+/* @endfragment */
+
+/* @fragment whole-projection */
+.month-projection-value{display:block;white-space:nowrap;overflow-wrap:normal;}
+/* @endfragment */
+
+/* @fragment private-projection */
+html[data-privacy="hidden"] #estMonth::after{left:auto;right:0;}
+/* @endfragment */
+
+/* @fragment coarse-action-target */
+.calendar-warning-action{min-height:44px;}
+/* @endfragment */

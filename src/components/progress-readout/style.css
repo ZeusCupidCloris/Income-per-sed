@@ -1,0 +1,157 @@
+/* @fragment title-row */
+.progress-header-main{display:inline-flex;align-items:center;gap:8px;}
+/* @endfragment */
+
+/* @fragment header-base */
+.progress-header{
+color: var(--text-secondary);
+font-size: 0.8rem;
+}
+/* @endfragment */
+
+/* @fragment readout-base */
+/* 今日工作进度：将信息层级改造成安静的双读数仪表。 */
+.progress-card .progress-header{
+    align-items:flex-start;
+}
+.progress-header-copy{
+    min-width:0;
+    display:grid;
+    gap:5px;
+}
+.progress-phase{
+    width:max-content;
+    padding-left:10px;
+    position:relative;
+    color:color-mix(in srgb,var(--workshop-green) 74%,var(--text-muted));
+    font-size:.66rem;
+}
+.progress-phase::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:50%;
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:currentColor;
+    box-shadow:0 0 0 3px color-mix(in srgb,currentColor 10%,transparent);
+    transform:translateY(-50%);
+}
+.progress-readout{
+    min-width:104px;
+    display:grid;
+    justify-items:end;
+    gap:3px;
+    padding:1px 0 0 14px;
+    border-left:1px solid color-mix(in srgb,var(--workshop-brass) 22%,var(--border-light));
+}
+/* @endfragment */
+
+/* @fragment width-620 */
+    .progress-readout{min-width:92px;}
+/* @endfragment */
+
+/* @fragment width-390 */
+    .progress-header{gap:8px;}
+    .progress-readout{min-width:84px;}
+    .progress-readout span{overflow:hidden;text-overflow:ellipsis;}
+/* @endfragment */
+
+/* @fragment readout-hierarchy */
+/* Read the timeline as current phase, remaining time, then percentage. */
+.progress-readout{
+    inline-size:124px;
+    min-inline-size:124px;
+    max-inline-size:124px;
+    grid-template-rows:repeat(2,1em);
+    row-gap:3px;
+    align-content:start;
+}
+
+.progress-readout span{
+    order:-1;
+    color:color-mix(in srgb,var(--text-primary) 83%,var(--text-secondary));
+    font-family:var(--numeric-font);
+    font-weight:590;
+    line-height:1;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.progress-readout strong{
+    color:var(--text-muted);
+    font-weight:560;
+    line-height:1;
+}
+/* @endfragment */
+
+/* @fragment compact-readout */
+    .progress-readout{
+        inline-size:106px;
+        min-inline-size:106px;
+        max-inline-size:106px;
+        padding-left:10px;
+    }
+
+    .progress-readout span{
+        font-size:.72rem;
+    }
+
+    .progress-readout strong{
+        font-size:.64rem;
+    }
+/* @endfragment */
+
+/* @fragment compact-text */
+    .progress-readout span{
+        max-width:100px;
+        white-space:nowrap;
+        line-height:1;
+        text-align:right;
+    }
+/* @endfragment */
+
+/* @fragment narrow-readout */
+@media (max-width:390px){
+    .progress-readout{
+        inline-size:92px;
+        min-inline-size:92px;
+        max-inline-size:92px;
+        padding-left:7px;
+    }
+
+    .progress-readout span{
+        max-width:86px;
+        font-size:.67rem;
+    }
+}
+/* @endfragment */
+
+/* @fragment content-pressure */
+#scheduleSettingsCard[data-content-pressure="compact"] .progress-readout{
+    gap:3px;
+    min-width:96px;
+}
+
+#scheduleSettingsCard[data-content-pressure="critical"] .progress-readout span{
+    max-width:10em;
+    font-size:.68rem;
+}
+/* @endfragment */
+
+/* @fragment type-scale */
+.progress-readout span{font-size:.80rem;}
+.progress-readout strong{font-size:.68rem;}
+/* @endfragment */
+
+/* @fragment phase-visibility */
+#scheduleSettingsCard .progress-header-copy{gap:0;}
+#scheduleSettingsCard .progress-phase{display:none;}
+#scheduleSettingsCard[data-work-status="day-off"] .progress-readout strong{display:none;}
+/* @endfragment */
+
+/* @fragment title-weight */
+#progressContextLabel{font-weight:600;}
+/* @endfragment */

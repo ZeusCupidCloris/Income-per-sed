@@ -146,6 +146,7 @@ for (const version of ['Develop', 'Push']) {
       await expect(input).toHaveValue('25:00');
       await input.press('Escape');
       await expect(input).toHaveValue('10:00:00');
+      await expect(page.locator('#historyDialTrack')).toBeFocused();
       await expect(page.locator('#historySeekError')).toBeHidden();
       await expect(page.locator('#historyQuickPanel')).toBeVisible();
     });
@@ -191,11 +192,41 @@ for (const version of ['Develop', 'Push']) {
     test('explicit return to live discards invalid draft', async ({ page }) => {
       await open(page, version);
       await seek(page);
-      await page.locator('#historyDialTime').fill('25:00');
+      const input = page.locator('#historyDialTime');
+      await input.fill('25:00');
+      const playback = page.locator('#historyQuickPlay');
+      await playback.click();
+      expect(await mode(page)).toBe('HISTORY_HOLD');
+      await expect(playback).toHaveAttribute('aria-pressed', 'false');
+      await expect(input).toHaveValue('25:00');
+      await expect(input).toHaveAttribute('aria-invalid', 'true');
+      await expect(page.locator('#historySeekError')).toBeVisible();
       await page.locator('[data-history-action="live"]').click();
       await expect.poll(() => mode(page)).toBe('LIVE');
-      await expect(page.locator('#historyDialTime')).not.toHaveAttribute('aria-invalid');
+      await expect(input).not.toHaveAttribute('aria-invalid');
+      await expect(input).not.toHaveValue('25:00');
       await expect(page.locator('#historySeekError')).toBeHidden();
+    });
+    test('quick buttons step, locate midnight and toggle playback', async ({ page }) => {
+      await open(page, version);
+      await seek(page);
+      const clock = page.locator('#historyQuickClock');
+      for (const [selector, expected] of [
+        ['[data-history-seconds="-900"]', '09:45:00'],
+        ['[data-history-seconds="900"]', '10:00:00'],
+        ['[data-history-action="start"]', '00:00:00'],
+      ]) {
+        await page.locator(selector).click();
+        await hold(page);
+        await expect(clock).toHaveText(expected);
+      }
+      const play = page.locator('#historyQuickPlay');
+      await play.click();
+      await expect.poll(() => mode(page)).toBe('HISTORY_PLAY');
+      await expect(play).toHaveAttribute('aria-pressed', 'true');
+      await play.click();
+      await hold(page);
+      await expect(play).toHaveAttribute('aria-pressed', 'false');
     });
     for (const entry of ['quick-button', 'clock-click', 'clock-keyboard', 'global-keyboard']) {
       test(`play and return use bounded response via ${entry}`, async ({ page }) => {

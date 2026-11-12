@@ -1,0 +1,33 @@
+/* @fragment base */
+.date-review-result{margin-top:12px;border-top:1px solid var(--material-edge,var(--border-light));padding-top:10px;}
+.date-review-result h3{font-size:13px;font-weight:600;margin:0;}
+.date-review-amount{font-size:26px;line-height:1.4;font-weight:600;font-variant-numeric:tabular-nums;min-height:37px;margin:6px 0;}
+.date-review-ledger>div{padding:5px 0;}
+.context-ledger.date-review-ledger>div{grid-template-columns:92px minmax(0,1fr);}
+.date-review-ledger{margin-bottom:8px;}
+.date-review-result button{width:100%;min-height:44px;}
+/* @endfragment */
+
+/* @fragment forced-colors */
+    .date-review-result{border-color:CanvasText;}
+/* @endfragment */
+
+/* @fragment layout */
+#incomeEstimateView .date-review-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);align-items:center;gap:4px 16px;margin-top:12px;}
+#incomeEstimateView .date-review-result[hidden]{display:none;}
+#incomeEstimateView .date-review-result h3{grid-column:1;grid-row:1;font-size:14px;line-height:1.5;}
+#incomeEstimateView #historyDateState{grid-column:1;grid-row:2;margin:0;font-size:12px;line-height:1.5;}
+#incomeEstimateView .date-review-amount{grid-column:2;grid-row:1/3;align-self:center;margin:0;min-width:0;min-height:0;font-size:30px;line-height:1.25;text-align:right;overflow-wrap:anywhere;}
+#incomeEstimateView .date-review-ledger{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:8px 0 0;}
+#incomeEstimateView .date-review-ledger>div{display:block;padding:0;}
+#incomeEstimateView .date-review-ledger dt{font-size:12px;}
+#incomeEstimateView .date-review-ledger dd{text-align:left;font-size:13px;font-weight:400;margin-top:3px;overflow-wrap:anywhere;}
+/* @endfragment */
+
+/* @fragment width-620 */
+ #incomeEstimateView .date-review-result{grid-template-columns:minmax(0,1fr);}
+ #incomeEstimateView .date-review-amount{grid-column:1;grid-row:3;font-size:28px;text-align:left;}
+ #incomeEstimateView .date-review-ledger{grid-template-columns:minmax(0,1fr);gap:6px;}
+ #incomeEstimateView .date-review-ledger>div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+ #incomeEstimateView .date-review-ledger dd{max-width:65%;margin:0;text-align:right;}
+/* @endfragment */

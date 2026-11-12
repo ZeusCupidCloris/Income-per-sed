@@ -46,6 +46,16 @@ class PrepareReleaseTests(unittest.TestCase):
             page.write_text(prefix + elements + '<script>(function(){var sharedName;})();</script><script>const sharedName = 1;</script></html>', encoding='utf-8')
             validate_html(page)
 
+    def test_standalone_html_rejects_external_script_and_stylesheet(self) -> None:
+        prefix = '<html lang="zh-CN"><meta name="viewport" content="width=device-width">'
+        elements = ''.join(f'<div id="{value}"></div>' for value in REQUIRED_IDS)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            page = Path(temp_dir) / "Develop.html"
+            for external in ['<script src="src/card.js"></script>', '<link rel="stylesheet" href="src/card.css">']:
+                page.write_text(prefix + elements + external + '<script>const value = 1;</script></html>', encoding='utf-8')
+                with self.assertRaisesRegex(RuntimeError, 'standalone HTML cannot load external source files'):
+                    validate_html(page)
+
     def test_delivery_revision_matches_manual_and_widget(self) -> None:
         manifest = json.loads((ROOT / 'release-manifest.json').read_text(encoding='utf-8'))
         revision = manifest['deliveryRevision']
