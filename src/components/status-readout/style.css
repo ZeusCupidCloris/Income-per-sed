@@ -1,0 +1,12 @@
+/* @fragment status-type */
+.status-label-main{font-weight:600;}
+.status-label-detail{color:var(--text-secondary);font-size:.90em;font-weight:400;}
+/* @endfragment */
+
+/* @fragment clock-type */
+.current-time{font-weight:600;color:var(--text-primary);}
+/* @endfragment */
+
+/* @fragment compact-detail */
+.status-label-detail{display:none;}
+/* @endfragment */

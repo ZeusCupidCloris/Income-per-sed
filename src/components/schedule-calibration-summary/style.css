@@ -1,0 +1,66 @@
+/* @fragment workshop-base */
+.schedule-calibration-summary{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    border:1px solid color-mix(in srgb,var(--workshop-brass) 22%,var(--border-light));
+}
+.schedule-calibration-summary[data-valid="false"]{
+    border-color:color-mix(in srgb,var(--workshop-copper) 36%,var(--border-light));
+}
+/* @endfragment */
+
+/* @fragment workshop-dark */
+    .schedule-calibration-summary{
+        background:linear-gradient(135deg,rgba(255,230,190,.045),transparent 45%),color-mix(in srgb,var(--bg-soft) 92%,#53422d);
+    }
+/* @endfragment */
+
+/* @fragment workshop-width-620 */
+    .schedule-calibration-summary{gap:10px;}
+/* @endfragment */
+
+/* @fragment workshop-width-390 */
+    .schedule-calibration-summary{align-items:flex-start;}
+/* @endfragment */
+
+/* @fragment release-margin */
+.schedule-calibration-summary{
+    margin-bottom:11px;
+}
+/* @endfragment */
+
+/* @fragment release-width-620 */
+    .schedule-calibration-summary{padding:8px 10px;}
+/* @endfragment */
+
+/* @fragment adaptive-inset */
+.schedule-calibration-summary{
+    padding:9px 11px;
+}
+/* @endfragment */
+
+/* @fragment integrated-total */
+html:root #scheduleCalibrationSummary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;margin:0 0 14px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;}
+#scheduleCalibrationSummary span{font-size:12px;color:var(--text-secondary);}
+#scheduleCalibrationSummary strong{min-inline-size:0;font-size:18px;font-weight:600;line-height:1.4;}
+/* @endfragment */
+
+/* @fragment period-heading */
+.schedule-period-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 0 12px;}
+.schedule-period-heading h3{margin:0;font-size:13px;font-weight:600;}
+.schedule-period-heading strong{font-size:11px;font-weight:400;color:var(--text-secondary);font-variant-numeric:tabular-nums;}
+/* @endfragment */
+
+/* @fragment period-width-620 */
+ .schedule-period-heading{margin-bottom:8px;}
+/* @endfragment */
+
+/* @fragment short-total */
+ html:root #scheduleCalibrationSummary{margin-bottom:8px;}
+/* @endfragment */
+
+/* @fragment short-period */
+ .schedule-period-heading{margin-bottom:5px;}
+/* @endfragment */

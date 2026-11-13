@@ -34,6 +34,14 @@ test('full is read-only, serial and retains both browsers; observation is opt-in
   assert.match(config, /testIgnore:.*settings-frame-budget\.spec\.js/);
 });
 
+test('the explicit write flow assembles artifacts before checking their source consistency', () => {
+  const { scripts } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  assert.deepEqual(scripts['quality:local'].split(' && '), [
+    'npm run release:prepare', 'npm run test:release', 'npm run test:readme',
+    'npm run test:widget', 'npm test', 'npm run test:webkit',
+  ]);
+});
+
 test('invalid groups, browsers and incomplete options fail instead of silently running everything', () => {
   assert.throws(() => buildPlan('focus', { group: 'missing' }));
   assert.throws(() => buildPlan('full', { browser: 'missing' }));

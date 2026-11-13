@@ -12,7 +12,7 @@
 | [.gitattributes](../.gitattributes) | Git 文件换行约定 | 维护 |
 | [.gitignore](../.gitignore) | 本地临时文件排除规则 | 维护 |
 | [CHANGELOG.md](../CHANGELOG.md) | 产品变更总览 | 用户与维护 |
-| [Income-per-sed-Develop.html](../Income-per-sed-Develop.html) | 网页开发与诊断源文件 | 维护 |
+| [Income-per-sed-Develop.html](../Income-per-sed-Develop.html) | 自动组装的可读诊断网页 | 维护 |
 | [Income-per-sed-Push.html](../Income-per-sed-Push.html) | 网页日常发布文件 | 用户 |
 | [IncomeWidget.js](../IncomeWidget.js) | Scriptable 手机和平板小组件 | 用户 |
 | [LICENSE](../LICENSE) | 版权与使用限制 | 用户 |
@@ -21,6 +21,90 @@
 | [package-lock.json](../package-lock.json) | 维护工具依赖版本锁定 | 维护 |
 | [package.json](../package.json) | 维护命令和工具依赖入口 | 维护 |
 | [release-manifest.json](../release-manifest.json) | 产品版本与交付对应清单 | 维护 |
+
+## 页面与组件源码
+
+| 实际路径 | 中文用途名 | 阅读对象 |
+| --- | --- | --- |
+| [src/page.html](../src/page.html) | 单 HTML 组装入口与尚未迁移的页面实现 | 维护 |
+| [src/components/fun-conversions/README.md](../src/components/fun-conversions/README.md) | 趣味换算卡维护入口与改动边界 | 维护 |
+| [src/components/fun-conversions/view.html](../src/components/fun-conversions/view.html) | 趣味换算卡结构 | 维护 |
+| [src/components/fun-conversions/style.css](../src/components/fun-conversions/style.css) | 按原位置组装的趣味换算专属样式片段 | 维护 |
+| [src/components/fun-conversions/index.js](../src/components/fun-conversions/index.js) | 趣味数量与日期标题的独立生命周期 | 维护 |
+| [src/components/fun-conversions/items.json](../src/components/fun-conversions/items.json) | 趣味商品名称、图标与单价 | 维护 |
+| [src/components/work-summary/README.md](../src/components/work-summary/README.md) | 已工作卡修改入口、输入与检查边界 | 维护 |
+| [src/components/work-summary/view.html](../src/components/work-summary/view.html) | 已工作卡结构与稳定根节点 | 维护 |
+| [src/components/work-summary/style.css](../src/components/work-summary/style.css) | 已工作卡专属单位间距片段 | 维护 |
+| [src/components/work-summary/index.js](../src/components/work-summary/index.js) | 已工作与剩余文案的独立呈现 | 维护 |
+| [src/components/month-summary/README.md](../src/components/month-summary/README.md) | 月收入卡修改入口与协调边界 | 维护 |
+| [src/components/month-summary/view.html](../src/components/month-summary/view.html) | 月累计、预计与日历提示结构 | 维护 |
+| [src/components/month-summary/style.css](../src/components/month-summary/style.css) | 月收入卡专属长金额、布局与提示片段 | 维护 |
+| [src/components/month-summary/index.js](../src/components/month-summary/index.js) | 月收入、工作日摘要和日历入口的呈现与清理 | 维护 |
+| [src/components/hourly-summary/README.md](../src/components/hourly-summary/README.md) | 时薪卡修改入口与设置边界 | 维护 |
+| [src/components/hourly-summary/view.html](../src/components/hourly-summary/view.html) | 时薪、日均和编辑入口结构 | 维护 |
+| [src/components/hourly-summary/style.css](../src/components/hourly-summary/style.css) | 时薪卡专属单位与编辑图标样式 | 维护 |
+| [src/components/hourly-summary/index.js](../src/components/hourly-summary/index.js) | 时薪读数呈现与编辑入口监听清理 | 维护 |
+| [src/components/progress-readout/README.md](../src/components/progress-readout/README.md) | 进度读数、时间轴及设置边界 | 维护 |
+| [src/components/progress-readout/view.html](../src/components/progress-readout/view.html) | 进度标题、编辑图标、百分比和剩余时长结构 | 维护 |
+| [src/components/progress-readout/style.css](../src/components/progress-readout/style.css) | 进度读数区专属排版片段 | 维护 |
+| [src/components/progress-readout/index.js](../src/components/progress-readout/index.js) | 状态和百分比显示、无障碍读数及编辑入口 | 维护 |
+| [src/components/status-readout/README.md](../src/components/status-readout/README.md) | 顶部读数与回溯控制的维护边界 | 维护 |
+| [src/components/status-readout/view.html](../src/components/status-readout/view.html) | 顶部状态文案和时间结构片段 | 维护 |
+| [src/components/status-readout/style.css](../src/components/status-readout/style.css) | 顶部状态和时间专属文字样式 | 维护 |
+| [src/components/status-readout/index.js](../src/components/status-readout/index.js) | 状态文案、时间及对应属性的写入 | 维护 |
+| [src/components/history-date-seek/README.md](../src/components/history-date-seek/README.md) | 日期定位与表盘交互的维护边界 | 维护 |
+| [src/components/history-date-seek/view.html](../src/components/history-date-seek/view.html) | 日期读数和定位表单 | 维护 |
+| [src/components/history-date-seek/style.css](../src/components/history-date-seek/style.css) | 日期区专属样式片段 | 维护 |
+| [src/components/history-date-seek/index.js](../src/components/history-date-seek/index.js) | 日期轮草稿、提交、错误及生命周期 | 维护 |
+| [src/components/history-time-input/README.md](../src/components/history-time-input/README.md) | 精确时间输入与表盘控制的维护边界 | 维护 |
+| [src/components/history-time-input/view.html](../src/components/history-time-input/view.html) | 精确时间字段及无障碍标签 | 维护 |
+| [src/components/history-time-input/style.css](../src/components/history-time-input/style.css) | 时间字段专属样式片段 | 维护 |
+| [src/components/history-time-input/index.js](../src/components/history-time-input/index.js) | 草稿、校验与取消编辑 | 维护 |
+| [src/components/history-quick-buttons/README.md](../src/components/history-quick-buttons/README.md) | 回溯按钮接线与时间轴的维护边界 | 维护 |
+| [src/components/history-quick-buttons/index.js](../src/components/history-quick-buttons/index.js) | 回溯按钮点击分发及输入草稿规则 | 维护 |
+| [src/components/history-dial-geometry/README.md](../src/components/history-dial-geometry/README.md) | 表盘几何与拖动控制的维护边界 | 维护 |
+| [src/components/history-dial-geometry/index.js](../src/components/history-dial-geometry/index.js) | 日内时间到坐标与圆弧的纯计算 | 维护 |
+| [src/components/history-panel-focus/README.md](../src/components/history-panel-focus/README.md) | 面板焦点、关闭接线与动画收尾的维护边界 | 维护 |
+| [src/components/history-panel-focus/index.js](../src/components/history-panel-focus/index.js) | 回溯面板键盘边界、关闭入口与焦点归还 | 维护 |
+| [src/components/history-panel-controller/README.md](../src/components/history-panel-controller/README.md) | 回溯面板开关、视口切换和呈现器的协调边界 | 维护 |
+| [src/components/history-panel-controller/index.js](../src/components/history-panel-controller/index.js) | 原开关状态、收尾、断点与后台立即关闭规则 | 维护 |
+| [src/components/date-estimate-result/README.md](../src/components/date-estimate-result/README.md) | 日期估算结果与日期、计算、保存的维护边界 | 维护 |
+| [src/components/date-estimate-result/view.html](../src/components/date-estimate-result/view.html) | 所选日期、主金额与辅助读数结构 | 维护 |
+| [src/components/date-estimate-result/style.css](../src/components/date-estimate-result/style.css) | 估算结果专属排版及窄屏、高对比度片段 | 维护 |
+| [src/components/date-estimate-result/index.js](../src/components/date-estimate-result/index.js) | 已格式化估算读数的呈现与隐藏 | 维护 |
+| [src/components/income-rate-summary/README.md](../src/components/income-rate-summary/README.md) | 工资换算摘要与输入、公式及保存的维护边界 | 维护 |
+| [src/components/income-rate-summary/view.html](../src/components/income-rate-summary/view.html) | 折合时薪、日均收入与日期工时说明结构 | 维护 |
+| [src/components/income-rate-summary/style.css](../src/components/income-rate-summary/style.css) | 工资换算摘要专属排版 | 维护 |
+| [src/components/income-rate-summary/index.js](../src/components/income-rate-summary/index.js) | 宿主格式化后的工资摘要呈现 | 维护 |
+| [src/components/income-mode-switch/README.md](../src/components/income-mode-switch/README.md) | 工资方式按钮与草稿、指示条动效的维护边界 | 维护 |
+| [src/components/income-mode-switch/view.html](../src/components/income-mode-switch/view.html) | 三种工资方式按钮结构 | 维护 |
+| [src/components/income-mode-switch/style.css](../src/components/income-mode-switch/style.css) | 选择条与按钮专属外观片段 | 维护 |
+| [src/components/income-mode-switch/index.js](../src/components/income-mode-switch/index.js) | 选中外观、点击转交与监听清理 | 维护 |
+| [src/components/income-view-tabs/README.md](../src/components/income-view-tabs/README.md) | 收入页签与草稿、日期估算、保存的维护边界 | 维护 |
+| [src/components/income-view-tabs/view.html](../src/components/income-view-tabs/view.html) | 工资设置与日期估算页签结构 | 维护 |
+| [src/components/income-view-tabs/style.css](../src/components/income-view-tabs/style.css) | 页签专属外观、焦点与紧凑视口片段 | 维护 |
+| [src/components/income-view-tabs/index.js](../src/components/income-view-tabs/index.js) | 页签选中、面板显隐、键盘切换及监听清理 | 维护 |
+| [src/components/income-drafts/README.md](../src/components/income-drafts/README.md) | 三种工资方式的草稿接口与保存边界 | 维护 |
+| [src/components/income-drafts/index.js](../src/components/income-drafts/index.js) | 原始字段、草稿比较、快照和恢复内容检查 | 维护 |
+| [src/components/income-fields/README.md](../src/components/income-fields/README.md) | 工资输入区与草稿、隐私、校验的维护边界 | 维护 |
+| [src/components/income-fields/view.html](../src/components/income-fields/view.html) | 工资说明、金额、工作日和错误提示结构 | 维护 |
+| [src/components/income-fields/style.css](../src/components/income-fields/style.css) | 输入区专属布局、尺寸与遮蔽样式 | 维护 |
+| [src/components/income-fields/index.js](../src/components/income-fields/index.js) | 字段名称、说明、显隐和传入数值的呈现 | 维护 |
+| [src/components/income-settings/README.md](../src/components/income-settings/README.md) | 收入设置子组件索引和业务边界 | 维护 |
+| [src/components/income-settings/index.js](../src/components/income-settings/index.js) | 收入设置组件创建、挂载、事件转交与清理 | 维护 |
+| [src/components/schedule-calibration-summary/README.md](../src/components/schedule-calibration-summary/README.md) | 工时读数与滚轮、校验、播报的维护边界 | 维护 |
+| [src/components/schedule-calibration-summary/view.html](../src/components/schedule-calibration-summary/view.html) | 每日、上午、下午的标题和读数结构 | 维护 |
+| [src/components/schedule-calibration-summary/style.css](../src/components/schedule-calibration-summary/style.css) | 工时摘要专属样式和视口片段 | 维护 |
+| [src/components/schedule-calibration-summary/index.js](../src/components/schedule-calibration-summary/index.js) | 显示宿主传入的时长和校准状态 | 维护 |
+| [src/components/calendar-status/README.md](../src/components/calendar-status/README.md) | 日历状态展示与校验、保存的维护边界 | 维护 |
+| [src/components/calendar-status/view.html](../src/components/calendar-status/view.html) | 工作日历标题、年份、来源与结果提示结构 | 维护 |
+| [src/components/calendar-status/style.css](../src/components/calendar-status/style.css) | 日历标题、标记和提示的专属样式 | 维护 |
+| [src/components/calendar-status/index.js](../src/components/calendar-status/index.js) | 来源、年份、辅助说明和操作提示的呈现 | 维护 |
+| [src/components/schedule-settings/README.md](../src/components/schedule-settings/README.md) | 工时摘要、日历状态及操作的统一维护入口 | 维护 |
+| [src/components/schedule-settings/index.js](../src/components/schedule-settings/index.js) | 装配工时与日历展示，连接日历按钮和宿主操作 | 维护 |
+| [src/components/schedule-settings/view.html](../src/components/schedule-settings/view.html) | 工作日历按钮和文件输入结构 | 维护 |
+| [src/components/schedule-settings/wheels.js](../src/components/schedule-settings/wheels.js) | 工时滚轮组的创建、重建和清理 | 维护 |
+| [src/components/schedule-settings/validation.js](../src/components/schedule-settings/validation.js) | 工作时间面板的时长与违规判定 | 维护 |
 
 ## 自动维护与配置
 
@@ -63,6 +147,30 @@
 | [docs/maintainer/patch-readiness.md](../docs/maintainer/patch-readiness.md) | 累计补丁清单、参考刻线观感、耗时样本及交付待办 | 维护 |
 | [docs/maintainer/2.7x-review.md](../docs/maintainer/2.7x-review.md) | 2.7.0 起已交付改动、本地精简、问题处理及当前边界 | 维护 |
 | [docs/maintainer/component-architecture-2.8.md](../docs/maintainer/component-architecture-2.8.md) | 2.8.x 分组件文件归属、共享规则、离线交付与分批重构计划 | 维护 |
+| [docs/maintainer/component-source-first-batch.md](../docs/maintainer/component-source-first-batch.md) | 首批组件源码、单 HTML 构建与本地候选验收边界 | 维护 |
+| [docs/maintainer/readout-components-second-batch.md](../docs/maintainer/readout-components-second-batch.md) | 已工作与月收入卡迁移、专项验证与保留风险 | 维护 |
+| [docs/maintainer/hourly-summary-third-batch.md](../docs/maintainer/hourly-summary-third-batch.md) | 时薪卡迁移、验证与下一批边界 | 维护 |
+| [docs/maintainer/progress-readout-fourth-batch.md](../docs/maintainer/progress-readout-fourth-batch.md) | 进度读数迁移及专项验证 | 维护 |
+| [docs/maintainer/status-readout-fifth-batch.md](../docs/maintainer/status-readout-fifth-batch.md) | 窄屏测量、五组件联测和顶部读数迁移 | 维护 |
+| [docs/maintainer/history-date-seek-sixth-batch.md](../docs/maintainer/history-date-seek-sixth-batch.md) | 日常流程回归与日期定位迁移 | 维护 |
+| [docs/maintainer/history-time-input-seventh-batch.md](../docs/maintainer/history-time-input-seventh-batch.md) | 精确时间输入迁移及验证 | 维护 |
+| [docs/maintainer/history-quick-buttons-eighth-batch.md](../docs/maintainer/history-quick-buttons-eighth-batch.md) | 回溯按钮接线迁移及验证 | 维护 |
+| [docs/maintainer/history-dial-geometry-ninth-batch.md](../docs/maintainer/history-dial-geometry-ninth-batch.md) | 常规回溯联测、表盘几何迁移和拆分前后验证 | 维护 |
+| [docs/maintainer/history-panel-focus-tenth-batch.md](../docs/maintainer/history-panel-focus-tenth-batch.md) | 面板焦点与关闭迁移、原完整验收边界及前后对照 | 维护 |
+| [docs/maintainer/history-panel-controller-eleventh-batch.md](../docs/maintainer/history-panel-controller-eleventh-batch.md) | 回溯开关协调迁移及定位、断点与收尾对照 | 维护 |
+| [docs/maintainer/date-estimate-result-twelfth-batch.md](../docs/maintainer/date-estimate-result-twelfth-batch.md) | 日期估算结果迁移及前后读数、布局对照 | 维护 |
+| [docs/maintainer/income-rate-summary-thirteenth-batch.md](../docs/maintainer/income-rate-summary-thirteenth-batch.md) | 工资摘要迁移、三种计薪方式及前后呈现对照 | 维护 |
+| [docs/maintainer/income-mode-switch-fourteenth-batch.md](../docs/maintainer/income-mode-switch-fourteenth-batch.md) | 工资方式选择条迁移、草稿及原动效对照 | 维护 |
+| [docs/maintainer/income-view-tabs-fifteenth-batch.md](../docs/maintainer/income-view-tabs-fifteenth-batch.md) | 收入设置页签迁移、键盘与原日期异常证据 | 维护 |
+| [docs/maintainer/date-wheel-visibility.md](../docs/maintainer/date-wheel-visibility.md) | 隐藏日期滚轮的回写来源、独立修复与回归 | 维护 |
+| [docs/maintainer/income-drafts-sixteenth-batch.md](../docs/maintainer/income-drafts-sixteenth-batch.md) | 工资草稿迁移、恢复与保存后刷新对照 | 维护 |
+| [docs/maintainer/income-fields-seventeenth-batch.md](../docs/maintainer/income-fields-seventeenth-batch.md) | 工资输入区迁移、布局及隐私回归 | 维护 |
+| [docs/maintainer/income-settings-entry-eighteenth-batch.md](../docs/maintainer/income-settings-entry-eighteenth-batch.md) | 收入设置装配入口及行为对照 | 维护 |
+| [docs/maintainer/schedule-calibration-summary-nineteenth-batch.md](../docs/maintainer/schedule-calibration-summary-nineteenth-batch.md) | 工时摘要迁移、布局与播报对照 | 维护 |
+| [docs/maintainer/calendar-status-twentieth-batch.md](../docs/maintainer/calendar-status-twentieth-batch.md) | 工作日历状态、导出与保存回滚对照 | 维护 |
+| [docs/maintainer/schedule-settings-entry-twenty-first-batch.md](../docs/maintainer/schedule-settings-entry-twenty-first-batch.md) | 工作时间设置入口与工时、日历联合验收 | 维护 |
+| [docs/maintainer/schedule-wheels-twenty-second-batch.md](../docs/maintainer/schedule-wheels-twenty-second-batch.md) | 工时滚轮装配、重复开关和直接输入恢复验收 | 维护 |
+| [docs/maintainer/schedule-validation-twenty-third-batch.md](../docs/maintainer/schedule-validation-twenty-third-batch.md) | 工作时间校验入口、午休边界与提示时机验收 | 维护 |
 | [docs/Income-per-sed（说明文档）.docx](../docs/Income-per-sed（说明文档）.docx) | Income-per-sed 使用手册 | 用户 |
 | [docs/README.md](../docs/README.md) | 当前交付与验收状态索引 | 维护 |
 | [docs/acceptance/maintenance-simplification-20261006.md](../docs/acceptance/maintenance-simplification-20261006.md) | 索引、测试入口与维护收敛验收记录 | 维护 |
@@ -92,6 +200,7 @@
 | [docs/acceptance/fourfile-20261027.md](../docs/acceptance/fourfile-20261027.md) | 2.7.4 定位优化、全量业务与备份恢复本地补丁验收 | 维护与验收 |
 | [docs/acceptance/fourfile-20261028.md](../docs/acceptance/fourfile-20261028.md) | 2.7.5 午休进度衔接与四文件补丁验收 | 维护与验收 |
 | [docs/acceptance/fourfile-20261101.md](../docs/acceptance/fourfile-20261101.md) | 2.7.6 本地留档、稳定性收尾与四文件交付状态 | 维护与验收 |
+| [docs/acceptance/fourfile-20261112.md](../docs/acceptance/fourfile-20261112.md) | 2.8.0 冻结验收、离线试用与候选四文件核对 | 维护与验收 |
 | [docs/acceptance/grid-idle-20260930.md](../docs/acceptance/grid-idle-20260930.md) | 09-30 背景空闲重绘修复证据 | 维护与历史 |
 | [docs/acceptance/grid-recovery-20260930.md](../docs/acceptance/grid-recovery-20260930.md) | 09-30 模拟后台绘制循环检查证据 | 维护与历史 |
 | [docs/acceptance/maintenance-20260915.md](../docs/acceptance/maintenance-20260915.md) | 09-15 仓库维护验收证据 | 维护与历史 |
@@ -119,6 +228,7 @@
 | [docs/releases/v2.7.4.md](../docs/releases/v2.7.4.md) | 2.7.4 回溯定位优化本地补丁说明与交付边界 | 用户与维护 |
 | [docs/releases/v2.7.5.md](../docs/releases/v2.7.5.md) | 2.7.5 午休进度衔接补丁说明 | 用户与维护 |
 | [docs/releases/v2.7.6.md](../docs/releases/v2.7.6.md) | 2.7.6 保存、北京时间、焦点与长数字排版收尾说明 | 用户与维护 |
+| [docs/releases/v2.8.0.md](../docs/releases/v2.8.0.md) | 2.8.0 组件化候选的使用方式与维护入口 | 用户与维护 |
 | [docs/releases/v2.5.4-rc.2.md](../docs/releases/v2.5.4-rc.2.md) | 2.5.4-rc.2 候选发布说明 | 维护与历史 |
 
 ## 维护脚本
@@ -126,7 +236,8 @@
 | 实际路径 | 中文用途名 | 阅读对象 |
 | --- | --- | --- |
 | [Attachment/scripts-index.md](scripts-index.md) | 维护脚本用途与写入行为索引 | 维护 |
-| [scripts/build-release-html.mjs](../scripts/build-release-html.mjs) | 从开发网页生成发布网页 | 维护 |
+| [scripts/build-develop-html.mjs](../scripts/build-develop-html.mjs) | 组装单 HTML 诊断网页及回查源码行号 | 维护 |
+| [scripts/build-release-html.mjs](../scripts/build-release-html.mjs) | 从组件源码生成两份独立网页 | 维护 |
 | [scripts/capture-readme-previews.mjs](../scripts/capture-readme-previews.mjs) | 采集首页浏览器展示图 | 维护 |
 | [scripts/check_delivery_repeatability.py](../scripts/check_delivery_repeatability.py) | 连续构建一致性检查 | 维护 |
 | [scripts/manual_checksum_bookmarks.py](../scripts/manual_checksum_bookmarks.py) | 手册校验书签读取与更新工具 | 维护 |
@@ -148,6 +259,13 @@
 | 实际路径 | 中文用途名 | 阅读对象 |
 | --- | --- | --- |
 | [tests/install-ci-dependencies.test.mjs](../tests/install-ci-dependencies.test.mjs) | 安装重试与真实子进程超时测试 | 维护 |
+| [tests/source-assembly.test.mjs](../tests/source-assembly.test.mjs) | 源码组装、路径边界、组件数据与产物可复现检查 | 维护 |
+| [tests/fun-conversions-contract.spec.js](../tests/fun-conversions-contract.spec.js) | 趣味换算卡实例隔离、生命周期与双网页离线契约 | 维护 |
+| [tests/readout-components-contract.spec.js](../tests/readout-components-contract.spec.js) | 两张读数卡的状态、隔离、清理、跨月与日历入口契约 | 维护 |
+| [tests/hourly-summary-contract.spec.js](../tests/hourly-summary-contract.spec.js) | 时薪卡读数、隔离、监听清理和真实入口契约 | 维护 |
+| [tests/progress-readout-contract.spec.js](../tests/progress-readout-contract.spec.js) | 进度状态、百分比与无障碍同步、归零、回溯和编辑入口 | 维护 |
+| [tests/component-joint.spec.js](../tests/component-joint.spec.js) | 趣味换算布局恢复、工时修改、跨日与跨月回溯、主题切换和顶部时间标签 | 维护 |
+| [tests/daily-workflow.spec.js](../tests/daily-workflow.spec.js) | 工资与工时保存、首页读数、完整备份恢复、刷新及日期定位 | 维护 |
 | [tests/browser-lifecycle.spec.js](../tests/browser-lifecycle.spec.js) | 真实冻结、缓存返回及模拟休眠时间差测试 | 维护 |
 | [Attachment/tests-index.md](tests-index.md) | 自动测试用途与验收边界索引 | 维护 |
 | [tests/background-grid.spec.js](../tests/background-grid.spec.js) | 背景交互与恢复绘制循环测试 | 维护 |
@@ -168,7 +286,7 @@
 | [tests/settings-text-continuity.spec.js](../tests/settings-text-continuity.spec.js) | 设置卡片动画文字排版与显隐连续性测试 | 维护 |
 | [tests/settings-local-motion.spec.js](../tests/settings-local-motion.spec.js) | 设置分层显现、口径文字交接、日历展开和滚轮明度测试 | 维护 |
 | [tests/settings-scrollbar-handoff.spec.js](../tests/settings-scrollbar-handoff.spec.js) | 设置外壳交接期间的原生滚动条绘制与滚动空间检查 | 维护 |
-| [tests/settings-refinements.spec.js](../tests/settings-refinements.spec.js) | 设置及快速回溯的局部反馈、拖动接管与滚动边界检查 | 维护 |
+| [tests/settings-refinements.spec.js](../tests/settings-refinements.spec.js) | 设置及回溯布局、工时读数、日历预览与保存失败回滚 | 维护 |
 | [tests/settings-stability.spec.js](../tests/settings-stability.spec.js) | 设置滚动锚定、摘要布局、快速操作清理与读写耗时检查 | 维护 |
 | [tests/settings-input-safety.spec.js](../tests/settings-input-safety.spec.js) | 不可见控件防误触、触屏手势意图及停靠后摘要播报测试 | 维护 |
 | [tests/global-css-feedback.spec.js](../tests/global-css-feedback.spec.js) | 存储提示生命周期、隐私解锁触摸尺寸与键盘焦点视觉契约 | 维护 |
@@ -185,6 +303,12 @@
 | [docs/acceptance/runtime-observation-20261003.json](../docs/acceptance/runtime-observation-20261003.json) | 30 分钟资源观察原始采样证据 | 维护 |
 | [tests/startup-history-playback.spec.js](../tests/startup-history-playback.spec.js) | 启动与历史播放运动测试 | 维护 |
 | [tests/history-dial-refinement.spec.js](../tests/history-dial-refinement.spec.js) | 拨盘输入、模态焦点、坐标缓存与模拟恢复 | 维护 |
+| [tests/history-flow.spec.js](../tests/history-flow.spec.js) | 窄屏定位、鼠标拖动、播放暂停、跨断点缩放与返回实时联测 | 维护 |
+| [tests/history-panel-focus.spec.js](../tests/history-panel-focus.spec.js) | 回溯面板关闭入口、键盘隔离、焦点归还与反向打开 | 维护 |
+| [tests/date-estimate-result.spec.js](../tests/date-estimate-result.spec.js) | 日期估算结果、未保存草稿隔离与桌面窄屏呈现 | 维护 |
+| [tests/income-rate-summary.spec.js](../tests/income-rate-summary.spec.js) | 工资摘要、无效输入、取消及保存后刷新 | 维护 |
+| [tests/income-mode-switch.spec.js](../tests/income-mode-switch.spec.js) | 工资方式切换、字段呈现、分方式草稿刷新恢复与取消 | 维护 |
+| [tests/income-view-tabs.spec.js](../tests/income-view-tabs.spec.js) | 收入设置页签、键盘焦点、工资草稿与日期滚轮切页保值 | 维护 |
 | [tests/live-reference-marker.spec.js](../tests/live-reference-marker.spec.js) | 回溯实时参考线的主题颜色、跟随实时和返回隐藏 | 维护 |
 | [tests/history-dial-touch.spec.js](../tests/history-dial-touch.spec.js) | 拨盘原生触摸坐标映射与拖动模拟 | 维护 |
 | [tests/test_prepare_delivery.py](../tests/test_prepare_delivery.py) | 交付生成与手册书签测试 | 维护 |

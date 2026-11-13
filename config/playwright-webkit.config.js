@@ -6,7 +6,7 @@ module.exports = defineConfig({
   testMatch: (process.env.DEVELOP_PREVIEW === '1'
     ? ['webkit-mobile.spec.js', 'background-grid.spec.js', 'motion-feedback.spec.js', 'settings-input-safety.spec.js', 'settings-local-motion.spec.js', 'settings-stability.spec.js', 'settings-text-continuity.spec.js', 'settings-scrollbar-handoff.spec.js', 'settings-refinements.spec.js', 'foreground-progress.spec.js', 'readout-sync.spec.js', 'cross-date-month.spec.js', 'recovery-combinations.spec.js', 'long-amount-layout.spec.js']
     : ['webkit-mobile.spec.js', 'background-grid.spec.js', 'foreground-progress.spec.js', 'readout-sync.spec.js', 'cross-date-month.spec.js', 'recovery-combinations.spec.js', 'long-amount-layout.spec.js', 'release-behavior.spec.js', 'settings-text-continuity.spec.js', 'settings-scrollbar-handoff.spec.js', 'settings-refinements.spec.js', 'storage-resilience.spec.js', 'settings-input-safety.spec.js'])
-    .concat(['history-dial-refinement.spec.js', 'history-dial-touch.spec.js', 'global-css-feedback.spec.js', 'live-reference-marker.spec.js', 'foreground-resume.spec.js']),
+    .concat(['history-dial-refinement.spec.js', 'history-dial-touch.spec.js', 'history-flow.spec.js', 'history-panel-focus.spec.js', 'global-css-feedback.spec.js', 'live-reference-marker.spec.js', 'foreground-resume.spec.js', 'fun-conversions-contract.spec.js', 'readout-components-contract.spec.js', 'hourly-summary-contract.spec.js', 'progress-readout-contract.spec.js', 'component-joint.spec.js', 'daily-workflow.spec.js', 'date-estimate-result.spec.js', 'income-rate-summary.spec.js', 'income-mode-switch.spec.js', 'income-view-tabs.spec.js']),
   testIgnore: [],
   projects: [
     {

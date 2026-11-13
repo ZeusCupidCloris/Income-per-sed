@@ -30,6 +30,8 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | --- | --- | --- |
 | 启动与历史运动 | startup-history-playback.spec.js | 后台是模拟，不代表实机锁屏 |
 | 拨盘输入与恢复 | history-dial-refinement.spec.js | Develop/Push 的失焦、回车、Tab、日期定位、无效草稿、鼠标/键盘播放、坐标缓存和模拟十二小时恢复；窄屏初始容器焦点的正反向 Tab、背景焦点隔离与桌面非模态行为；Edge 与 WebKit，不等于整夜驻留 |
+| 窄屏回溯联测 | history-flow.spec.js | 两份网页从 390px 打开、定位、鼠标拖动、播放暂停、跨断点关闭与重开，再返回实时；Edge 与 WebKit，不等于真机触摸 |
+| 回溯面板焦点与关闭 | history-panel-focus.spec.js | Develop/Push 的窄屏关闭按钮与遮罩焦点归还、桌面外部点击与设置焦点不被抢回、面板键盘隔离和关闭后全局快捷键恢复、关闭反向打开；Edge 与 WebKit，非真机触摸验收 |
 | 回溯实时参考线 | live-reference-marker.spec.js | Develop/Push 明暗主题与两种宽度下的边框底色、实时位置跟随及返回实时后隐藏；不改变表盘计算 |
 | 拨盘触摸 | history-dial-touch.spec.js | 按原生事件实际坐标验证点选分钟；Edge 注入原生拖动，WebKit 对不支持的多事件注入明确跳过，不替代真机 |
 | 前台恢复 | foreground-resume.spec.js | 同日、跨日、上午开工及午休结束；恢复速度按已提交帧的时间与角度配对，保留观察时间及原阈值，固定错位样本自检；双版本使用真实主针 transform 检查收尾壁钟毫秒取整不回退及下一整秒接管，Edge/WebKit；模拟后台，不代表系统休眠 |
@@ -42,7 +44,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 设置文字连续性 | settings-text-continuity.spec.js | Develop 动画副本与原卡片的文字排版一致性、面板文字固定坐标和透明度连续性；桌面浏览器自动检查，不替代实机流畅度验收 |
 | 设置局部动效 | settings-local-motion.spec.js | 分层显现、常驻日历工具、收入口径原位更新、滚轮物理明度与跨尺寸缓存样式公式；设置 SETTINGS_RELEASE_CHANNEL=push 可验证生成的 Push |
 | 设置滚动条交接 | settings-scrollbar-handoff.spec.js | 完整面板在展开、关闭与反向交接中无内容溢出或滚动条；桌面、手机宽度、操作区可见性和减少动态效果 |
-| 设置细节精修 | settings-refinements.spec.js | 无滚动条面板、口径底板反向接管、常驻日历、错误占位、居中回溯面板触摸锚定及来源反馈、保存后读数交接和时间滚轮渐隐；原生动画时钟中间帧检查，SETTINGS_RELEASE_CHANNEL=push 验证生成版 |
+| 设置细节精修 | settings-refinements.spec.js | 面板和回溯布局、读数交接、工时滚轮重建和直接输入恢复；工时校验提示时机、相邻时段与修正保存；日历预览、导出、重置、失败回滚及工时和日历联合保存；SETTINGS_RELEASE_CHANNEL=push 验证生成版 |
 | 设置稳定性 | settings-stability.spec.js | 日历及错误锚定、右对齐摘要读数、高频操作清理和同帧几何读写；性能采样仅用于定位本机耗时 |
 | 设置输入安全 | settings-input-safety.spec.js | 展开早期防误触、关闭接管、触屏意图及停靠后摘要播报；可用 SETTINGS_RELEASE_CHANNEL=push 检查 Push；模拟不替代 iPhone 和 VoiceOver 实机验收 |
 | 设置帧开销观察 | settings-frame-budget.spec.js | Edge 中实际采样两种设置卡片的帧间隔与布局、样式计算开销；用于同机对比，不用固定帧率阈值判断所有设备 |
@@ -64,7 +66,18 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 改动分流 | workflow-contract.test.mjs | 版本字段排除、真实网页改动、未知路径、失败与缺失关卡的反例检查；不另建重复套件 |
 | 安装稳定性 | install-ci-dependencies.test.mjs | 成功不重试、失败最多两次、真实子进程超时终止 |
 | 浏览器生命周期 | browser-lifecycle.spec.js | Edge 实际 BFCache 冻结与返回、三轮计时器暂停证据、冻结结合模拟五小时墙钟差；不等于实体电脑休眠或真实跨夜 |
-| 检查入口与分组 | quality-entrypoints.test.mjs | 每份用例唯一归属、组内断言不遗漏、手动观察不混入完整回归、参数错误直接失败 |
+| 检查入口与分组 | quality-entrypoints.test.mjs | 每份用例唯一归属、组内断言不遗漏、显式生成先于产物检查、只读全量不生成交付、手动观察不混入完整回归、参数错误直接失败 |
+| 组件源码组装 | source-assembly.test.mjs | 顺序与源码定位、片段完整性、重复与循环、越界路径、JSON 数据、双产物一致、显式依赖；检查收入设置挂载、解绑、重挂和草稿保留，不启动浏览器 |
+| 趣味换算组件 | fun-conversions-contract.spec.js | 两个实例互不影响、数量边界、重复值零写入、实时/历史标题、挂载与销毁；实际 Develop / Push 的 file 离线入口不请求源码或联网资源；Edge 与 WebKit，后者使用阻断网络请求而非驱动不支持的离线开关 |
+| 已工作与月收入组件 | readout-components-contract.spec.js | 状态文案优先级、两实例隔离、同值写入、累计与预计分离、工作日摘要、月份名称、覆盖提示及监听清理；两份实际 HTML 的跨月回溯、单位节点保留、日历设置与焦点返回；Edge 与 WebKit，不替代真实设备验收 |
+| 每小时收入组件 | hourly-summary-contract.spec.js | 三种工资方式呈现、实例隔离与监听清理；两份实际 HTML 的鼠标和键盘入口、原卡隐藏与焦点返回 |
+| 日期估算结果 | date-estimate-result.spec.js | Develop/Push 在桌面和窄屏、深浅主题下的工作日与休息日读数、未来日期报错、输入后隐藏与未保存工资草稿隔离；组件实例与生命周期另由源码测试核对 |
+| 工资换算摘要 | income-rate-summary.spec.js | 两份网页、两种宽度和深浅主题下三种计薪方式的即时摘要、无效金额与工作日输入、取消及保存后刷新；结构、字体和边界留作前后对照 |
+| 工资方式、输入区与草稿 | income-mode-switch.spec.js | 两份网页在桌面、窄屏的鼠标与键盘切换、字段名称、说明、工作日栏显隐、金额限制和布局；覆盖重复当前方式、无效草稿、保存、刷新确认恢复及取消不改已保存工资 |
+| 收入设置页签 | income-view-tabs.spec.js | 两份网页在桌面、窄屏的左右循环、Home/End、Tab 焦点、点击切页及保存区显隐；往返页签保留日期、时刻与工资草稿，估算使用已保存工资；隐藏滚轮的延迟回调不得改写选值，可见时仍能滚至 1 日 |
+| 工作进度读数 | progress-readout-contract.spec.js | 六种班次或日状态、百分比和无障碍属性、立即归零和入口清理；两份 HTML 的午休、回溯及键盘焦点 |
+| 组件联动 | component-joint.spec.js | 隐藏卡片不误判、真实宽度不足时缩紧与恢复；改工时、跨日跨月回溯、换主题及返回实时后的读数同步 |
+| 日常使用 | daily-workflow.spec.js | 工资修改、日期定位及返回实时；改工时后核对首页时薪和进度，导出、修改并恢复工时、工资和日历后刷新 |
 
 ## 辅助工具
 

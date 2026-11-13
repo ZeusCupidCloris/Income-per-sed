@@ -1,0 +1,11 @@
+/* @fragment unit-spacing */
+#hourlyRateDisplay .readout-unit{margin-inline-end:.12em;}
+/* @endfragment */
+
+/* @fragment label-space */
+#incomeSettingsCard .info-label{position:relative;padding-right:24px;}
+/* @endfragment */
+
+/* @fragment edit-position */
+#incomeSettingsCard .card-edit-indicator{position:absolute;top:50%;right:0;transform:translateY(-50%);}
+/* @endfragment */

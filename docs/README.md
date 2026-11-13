@@ -4,7 +4,61 @@
 
 ## 当前交付
 
-产品与小组件统一为 **2.7.6**，交付 **20261101.1**。2026-11-03 已通过 [PR #75](https://github.com/ZeusCupidCloris/Income-per-sed/pull/75) 合并为 `6d235d1`，桌面旧四文件先备份再替换，精确哈希一致。[PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/41573859993)和 [main 完整检查与 Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/41588491789)各为 Edge 415 项、WebKit 328 项通过及 4 项既定跳过，均为首次工作流尝试、无测试重试。当前四文件另通过本机各 32 项长内容及缩放检查、仓库离线文件 8 组 48 项和实际桌面文件 4 组 24 项操作核对。15:08（北京时间）独立核对线上首页与命名 Push 的完整字节、390/1440px 操作及四张截图通过。手册九页和三张当前 Push 预览已核对；历次失败、采样取舍与未解决的自动化 WebKit 原生崩溃继续保留在[本批收尾记录](acceptance/fourfile-20261101.md)。真实手机、真实跨夜和实际读屏仍暂缓，不创建 Release 或标签。2.8.x 仅形成[组件维护计划](maintainer/component-architecture-2.8.md)，本批不开始拆分运行代码。
+仓库四文件统一为 **2.8.0**，交付编号 **20261112.1**。见[版本说明](releases/v2.8.0.md)和[验收记录](acceptance/fourfile-20261112.md)。合并与自动发布状态见 [PR #77](https://github.com/ZeusCupidCloris/Income-per-sed/pull/77)及其检查；本批不创建 Release 或标签。
+
+### 2.7.6 已交付基线
+
+产品与小组件统一为 **2.7.6**，交付 **20261101.1**。2026-11-03 已通过 [PR #75](https://github.com/ZeusCupidCloris/Income-per-sed/pull/75) 合并为 `6d235d1`，桌面旧四文件先备份再替换，精确哈希一致。[PR 完整检查](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/41573859993)和 [main 完整检查与 Pages](https://github.com/ZeusCupidCloris/Income-per-sed/actions/runs/41588491789)各为 Edge 415 项、WebKit 328 项通过及 4 项既定跳过，均为首次工作流尝试、无测试重试。该版四文件另通过本机各 32 项长内容及缩放检查、仓库离线文件 8 组 48 项和实际桌面文件 4 组 24 项操作核对。15:08（北京时间）独立核对线上首页与命名 Push 的完整字节、390/1440px 操作及四张截图通过。手册九页和三张该版 Push 预览已核对；历次失败、采样取舍与未解决的自动化 WebKit 原生崩溃继续保留在[本批收尾记录](acceptance/fourfile-20261101.md)。真实手机、真实跨夜和实际读屏仍暂缓，不创建 Release 或标签。2.7.6 只记录[组件维护计划](maintainer/component-architecture-2.8.md)，未拆分运行代码。
+
+### 2.8.x 迁移记录
+
+在上述已交付基线之后，本分支开始[组件源码首批](maintainer/component-source-first-batch.md)：先拆趣味换算卡，组装 Develop 与 Push 两份独立 HTML，保持原字体、布局和算法。2026-11-04 本地 Edge 422 项通过，WebKit 334 项通过、1 项内容页崩溃、4 项既定跳过；当时完整关卡未通过，没有重试到成功或交付。两浏览器各 7 项新组件契约及独立目录单 HTML 入口通过，不能替代完整结果。首批沿用 2.7.6 标识，与 2.8.0 候选验收分开记录。
+
+所有者随后明确表示无法手测，要求继续两张只读卡，现按[第二批记录](maintainer/readout-components-second-batch.md)推进已工作与月收入的本地组件迁移。保留首批完整失败，新增专项不冒称全量通过；不升版、不交付、不做新的环境或组合实验，最终自动检查结果在第二批记录中单列。
+
+[第三批](maintainer/hourly-summary-third-batch.md)拆分每小时收入卡的展示与编辑入口，不迁移工资设置、保存或算法。原有完整检查失败记录仍保留。
+
+[第四批](maintainer/progress-readout-fourth-batch.md)拆分工作进度读数和编辑入口，保留时间轴、午休衔接和动画。
+
+[第五批](maintainer/status-readout-fifth-batch.md)修复趣味换算卡宽度误判和回溯工时少一秒，联测通过后拆分顶部状态与时间读数。
+
+[第六批](maintainer/history-date-seek-sixth-batch.md)先核对工资、备份和回溯的日常流程，再拆分日期显示与定位入口。
+
+[第七批](maintainer/history-time-input-seventh-batch.md)分离精确时间输入的草稿、校验和取消，保留原表盘与播放控制。
+
+[第八批](maintainer/history-quick-buttons-eighth-batch.md)分离回溯操作按钮的点击分发，保留原时间轴及动效。
+
+[第九批](maintainer/history-dial-geometry-ninth-batch.md)将回溯联测纳入常规回归，提取表盘纯几何，生成网页不变。
+
+[第十批](maintainer/history-panel-focus-tenth-batch.md)仅迁移回溯面板的键盘焦点与关闭接线，原状态、时间轴与动画保留；前后专项和原完整验收分别记录。
+
+[第十一批](maintainer/history-panel-controller-eleventh-batch.md)收拢面板开关、原关闭收尾和跨视口模式的协调入口，复用呈现器与焦点接口，不迁移动画或时间轴。
+
+[第十二批](maintainer/date-estimate-result-twelfth-batch.md)拆分日期估算的结果结构、专属样式及读数呈现，日期选择、计薪公式和保存继续使用原实现。
+
+[第十三批](maintainer/income-rate-summary-thirteenth-batch.md)拆分工资设置里的折合时薪、日均收入与日期工时说明，只呈现原页面算好的结果，不迁移工资输入、方式切换和保存。
+
+[第十四批](maintainer/income-mode-switch-fourteenth-batch.md)集中工资方式按钮的结构、专属外观、选中反馈和点击转交；草稿、校验、保存及选择指示条动效继续使用原实现。
+
+[第十五批](maintainer/income-view-tabs-fifteenth-batch.md)拆分“工资设置／日期估算”页签的外观、显隐与键盘切换，保留原草稿、估算与保存；单独记录拆分前 WebKit 日期回跳。
+
+[日期回跳独立修复](maintainer/date-wheel-visibility.md)确认隐藏滚轮的延迟回写来源，恢复切页保值回归；不改变工资草稿、计薪、保存或滚轮动效。
+
+[第十六批](maintainer/income-drafts-sixteenth-batch.md)集中维护三种工资方式的未保存字段、草稿比较和恢复快照；计薪、校验、保存及存储继续由原宿主管理。
+
+[第十七批](maintainer/income-fields-seventeenth-batch.md)集中维护工资输入区的字段、说明、显隐和专属样式，不移动草稿、隐私解锁、校验、计薪或保存逻辑。
+
+[第十八批](maintainer/income-settings-entry-eighteenth-batch.md)为收入设置统一组件装配入口，集中挂载、选项绑定和清理，不移动弹窗开合、校验或保存。
+
+[第十九批](maintainer/schedule-calibration-summary-nineteenth-batch.md)集中维护每日、上午、下午工时读数和专属样式，时间滚轮、校验、播报及保存继续使用原实现。
+
+[第二十批](maintainer/calendar-status-twentieth-batch.md)集中工作日历的来源、覆盖年份、辅助说明和结果提示，导入校验、导出与保存回滚仍由原宿主处理。
+
+[第二十一批](maintainer/schedule-settings-entry-twenty-first-batch.md)统一连接工时摘要、工作日历状态和日历按钮，保留原滚轮与保存逻辑。
+
+[第二十二批](maintainer/schedule-wheels-twenty-second-batch.md)集中工时滚轮的创建、重建和清理，不改共用滚轮和保存逻辑。
+
+[第二十三批](maintainer/schedule-validation-twenty-third-batch.md)统一工作时间面板的时长与违规判定，保留原规则、提示时机和底层保存校验。
 
 ### 2.7.5 上批交付
 

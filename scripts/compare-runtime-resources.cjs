@@ -1,8 +1,6 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const os = require('node:os');
 const path = require('node:path');
-const { execFileSync } = require('node:child_process');
 const { createHash } = require('node:crypto');
 const { pathToFileURL } = require('node:url');
 const { gzipSync } = require('node:zlib');
@@ -20,37 +18,18 @@ if (args.includes('--help') || args.length !== 3) {
 }
 
 function fileStats(file) {
-  const data = fs.readFileSync(file);
+  const data = Buffer.isBuffer(file) ? file : fs.readFileSync(file);
   return { bytes: data.length, gzipBytes: gzipSync(data, { level: 9 }).length, sha256: createHash('sha256').update(data).digest('hex') };
 }
 
-function buildSizes(sources) {
-  const root = path.resolve(__dirname, '..');
-  const folder = fs.mkdtempSync(path.join(os.tmpdir(), 'income-size-'));
-  const scripts = path.join(folder, 'scripts');
-  const modules = path.join(folder, 'node_modules');
-  const develop = path.join(folder, 'Income-per-sed-Develop.html');
-  const push = path.join(folder, 'Income-per-sed-Push.html');
-  const builder = path.join(scripts, 'build-release-html.mjs');
-  try {
-    fs.mkdirSync(scripts);
-    fs.copyFileSync(path.join(__dirname, 'build-release-html.mjs'), builder);
-    fs.symlinkSync(path.join(root, 'node_modules'), modules, process.platform === 'win32' ? 'junction' : 'dir');
-    return sources.map(source => {
-      fs.copyFileSync(source, develop);
-      execFileSync(process.execPath, [builder, '--write'], { cwd: folder, stdio: 'pipe', timeout: 120000 });
-      return { develop: fileStats(source), push: fileStats(push) };
-    });
-  } finally {
-    // Remove only the known files and link in this newly created temporary folder.
-    for (const file of [develop, push, builder]) if (fs.existsSync(file)) fs.unlinkSync(file);
-    if (fs.existsSync(modules)) {
-      if (process.platform === 'win32') fs.rmdirSync(modules);
-      else fs.unlinkSync(modules);
-    }
-    if (fs.existsSync(scripts)) fs.rmdirSync(scripts);
-    fs.rmdirSync(folder);
+async function buildSizes(sources) {
+  const { buildPushFromDevelop } = await import(pathToFileURL(path.join(__dirname, 'build-release-html.mjs')).href);
+  const result = [];
+  for (const source of sources) {
+    const push = await buildPushFromDevelop(fs.readFileSync(source, 'utf8'));
+    result.push({ develop: fileStats(source), push: fileStats(Buffer.from(push)) });
   }
+  return result;
 }
 
 function median(values) {
@@ -67,14 +46,14 @@ async function compare(before, after, output) {
   assert.notEqual(...inputPaths, 'The before and after paths must differ.');
   assert(!inputPaths.includes(identity(output)), 'The report must not overwrite an input.');
   const sources = [before, after];
-  const sizes = buildSizes(sources);
+  const sizes = await buildSizes(sources);
   const report = {
     complete: false,
     startedAt: new Date().toISOString(),
     settings: { samplesPerVersion: 3, windowMs: 5000, settingsCyclesPerSample: 8, viewport: { width: 1440, height: 1000 }, motion: 'no-preference', timezone: 'Asia/Shanghai', forcedGCBeforeSnapshots: true },
     sources: sources.map((source, index) => ({ label: index ? 'after' : 'before', source, ...sizes[index] })),
     samples: [],
-    limitations: ['Controlled local Edge run, not a real-device or overnight leak test.', 'Timing samples are observations, not a guaranteed speed improvement.', 'Push candidates are built in an isolated temporary folder; repository delivery files are untouched.'],
+    limitations: ['Controlled local Edge run, not a real-device or overnight leak test.', 'Timing samples are observations, not a guaranteed speed improvement.', 'Push candidates are minified in memory through the existing pure builder; repository delivery files are untouched.'],
   };
   const save = () => {
     fs.mkdirSync(path.dirname(output), { recursive: true });

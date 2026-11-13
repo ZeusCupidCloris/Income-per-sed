@@ -1,0 +1,11 @@
+/* @fragment base */
+.income-view-tabs{display:flex;gap:24px;flex:none;border-bottom:1px solid var(--material-edge);margin-bottom:12px;}
+.income-view-tabs button{position:relative;min-height:44px;padding:0 2px 12px;border:0;background:transparent;color:var(--text-secondary);font:inherit;font-size:14px;cursor:pointer;}
+.income-view-tabs button[aria-selected="true"]{color:var(--text-primary);font-weight:600;}
+.income-view-tabs button[aria-selected="true"]::after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--accent-warm);}
+.income-view-tabs button:focus-visible{outline:2px solid var(--accent-warm);outline-offset:2px;}
+/* @endfragment */
+
+/* @fragment compact-input-focus */
+html:root[data-settings-compact-viewport] #settingsDialog[data-settings-panel="income"]:has(input:focus) .income-view-tabs{display:none;}
+/* @endfragment */

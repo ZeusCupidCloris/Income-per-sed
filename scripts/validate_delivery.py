@@ -54,11 +54,17 @@ class InlineScriptParser(HTMLParser):
         self._parts: list[str] = []
         self.scripts: list[tuple[str, str]] = []
         self._kind = "classic"
+        self.external_resources: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = {key.lower(): value for key, value in attrs}
+        if tag.lower() == "link" and "stylesheet" in (values.get("rel") or "").lower().split():
+            if not (values.get("href") or "").startswith(("data:", "#")):
+                self.external_resources.append(f"stylesheet: {values.get('href')}")
         if tag.lower() != "script":
             return
-        values = {key.lower(): value for key, value in attrs}
+        if "src" in values:
+            self.external_resources.append(f"script: {values['src']}")
         script_type = (values.get("type") or "text/javascript").lower()
         self._capture = "src" not in values and script_type in {
             "text/javascript",
@@ -127,10 +133,10 @@ def validate_manifest(release_tag: str | None) -> None:
         fail("release-manifest.json releaseTag must equal v + productVersion")
     if release_tag and release_tag != expected_tag:
         fail(f"Release tag {release_tag} does not match manifest tag {expected_tag}")
-    if manifest.get("canonicalSource") != RELEASE_FILES[1].as_posix():
-        fail("Develop HTML must remain the canonical source")
-    if manifest.get("derivedArtifacts") != [RELEASE_FILES[0].as_posix()]:
-        fail("Push HTML must remain the declared derived artifact")
+    if manifest.get("canonicalSource") != "src/page.html":
+        fail("src/page.html must remain the canonical source entry")
+    if manifest.get("derivedArtifacts") != [RELEASE_FILES[1].as_posix(), RELEASE_FILES[0].as_posix()]:
+        fail("Develop and Push HTML must remain the declared derived artifacts")
 
     expected_artifacts = [path.as_posix() for path in RELEASE_FILES] + [
         CHECKSUM_FILE.name,
@@ -180,6 +186,8 @@ def validate_html(path: Path) -> None:
 
     parser = InlineScriptParser()
     parser.feed(text)
+    if parser.external_resources:
+        fail(f"{path.name}: standalone HTML cannot load external source files: {parser.external_resources}")
     if not parser.scripts:
         fail(f"{path.name}: no inline JavaScript found")
 
@@ -286,6 +294,12 @@ def main() -> int:
     try:
         validate_files()
         validate_manifest(args.release_tag)
+        source_check = subprocess.run(
+            ["node", "scripts/build-develop-html.mjs", "--check"], cwd=ROOT,
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
+        if source_check.returncode:
+            fail(f"Generated Develop does not match src:\n{source_check.stderr.strip()}")
         validate_widget()
         validate_html(ROOT / RELEASE_FILES[0])
         validate_html(ROOT / RELEASE_FILES[1])
