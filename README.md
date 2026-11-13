@@ -54,13 +54,12 @@
 
 | 项目 | 标识 |
 | --- | --- |
-| 四文件候选版本 | `2.8.0` |
+| 四文件版本 | `2.8.0` |
 | 交付编号 | `20261112.1` |
-| 已上线版本 | `2.7.6` |
 
 2.8.0 按卡片和操作区拆分维护源码，Develop 与 Push 仍各是一份可独立打开的 HTML。使用入口、计薪公式、字体和机械动效保持不变，无需为网页安装依赖。修复估算页签隐藏后日期被滚轮改写、回溯工时少一秒和趣味换算卡的宽度误判。
 
-本分支的四文件仅提交审核，不等于已上线。见 [2.8.0 版本说明](docs/releases/v2.8.0.md)与[候选验收](docs/acceptance/fourfile-20261112.md)。线上与桌面仍以 [2.7.6 交付记录](docs/acceptance/fourfile-20261101.md)为准。
+见 [2.8.0 版本说明](docs/releases/v2.8.0.md)与[验收记录](docs/acceptance/fourfile-20261112.md)。仓库文件的版本不等于线上或桌面已更新；合并与自动发布进度见 [PR #77](https://github.com/ZeusCupidCloris/Income-per-sed/pull/77)。[2.7.6 交付记录](docs/acceptance/fourfile-20261101.md)独立保留。
 
 版本对应关系见[发布清单](release-manifest.json)，检查与上线记录见[当前交付](docs/README.md#当前交付)。普通更新同步仓库与 Pages；仅在确认大版本时发布 Release。
 

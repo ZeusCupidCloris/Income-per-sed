@@ -156,28 +156,16 @@ for (const [variant, width, height] of [['Develop', 1200, 900], ['Push', 390, 67
   });
 }
 
-for (const deferFirstFocus of [false, true]) {
-  const suffix = deferFirstFocus ? ' when initial focus is refused' : '';
+for (const delayedOpening of [false, true]) {
+  const suffix = delayedOpening ? ' after a delayed panel opening' : '';
   test(`Push: schedule wheel lifecycle rebuilds a restored draft with its pending editor${suffix}`, async ({ page }) => {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize({ width: 390, height: 676 });
-    if (deferFirstFocus) await page.addInitScript(() => {
-      let defer = false;
-      document.addEventListener('click', event => {
-        if (event.target.id !== 'settingsSafetyAccept') return;
-        defer = true;
-        requestAnimationFrame(() => { defer = false; });
-      }, { capture: true });
-      const focus = HTMLElement.prototype.focus;
-      HTMLElement.prototype.focus = function (...args) {
-        if (defer && this.matches('#scheduleWheelGrid .time-wheel-direct input')) {
-          this.dataset.initialFocusRefused = 'true';
-          return;
-        }
-        return focus.apply(this, args);
-      };
-    });
+    if (delayedOpening) {
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.clock.install({ time: new Date('2026-10-22T15:30:00+08:00') });
+    }
     await page.goto('/Income-per-sed-Push.html');
     await fullDisplay(page);
     const dialog = page.locator('#settingsDialog');
@@ -194,13 +182,33 @@ for (const deferFirstFocus of [false, true]) {
 
     await page.reload();
     await fullDisplay(page);
-    await page.locator('#draftReview').click();
+    const review = page.locator('#draftReview');
+    if (delayedOpening) {
+      await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now() + 100)));
+      await page.evaluate(() => {
+        const frame = window.requestAnimationFrame;
+        const heldTimestamp = performance.now();
+        // Keep the animation at its first frame while the recovery timer can advance.
+        window.requestAnimationFrame = callback => frame.call(window, () => callback(heldTimestamp));
+        window.addEventListener('test:release-opening-frames', () => { window.requestAnimationFrame = frame; }, { once: true });
+      });
+      await review.dispatchEvent('click');
+      await page.clock.runFor(500);
+      const panel = dialog.locator('#scheduleSettingsPanel');
+      expect(await panel.getAttribute('data-settings-unready')).not.toBeNull();
+      expect(await dialog.locator('#settingsSafetyConfirm').isHidden(), 'do not offer recovery during the interaction lock').toBe(true);
+      await page.evaluate(() => window.dispatchEvent(new Event('test:release-opening-frames')));
+      await page.clock.resume();
+    } else {
+      await review.click();
+    }
     await expect(dialog.locator('#settingsSafetyTitle')).toHaveText('恢复未保存的草稿？');
     const initialWheel = await minute('afternoonEnd').elementHandle();
     await dialog.locator('#settingsSafetyAccept').click();
     await expectScheduleWheels(grid, { ...defaultScheduleTimes, morningEnd: '11:31' });
     await expect(editor).toHaveValue('42');
-    if (deferFirstFocus) await expect(editor).toHaveAttribute('data-initial-focus-refused', 'true');
+    await expect(dialog.locator('#scheduleSettingsPanel')).not.toHaveAttribute('inert');
+    await expect(dialog.locator('#calendarDataSection')).not.toHaveAttribute('inert');
     try {
       await expect(editor).toBeFocused();
     } catch (error) {

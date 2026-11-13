@@ -4,7 +4,7 @@
 
 ## 当前交付
 
-本分支的四文件候选统一为 **2.8.0**，交付编号 **20261112.1**。见[版本说明](releases/v2.8.0.md)和[候选验收](acceptance/fourfile-20261112.md)。这批只提交独立 PR 审核，不合并 main、替换桌面文件、部署 Pages / Sites，也不创建 Release 或标签。
+仓库四文件统一为 **2.8.0**，交付编号 **20261112.1**。见[版本说明](releases/v2.8.0.md)和[验收记录](acceptance/fourfile-20261112.md)。合并与自动发布状态见 [PR #77](https://github.com/ZeusCupidCloris/Income-per-sed/pull/77)及其检查；本批不创建 Release 或标签。
 
 ### 2.7.6 已交付基线
 

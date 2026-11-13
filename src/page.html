@@ -17029,7 +17029,7 @@ const target = this.normalize(this.value + direction * steps);
 this.updateSelection(target, true);
 this.animateTo(target, Math.min(285, 115 + steps * 19), steps > 1 ? 'out-quart' : 'out-cubic');
 }
-openEditor(seed = null, { retryFocus = false } = {}) {
+openEditor(seed = null) {
 if (this.editor || !TimeWheel.commitActiveEditor()) return;
 this.cancelAnimation();
 this.setValue(this.value, { emit: false });
@@ -17075,15 +17075,6 @@ editorScope.listen(input, 'blur', () => this.commitEditor(false));
 input.focus({ preventScroll: true });
 if (seed === null) input.select();
 else input.setSelectionRange(input.value.length, input.value.length);
-if (retryFocus && document.activeElement !== input) {
-const focusAtRestore = document.activeElement;
-// The confirmation sheet has just released its inert children.
-editorScope.requestFrame(() => {
-if (document.activeElement !== focusAtRestore || !input.isConnected || input.closest('[inert], [hidden]')) return;
-input.focus();
-if (document.activeElement === input) input.setSelectionRange(input.value.length, input.value.length);
-});
-}
 }
 commitEditor(focusInvalid = true) {
 if (!this.editor) return true;
@@ -18204,6 +18195,11 @@ resolve(confirmed);
 }
 async function offerDraftRecovery(panel, generation) {
 if (!recoveryPanels.has(panel) || generation !== settingsOpenGeneration || dom.settingsDialog.hidden) return;
+// A confirmation must not save inert states that the opening motion still owns.
+if (incomeSharedMotion) {
+ComponentScopes.settings.requestFrame(() => offerDraftRecovery(panel, generation));
+return;
+}
 const entry = draftRecords[panel];
 const changed = entry.baseline !== settingsFingerprint();
 const accepted = await askSafety('恢复未保存的草稿？', `${panel === 'income' ? '工资' : '工时和日历'}草稿只保留在当前标签页。恢复后仍需保存才会生效。${changed ? '\n已保存设置有变化，请核对后再保存。' : ''}`, '恢复草稿', '丢弃草稿');
