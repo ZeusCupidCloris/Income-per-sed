@@ -59,7 +59,7 @@ Edge 保留全部功能断言；WebKit 保留[现有兼容性子集](../config/p
 | 页面视觉 | visual.spec.js | 既有截图基线，不随测试失败重建 |
 | 全局反馈样式 | global-css-feedback.spec.js | Develop/Push 存储成功与失败提示的显隐生命周期、键盘与高对比度焦点、粗指针隐私解锁尺寸及重开恢复；不修改产品逻辑或截图基线 |
 | WebKit 冒烟 | webkit-mobile.spec.js | WebKit 专属基础启动和手机回溯面板边界；其余文件的浏览器范围以 config/playwright-webkit.config.js 中的 testMatch 为唯一来源，避免维护第二份容易遗漏的名单；默认发布与 Develop 预览范围不同，不等于真实 iPhone |
-| 发布与资源 | test_prepare_delivery.py、release-channel.test.mjs、readme-preview-validation.test.mjs | 构建与资源一致性 |
+| 发布与资源 | test_prepare_delivery.py、release-channel.test.mjs、readme-preview-validation.test.mjs | 构建、正式大版本资格与资源一致性 |
 | 文档有效性 | document-index-validation.test.mjs | 检查器的遗漏、重复、失效地址、章节及中文路径测试；不修改交付 |
 | 文件命名 | release-naming.test.mjs | 既定对外名称、版本、交付编号，以及验收索引当前版本一致性 |
 | 部署结构 | workflow-contract.test.mjs | 静态约束；仍需 GitHub 实际运行验收 |

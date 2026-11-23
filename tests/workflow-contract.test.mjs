@@ -136,3 +136,26 @@ test('Pages cannot bypass Quality with a direct trigger or drift to another SHA'
   assert.match(pages, /persist-credentials: false/);
   assert.match(pages, /Verify published Push bytes/);
 });
+
+test('formal Release is manual, limited to main, and publishes only the validated tag commit', () => {
+  const [validate, publish] = release.replace(/\r/g, '').split('\n  publish:\n');
+  const triggers = validate.split('permissions:')[0];
+  assert.match(triggers, /on:\n {2}workflow_dispatch:/);
+  assert.doesNotMatch(triggers, /push:|tags:|workflow_call:|workflow_run:/);
+  assert.match(triggers, /confirmed:[\s\S]*required: true\n\s+default: false\n\s+type: boolean/);
+  assert.match(validate, /github\.ref == 'refs\/heads\/main'/);
+  assert.match(validate, /ref: \$\{\{ github.sha \}\}/);
+  assert.match(validate, /actions: read/);
+  assert.ok(validate.indexOf('node scripts/resolve-major-release.mjs') > 0);
+  assert.ok(validate.indexOf('git checkout --detach') > validate.indexOf('node scripts/resolve-major-release.mjs'));
+  assert.match(validate, /release:prepare -- --release-tag/);
+  assert.match(publish, /needs: validate/);
+  assert.match(publish, /ref: \$\{\{ needs.validate.outputs.tag_ref \}\}/);
+  assert.match(publish, /RELEASE_SHA: \$\{\{ needs.validate.outputs.sha \}\}/);
+  assert.match(publish, /RELEASE_TITLE: \$\{\{ needs.validate.outputs.title \}\}/);
+  assert.ok(publish.indexOf('$commit -cne $env:RELEASE_SHA') > 0);
+  assert.ok(publish.indexOf('$commit -cne $env:RELEASE_SHA') < publish.indexOf('gh release create'));
+  assert.match(publish, /--title \$env:RELEASE_TITLE/);
+  assert.match(publish, /--verify-tag/);
+  assert.doesNotMatch(publish, /--prerelease|always\(\)|continue-on-error/);
+});

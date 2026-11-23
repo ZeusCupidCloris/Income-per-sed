@@ -70,6 +70,7 @@
 | 要找什么 | 位置 |
 | --- | --- |
 | 全部文件路径和用途 | [仓库地图](Attachment/repository-map.md) |
+| 分支、PR 标题与交付记录 | [贡献指南](CONTRIBUTING.md) |
 | 三个检查入口 | [脚本索引](Attachment/scripts-index.md#三个主要入口) |
 | 五类测试与覆盖边界 | [测试索引](Attachment/tests-index.md#五类覆盖矩阵) |
 | 当前交付、待验收、历史证据 | [验收索引](docs/README.md) |
