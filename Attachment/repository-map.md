@@ -17,6 +17,7 @@
 | [IncomeWidget.js](../IncomeWidget.js) | Scriptable 手机和平板小组件 | 用户 |
 | [LICENSE](../LICENSE) | 版权与使用限制 | 用户 |
 | [README.md](../README.md) | 产品首页与下载入口 | 用户 |
+| [CONTRIBUTING.md](../CONTRIBUTING.md) | 维护分支、PR 标题、验收及交付入口 | 维护 |
 | [SHA256SUMS.txt](../SHA256SUMS.txt) | 四文件完整性校验清单 | 用户与维护 |
 | [package-lock.json](../package-lock.json) | 维护工具依赖版本锁定 | 维护 |
 | [package.json](../package.json) | 维护命令和工具依赖入口 | 维护 |
@@ -110,12 +111,12 @@
 
 | 实际路径 | 中文用途名 | 阅读对象 |
 | --- | --- | --- |
-| [.github/PULL_REQUEST_TEMPLATE.md](../.github/PULL_REQUEST_TEMPLATE.md) | 修改提交检查模板 | 维护 |
+| [.github/PULL_REQUEST_TEMPLATE.md](../.github/PULL_REQUEST_TEMPLATE.md) | PR 标题提示、改动范围、验证与交付状态模板 | 维护 |
 | [.github/SECURITY.md](../.github/SECURITY.md) | 安全问题报告说明 | 维护 |
 | [.github/dependabot.yml](../.github/dependabot.yml) | 依赖更新提醒配置 | 维护 |
 | [.github/workflows/pages.yml](../.github/workflows/pages.yml) | 已验证网页部署流程 | 维护 |
 | [.github/workflows/quality.yml](../.github/workflows/quality.yml) | 合并与发布质量检查流程 | 维护 |
-| [.github/workflows/release.yml](../.github/workflows/release.yml) | 正式或候选版本附件发布流程 | 维护 |
+| [.github/workflows/release.yml](../.github/workflows/release.yml) | 经确认后手动发布正式大版本与附件 | 维护 |
 | [config/playwright-edge.config.js](../config/playwright-edge.config.js) | Edge 自动测试配置 | 维护 |
 | [config/playwright-webkit.config.js](../config/playwright-webkit.config.js) | WebKit 自动测试配置 | 维护 |
 | [config/readme-previews.json](../config/readme-previews.json) | 首页截图尺寸与场景配置 | 维护 |
@@ -246,6 +247,7 @@
 | [scripts/prepare_delivery.py](../scripts/prepare_delivery.py) | 四文件发布准备工具 | 维护 |
 | [scripts/readme-preview-validation.mjs](../scripts/readme-preview-validation.mjs) | 首页图片完整性检查公共函数 | 维护 |
 | [scripts/release-channel.mjs](../scripts/release-channel.mjs) | 正式与候选发布标签识别 | 维护 |
+| [scripts/resolve-major-release.mjs](../scripts/resolve-major-release.mjs) | 检查手动正式发布确认、已验收标签提交与 Release 名称 | 维护 |
 | [scripts/run-python.mjs](../scripts/run-python.mjs) | Python 维护解释器选择工具 | 维护 |
 | [scripts/install-ci-dependencies.mjs](../scripts/install-ci-dependencies.mjs) | 安装超时与有限重试工具 | 维护 |
 | [scripts/serve-test-pages.mjs](../scripts/serve-test-pages.mjs) | 本地测试静态服务 | 维护 |
@@ -296,7 +298,7 @@
 | [tests/readout-sync.spec.js](../tests/readout-sync.spec.js) | 表盘与金额工时读数、同帧北京时间复用及历史日期隔离测试 | 维护 |
 | [tests/recovery-combinations.spec.js](../tests/recovery-combinations.spec.js) | 多状态后台恢复组合测试 | 维护 |
 | [tests/release-behavior.spec.js](../tests/release-behavior.spec.js) | 双版本业务一致性、设备时区与夏令时边界 | 维护 |
-| [tests/release-channel.test.mjs](../tests/release-channel.test.mjs) | 发布标签识别测试 | 维护 |
+| [tests/release-channel.test.mjs](../tests/release-channel.test.mjs) | 标签识别与正式大版本发布门槛测试 | 维护 |
 | [tests/storage-resilience.spec.js](../tests/storage-resilience.spec.js) | 异常存储、多窗口失败回滚与草稿恢复 | 维护 |
 | [docs/acceptance/storage-runtime-20261003.md](../docs/acceptance/storage-runtime-20261003.md) | 保存可靠性与长时资源验收记录 | 维护 |
 | [docs/acceptance/settings-delivery-20261005.md](../docs/acceptance/settings-delivery-20261005.md) | 设置局部反馈、输入安全与四文件交付验收 | 维护 |

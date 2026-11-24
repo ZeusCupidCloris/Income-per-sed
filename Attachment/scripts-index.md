@@ -47,6 +47,7 @@ Windows PowerShell 运行带参数的功能专项时使用 `npm.cmd run check:fo
 | validate-readme-previews.mjs | 首页图片及来源检查 | 不写入 |
 | verify_published_pages.py | 线上首页和 Push 与本地字节比较 | 不写交付 |
 | release-channel.mjs | 判断候选或正式标签 | 不写入 |
+| resolve-major-release.mjs | 解析已确认的大版本标签，核对同一提交最新的 main Quality | 只输出工作流结果，不发布 |
 | run-python.mjs | 选择 Python 并调用维护脚本 | 由被调用脚本决定 |
 | serve-test-pages.mjs | 本地静态测试服务 | 不写入 |
 | observe-runtime-resources.cjs | 空闲、历史播放、设置开关及恢复的资源采样 | 写报告 |

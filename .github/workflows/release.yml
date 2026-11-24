@@ -1,57 +1,70 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing version tag to publish
+        description: Existing major version tag, such as v3.0.0
         required: true
         type: string
+      confirmed:
+        description: The repository owner has approved this major Release
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  group: release-${{ inputs.tag }}
   cancel-in-progress: false
 
 jobs:
   validate:
     name: Validate release
+    if: github.ref == 'refs/heads/main'
     runs-on: windows-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      sha: ${{ steps.target.outputs.sha }}
+      tag_ref: ${{ steps.target.outputs.tag_ref }}
+      title: ${{ steps.target.outputs.title }}
     env:
       PYTHONUTF8: '1'
-      RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      RELEASE_TAG: ${{ inputs.tag }}
     steps:
       - name: Preserve repository file bytes
         shell: pwsh
         run: git config --global core.autocrlf false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ env.RELEASE_TAG }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
+      - name: Resolve confirmed major release
+        id: target
+        env:
+          RELEASE_CONFIRMED: ${{ inputs.confirmed && 'true' || 'false' }}
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/resolve-major-release.mjs
+      - name: Check out the validated release commit
+        shell: pwsh
+        env:
+          RELEASE_SHA: ${{ steps.target.outputs.sha }}
+        run: git checkout --detach $env:RELEASE_SHA
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
       - run: node scripts/install-ci-dependencies.mjs npm
         timeout-minutes: 11
       - run: npm run test:release
-      - run: node scripts/release-channel.mjs $env:RELEASE_TAG
-      - name: Verify tag belongs to main
-        shell: pwsh
-        run: |
-          git fetch origin main
-          git merge-base --is-ancestor $env:RELEASE_TAG origin/main
-          if ($LASTEXITCODE -ne 0) {
-            throw "Release tag $env:RELEASE_TAG is not part of main"
-          }
       - run: npm run release:prepare -- --release-tag $env:RELEASE_TAG
       - run: npm run test:readme
       - run: git diff --exit-code
@@ -65,31 +78,29 @@ jobs:
       contents: write
     env:
       PYTHONUTF8: '1'
-      RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      RELEASE_TAG: ${{ inputs.tag }}
+      RELEASE_SHA: ${{ needs.validate.outputs.sha }}
+      RELEASE_TITLE: ${{ needs.validate.outputs.title }}
     steps:
       - name: Preserve repository file bytes
         shell: pwsh
         run: git config --global core.autocrlf false
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ env.RELEASE_TAG }}
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
+          ref: ${{ needs.validate.outputs.tag_ref }}
+          persist-credentials: false
       - name: Publish GitHub Release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          $commit = git rev-parse --verify HEAD
+          if ($LASTEXITCODE -ne 0 -or $commit -cne $env:RELEASE_SHA) {
+            throw 'Release tag no longer points to the validated commit.'
+          }
           $notes = "docs/releases/$env:RELEASE_TAG.md"
           if (-not (Test-Path -LiteralPath $notes)) {
             throw "Missing release notes: $notes"
-          }
-          $channel = node scripts/release-channel.mjs $env:RELEASE_TAG
-          if ($LASTEXITCODE -ne 0) { throw 'Invalid release channel' }
-          $releaseFlags = @('--latest')
-          if ($channel -eq 'prerelease') {
-            $releaseFlags = @('--prerelease', '--latest=false')
           }
           gh release create $env:RELEASE_TAG `
             'Income-per-sed-Push.html#Push 日常使用版' `
@@ -98,7 +109,7 @@ jobs:
             'docs/Income-per-sed（说明文档）.docx#完整 Word 说明书' `
             'SHA256SUMS.txt#SHA-256 校验值' `
             'release-manifest.json#版本与构建清单' `
-            --title "Income-per-sed $env:RELEASE_TAG" `
+            --title $env:RELEASE_TITLE `
             --notes-file $notes `
             --verify-tag `
-            @releaseFlags
+            --latest
